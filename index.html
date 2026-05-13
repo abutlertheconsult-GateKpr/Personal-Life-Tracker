@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111115;
+    --surface2: #18181f;
+    --surface3: #1f1f28;
+    --border: #2a2a35;
+    --border2: #35353f;
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a70;
+
+    --blue: #3b82f6;
+    --blue-dim: #1e3a5f;
+    --blue-glow: rgba(59,130,246,0.15);
+
+    --gold: #f59e0b;
+    --gold-dim: #4a3010;
+    --gold-glow: rgba(245,158,11,0.15);
+
+    --slate: #64748b;
+    --slate-dim: #1e2530;
+    --slate-glow: rgba(100,116,139,0.15);
+
+    --green: #22c55e;
+    --green-dim: #0f3020;
+    --green-glow: rgba(34,197,94,0.15);
+
+    --panel-w: 380px;
+    --radius: 10px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,12,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 56px;
+  }
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem; letter-spacing: 0.08em;
+    color: var(--text);
+  }
+  .nav-brand span { color: var(--blue); }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    padding: 6px 14px; border-radius: 6px;
+    border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 500;
+    color: var(--text2); background: transparent;
+    transition: all 0.18s;
+  }
+  .nav-tab:hover { background: var(--surface2); color: var(--text); }
+  .nav-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .dash-header {
+    margin-bottom: 28px;
+  }
+  .dash-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem; letter-spacing: 0.06em;
+    line-height: 1;
+  }
+  .dash-subtitle { color: var(--text3); font-size: 0.85rem; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .stat-card:hover { transform: translateY(-1px); }
+  .stat-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-card.blue::before { background: var(--blue); }
+  .stat-card.gold::before { background: var(--gold); }
+  .stat-card.slate::before { background: var(--slate); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.blue { border-top-color: var(--blue); }
+  .stat-card.gold { border-top-color: var(--gold); }
+  .stat-card.slate { border-top-color: var(--slate); }
+  .stat-card.green { border-top-color: var(--green); }
+
+  .stat-label {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text3);
+    margin-bottom: 12px;
+  }
+  .stat-ring-row { display: flex; align-items: center; gap: 14px; }
+  .ring-wrap { flex-shrink: 0; }
+  svg.ring { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--surface3); stroke-width: 5; }
+  .ring-fill { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1); }
+  .ring-fill.blue { stroke: var(--blue); }
+  .ring-fill.gold { stroke: var(--gold); }
+  .ring-fill.slate { stroke: var(--slate); }
+  .ring-fill.green { stroke: var(--green); }
+
+  .stat-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem; line-height: 1; letter-spacing: 0.04em;
+  }
+  .stat-pct.blue { color: var(--blue); }
+  .stat-pct.gold { color: var(--gold); }
+  .stat-pct.slate { color: var(--slate); }
+  .stat-pct.green { color: var(--green); }
+
+  .stat-detail { font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
+
+  /* streak / summary bar */
+  .dash-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex; gap: 20px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .sum-item { text-align: center; }
+  .sum-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--text); }
+  .sum-lbl { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+  .sum-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; }
+
+  /* ── CALENDAR PAGE ── */
+  .cal-months { display: flex; flex-direction: column; gap: 32px; }
+
+  .month-block {}
+  .month-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem; letter-spacing: 0.08em;
+    color: var(--text2); margin-bottom: 12px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .month-heading span { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text3); }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-dow {
+    text-align: center;
+    font-size: 0.65rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text3); padding: 6px 0;
+  }
+  .cal-day {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    min-height: 56px;
+    padding: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    position: relative;
+    display: flex; flex-direction: column;
+  }
+  .cal-day:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); }
+  .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+  .cal-day.empty:hover { transform: none; }
+  .cal-day.today { border-color: var(--blue); }
+  .cal-day.today .day-num { color: var(--blue); }
+  .cal-day.past { opacity: 0.85; }
+  .cal-day.selected { border-color: var(--gold); background: var(--surface2); }
+
+  .day-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; font-weight: 600;
+    color: var(--text2);
+  }
+  .day-pct-badge {
+    margin-top: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; font-weight: 600;
+    padding: 2px 5px; border-radius: 4px;
+    align-self: flex-start;
+  }
+  .day-pct-badge.high { background: var(--green-dim); color: var(--green); }
+  .day-pct-badge.mid { background: var(--gold-dim); color: var(--gold); }
+  .day-pct-badge.low { background: #2a1010; color: #f87171; }
+  .day-pct-badge.zero { background: var(--surface3); color: var(--text3); }
+
+  .day-dot-row { display: flex; gap: 2px; flex-wrap: wrap; margin-top: 3px; }
+  .day-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .day-dot.blue { background: var(--blue); }
+  .day-dot.gold { background: var(--gold); }
+  .day-dot.slate { background: var(--slate); }
+  .day-dot.green { background: var(--green); }
+
+  /* ── SLIDE PANEL ── */
+  .panel-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+  }
+  .panel-overlay.open { display: block; }
+
+  .side-panel {
+    position: fixed; top: 0; right: -100%; bottom: 0;
+    width: min(var(--panel-w), 100vw);
+    z-index: 201;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transition: right 0.3s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+  }
+  .side-panel.open { right: 0; }
+
+  .panel-header {
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .panel-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem; letter-spacing: 0.06em; line-height: 1;
+  }
+  .panel-day-name { font-size: 0.75rem; color: var(--text3); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+  .panel-close {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 6px;
+    width: 32px; height: 32px; font-size: 1.1rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .panel-close:hover { background: var(--surface3); color: var(--text); }
+
+  .panel-overall {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .overall-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .overall-bar-wrap { background: var(--surface3); border-radius: 4px; height: 8px; overflow: hidden; }
+  .overall-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--blue), var(--green)); transition: width 0.4s; }
+  .overall-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text); margin-top: 5px; }
+
+  .panel-cats {
+    flex: 1; overflow-y: auto;
+    padding: 12px 18px 20px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .panel-cats::-webkit-scrollbar { width: 4px; }
+  .panel-cats::-webkit-scrollbar-track { background: transparent; }
+  .panel-cats::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  .cat-block {}
+  .cat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .cat-title {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .cat-dot.blue { background: var(--blue); }
+  .cat-dot.gold { background: var(--gold); }
+  .cat-dot.slate { background: var(--slate); }
+  .cat-dot.green { background: var(--green); }
+
+  .cat-pct-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; padding: 2px 7px; border-radius: 20px;
+  }
+  .cat-pct-pill.blue { background: var(--blue-dim); color: var(--blue); }
+  .cat-pct-pill.gold { background: var(--gold-dim); color: var(--gold); }
+  .cat-pct-pill.slate { background: var(--slate-dim); color: var(--slate); }
+  .cat-pct-pill.green { background: var(--green-dim); color: var(--green); }
+
+  .task-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .task-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 10px;
+    transition: border-color 0.15s;
+  }
+  .task-item:hover { border-color: var(--border2); }
+  .task-item.done { opacity: 0.6; }
+
+  .task-cb {
+    width: 17px; height: 17px; flex-shrink: 0;
+    border: 2px solid var(--border2); border-radius: 4px;
+    background: transparent; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .task-cb.checked { background: var(--blue); border-color: var(--blue); }
+  .task-cb.checked.gold { background: var(--gold); border-color: var(--gold); }
+  .task-cb.checked.slate { background: var(--slate); border-color: var(--slate); }
+  .task-cb.checked.green { background: var(--green); border-color: var(--green); }
+  .task-cb svg { display: none; }
+  .task-cb.checked svg { display: block; }
+
+  .task-text {
+    flex: 1; font-size: 0.82rem; color: var(--text);
+    background: transparent; border: none; outline: none;
+    font-family: 'DM Sans', sans-serif;
+    resize: none; line-height: 1.3;
+  }
+  .task-text.done-text { text-decoration: line-through; color: var(--text3); }
+
+  .task-del {
+    background: transparent; border: none;
+    color: var(--text3); cursor: pointer; font-size: 1rem;
+    padding: 2px 4px; border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+  .task-del:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+
+  .add-task-row {
+    display: flex; gap: 6px; margin-top: 6px;
+  }
+  .add-task-input {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 7px 10px;
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+    outline: none; transition: border-color 0.15s;
+  }
+  .add-task-input:focus { border-color: var(--border2); }
+  .add-task-input::placeholder { color: var(--text3); }
+  .add-task-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 7px; padding: 7px 12px;
+    cursor: pointer; font-size: 1rem; font-weight: 600;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .add-task-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .dash-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-card { padding: 14px; }
+    .stat-pct { font-size: 1.8rem; }
+    .page { padding: 16px 12px; }
+    .cal-day { min-height: 44px; padding: 4px; }
+    .day-num { font-size: 0.7rem; }
+    .dash-summary { gap: 14px; }
+    .month-heading { font-size: 1.3rem; }
+    nav { padding: 0 12px; }
+    .nav-tab { padding: 5px 10px; font-size: 0.78rem; }
+  }
+  @media (max-width: 380px) {
+    .cal-grid { gap: 3px; }
+    .cal-day { min-height: 40px; padding: 3px; }
+    .day-pct-badge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">LIFE<span>.</span>TRACK</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('calendar')">Calendar</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="dash-header">
+    <div class="dash-title">YOUR PROGRESS</div>
+    <div class="dash-subtitle" id="dash-range">— loading —</div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="stat-card blue">
+      <div class="stat-label">Personal Promises</div>
+      <div class="stat-ring-row">
+        <div class="ring-wrap">
+          <svg class="ring" width="54" height="54" viewBox="0 0 54 54">
+            <circle class="ring-bg" cx="27" cy="27" r="22"/>
+            <circle class="ring-fill blue" id="ring-blue" cx="27" cy="27" r="22"
+              stroke-dasharray="138.23" stroke-dashoffset="138.23"/>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-pct blue" id="pct-blue">0%</div>
+          <div class="stat-detail" id="detail-blue">0 / 0 tasks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card gold">
+      <div class="stat-label">Promises to Others</div>
+      <div class="stat-ring-row">
+        <div class="ring-wrap">
+          <svg class="ring" width="54" height="54" viewBox="0 0 54 54">
+            <circle class="ring-bg" cx="27" cy="27" r="22"/>
+            <circle class="ring-fill gold" id="ring-gold" cx="27" cy="27" r="22"
+              stroke-dasharray="138.23" stroke-dashoffset="138.23"/>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-pct gold" id="pct-gold">0%</div>
+          <div class="stat-detail" id="detail-gold">0 / 0 tasks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card slate">
+      <div class="stat-label">Not Important</div>
+      <div class="stat-ring-row">
+        <div class="ring-wrap">
+          <svg class="ring" width="54" height="54" viewBox="0 0 54 54">
+            <circle class="ring-bg" cx="27" cy="27" r="22"/>
+            <circle class="ring-fill slate" id="ring-slate" cx="27" cy="27" r="22"
+              stroke-dasharray="138.23" stroke-dashoffset="138.23"/>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-pct slate" id="pct-slate">0%</div>
+          <div class="stat-detail" id="detail-slate">0 / 0 tasks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card green">
+      <div class="stat-label">Health &amp; Wellness</div>
+      <div class="stat-ring-row">
+        <div class="ring-wrap">
+          <svg class="ring" width="54" height="54" viewBox="0 0 54 54">
+            <circle class="ring-bg" cx="27" cy="27" r="22"/>
+            <circle class="ring-fill green" id="ring-green" cx="27" cy="27" r="22"
+              stroke-dasharray="138.23" stroke-dashoffset="138.23"/>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-pct green" id="pct-green">0%</div>
+          <div class="stat-detail" id="detail-green">0 / 0 tasks</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-summary">
+    <div class="sum-item">
+      <div class="sum-val" id="sum-days-logged">0</div>
+      <div class="sum-lbl">Days Logged</div>
+    </div>
+    <div class="sum-divider"></div>
+    <div class="sum-item">
+      <div class="sum-val" id="sum-total-tasks">0</div>
+      <div class="sum-lbl">Total Tasks</div>
+    </div>
+    <div class="sum-divider"></div>
+    <div class="sum-item">
+      <div class="sum-val" id="sum-completed">0</div>
+      <div class="sum-lbl">Completed</div>
+    </div>
+    <div class="sum-divider"></div>
+    <div class="sum-item">
+      <div class="sum-val" id="sum-overall">0%</div>
+      <div class="sum-lbl">Overall</div>
+    </div>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div id="page-calendar" class="page">
+  <div class="cal-months" id="cal-months"></div>
+</div>
+
+<!-- OVERLAY -->
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+
+<!-- SIDE PANEL -->
+<div class="side-panel" id="side-panel">
+  <div class="panel-header">
+    <div>
+      <div class="panel-date" id="panel-date-text">—</div>
+      <div class="panel-day-name" id="panel-day-name">—</div>
+    </div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-overall">
+    <div class="overall-label">Day Completion</div>
+    <div class="overall-bar-wrap"><div class="overall-bar" id="overall-bar" style="width:0%"></div></div>
+    <div class="overall-pct" id="overall-pct-text">0 of 0 tasks complete — 0%</div>
+  </div>
+  <div class="panel-cats" id="panel-cats"></div>
+</div>
+
+<script>
+const CATS = [
+  { key: 'blue',  label: 'Personal Promises',  color: 'blue'  },
+  { key: 'gold',  label: 'Promises to Others', color: 'gold'  },
+  { key: 'slate', label: 'Not Important',       color: 'slate' },
+  { key: 'green', label: 'Health & Wellness',   color: 'green' },
+];
+
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let activeDateKey = null;
+const today = new Date(); today.setHours(0,0,0,0);
+
+function dateKey(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function loadData(key){ return JSON.parse(localStorage.getItem('lt_'+key)||'null'); }
+function saveData(key,val){ localStorage.setItem('lt_'+key, JSON.stringify(val)); }
+
+function getDay(key){
+  let d = loadData(key);
+  if(!d){ d = { blue:[], gold:[], slate:[], green:[] }; }
+  CATS.forEach(c=>{ if(!d[c.key]) d[c.key]=[]; });
+  return d;
+}
+function setDay(key,val){ saveData(key,val); }
+
+/* ── CALENDAR BUILD ── */
+function buildCalendar(){
+  const container = document.getElementById('cal-months');
+  container.innerHTML = '';
+  for(let mo=0; mo<3; mo++){
+    const d = new Date(today.getFullYear(), today.getMonth()+mo, 1);
+    const y = d.getFullYear(), m = d.getMonth();
+    container.appendChild(buildMonth(y,m));
+  }
+}
+
+function buildMonth(y,m){
+  const wrap = document.createElement('div');
+  wrap.className = 'month-block';
+
+  const head = document.createElement('div');
+  head.className = 'month-heading';
+  head.innerHTML = `${MONTHS[m]} <span>${y}</span>`;
+  wrap.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'cal-grid';
+
+  DAYS.forEach(d=>{
+    const el = document.createElement('div');
+    el.className = 'cal-dow'; el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDow = new Date(y,m,1).getDay();
+  for(let i=0;i<firstDow;i++){
+    const el=document.createElement('div'); el.className='cal-day empty'; grid.appendChild(el);
+  }
+
+  const days = new Date(y,m+1,0).getDate();
+  for(let day=1;day<=days;day++){
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    const cellDate = new Date(y,m,day);
+    const key = dateKey(y,m,day);
+
+    if(cellDate.getTime()===today.getTime()) cell.classList.add('today');
+    if(cellDate < today) cell.classList.add('past');
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num'; numEl.textContent = day;
+    cell.appendChild(numEl);
+
+    // dots for cats with tasks
+    const dotRow = document.createElement('div');
+    dotRow.className = 'day-dot-row';
+    const dayData = getDay(key);
+    CATS.forEach(c=>{
+      if(dayData[c.key].length>0){
+        const dot = document.createElement('div');
+        dot.className = `day-dot ${c.color}`; dotRow.appendChild(dot);
+      }
+    });
+    cell.appendChild(dotRow);
+
+    // pct badge for past days with tasks
+    if(cellDate <= today){
+      const {done,total} = dayTotals(key);
+      if(total>0){
+        const badge = document.createElement('div');
+        const pct = Math.round(done/total*100);
+        badge.className = 'day-pct-badge ' + (pct>=80?'high':pct>=40?'mid':pct>0?'low':'zero');
+        badge.textContent = pct+'%';
+        cell.appendChild(badge);
+      }
+    }
+
+    cell.dataset.key = key;
+    cell.dataset.y = y; cell.dataset.m = m; cell.dataset.d = day;
+    cell.addEventListener('click', ()=>openPanel(key,y,m,day));
+    grid.appendChild(cell);
+  }
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function dayTotals(key){
+  const d = getDay(key);
+  let done=0, total=0;
+  CATS.forEach(c=>{ total+=d[c.key].length; done+=d[c.key].filter(t=>t.done).length; });
+  return {done,total};
+}
+
+/* ── PANEL ── */
+function openPanel(key,y,m,day){
+  activeDateKey = key;
+  document.getElementById('panel-date-text').textContent =
+    `${MONTHS[m].substring(0,3).toUpperCase()} ${day}, ${y}`;
+  const dow = new Date(y,m,day).getDay();
+  document.getElementById('panel-day-name').textContent = DAYS[dow].toUpperCase();
+  renderPanel();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('side-panel').classList.add('open');
+  // mark selected
+  document.querySelectorAll('.cal-day').forEach(el=>el.classList.remove('selected'));
+  const sel = document.querySelector(`[data-key="${key}"]`);
+  if(sel) sel.classList.add('selected');
+}
+
+function closePanel(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('side-panel').classList.remove('open');
+  document.querySelectorAll('.cal-day').forEach(el=>el.classList.remove('selected'));
+  activeDateKey = null;
+}
+
+function renderPanel(){
+  if(!activeDateKey) return;
+  const data = getDay(activeDateKey);
+  const {done,total} = dayTotals(activeDateKey);
+  const pct = total>0?Math.round(done/total*100):0;
+
+  document.getElementById('overall-bar').style.width = pct+'%';
+  document.getElementById('overall-pct-text').textContent =
+    `${done} of ${total} tasks complete — ${pct}%`;
+
+  const container = document.getElementById('panel-cats');
+  container.innerHTML = '';
+
+  CATS.forEach(cat=>{
+    const tasks = data[cat.key];
+    const catDone = tasks.filter(t=>t.done).length;
+    const catPct = tasks.length>0?Math.round(catDone/tasks.length*100):0;
+
+    const block = document.createElement('div');
+    block.className = 'cat-block';
+
+    block.innerHTML = `
+      <div class="cat-header">
+        <div class="cat-title">
+          <div class="cat-dot ${cat.color}"></div>
+          ${cat.label}
+        </div>
+        <div class="cat-pct-pill ${cat.color}">${catPct}%</div>
+      </div>
+      <div class="task-list" id="tl-${cat.key}"></div>
+      <div class="add-task-row">
+        <input class="add-task-input" id="inp-${cat.key}" placeholder="Add task…" 
+          onkeydown="if(event.key==='Enter') addTask('${cat.key}')">
+        <button class="add-task-btn" onclick="addTask('${cat.key}')">+</button>
+      </div>
+    `;
+    container.appendChild(block);
+
+    const list = document.getElementById('tl-'+cat.key);
+    tasks.forEach((t,i)=>{
+      list.appendChild(makeTaskEl(cat, t, i));
+    });
+  });
+
+  // refresh calendar cell
+  refreshCalCell(activeDateKey);
+  updateDashboard();
+}
+
+function makeTaskEl(cat, task, idx){
+  const item = document.createElement('div');
+  item.className = 'task-item' + (task.done?' done':'');
+
+  const cb = document.createElement('div');
+  cb.className = 'task-cb' + (task.done?` checked ${cat.color}`:'');
+  cb.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
+  cb.onclick = ()=>toggleTask(cat.key, idx);
+
+  const txt = document.createElement('span');
+  txt.className = 'task-text' + (task.done?' done-text':'');
+  txt.textContent = task.text;
+
+  const del = document.createElement('button');
+  del.className = 'task-del'; del.textContent = '×';
+  del.onclick = ()=>deleteTask(cat.key, idx);
+
+  item.appendChild(cb); item.appendChild(txt); item.appendChild(del);
+  return item;
+}
+
+function addTask(catKey){
+  const inp = document.getElementById('inp-'+catKey);
+  const text = inp.value.trim(); if(!text) return;
+  const data = getDay(activeDateKey);
+  data[catKey].push({text, done:false});
+  setDay(activeDateKey, data);
+  inp.value = '';
+  renderPanel();
+}
+
+function toggleTask(catKey, idx){
+  const data = getDay(activeDateKey);
+  data[catKey][idx].done = !data[catKey][idx].done;
+  setDay(activeDateKey, data);
+  renderPanel();
+}
+
+function deleteTask(catKey, idx){
+  const data = getDay(activeDateKey);
+  data[catKey].splice(idx,1);
+  setDay(activeDateKey, data);
+  renderPanel();
+}
+
+function refreshCalCell(key){
+  const cell = document.querySelector(`[data-key="${key}"]`);
+  if(!cell) return;
+  // remove old badge & dots
+  cell.querySelectorAll('.day-pct-badge,.day-dot-row').forEach(el=>el.remove());
+
+  const dayData = getDay(key);
+  const dotRow = document.createElement('div');
+  dotRow.className = 'day-dot-row';
+  CATS.forEach(c=>{
+    if(dayData[c.key].length>0){
+      const dot=document.createElement('div');
+      dot.className=`day-dot ${c.color}`; dotRow.appendChild(dot);
+    }
+  });
+  cell.appendChild(dotRow);
+
+  const cellDate = new Date(key);
+  if(cellDate<=today){
+    const {done,total} = dayTotals(key);
+    if(total>0){
+      const badge=document.createElement('div');
+      const pct=Math.round(done/total*100);
+      badge.className='day-pct-badge '+(pct>=80?'high':pct>=40?'mid':pct>0?'low':'zero');
+      badge.textContent=pct+'%';
+      cell.appendChild(badge);
+    }
+  }
+}
+
+/* ── DASHBOARD ── */
+function updateDashboard(){
+  // gather 3 months of data
+  const totals = {blue:{d:0,t:0}, gold:{d:0,t:0}, slate:{d:0,t:0}, green:{d:0,t:0}};
+  let daysLogged=0, grandDone=0, grandTotal=0;
+
+  for(let mo=0;mo<3;mo++){
+    const base = new Date(today.getFullYear(), today.getMonth()+mo, 1);
+    const daysInMo = new Date(base.getFullYear(), base.getMonth()+1, 0).getDate();
+    for(let day=1;day<=daysInMo;day++){
+      const key = dateKey(base.getFullYear(), base.getMonth(), day);
+      const raw = loadData(key);
+      if(!raw) continue;
+      let dayHasTasks=false;
+      CATS.forEach(c=>{
+        const arr = raw[c.key]||[];
+        if(arr.length>0){
+          dayHasTasks=true;
+          totals[c.key].t += arr.length;
+          totals[c.key].d += arr.filter(x=>x.done).length;
+          grandTotal+=arr.length;
+          grandDone+=arr.filter(x=>x.done).length;
+        }
+      });
+      if(dayHasTasks) daysLogged++;
+    }
+  }
+
+  const circumference = 138.23;
+  CATS.forEach(c=>{
+    const pct = totals[c.key].t>0?Math.round(totals[c.key].d/totals[c.key].t*100):0;
+    const offset = circumference - (circumference * pct/100);
+    document.getElementById('pct-'+c.key).textContent = pct+'%';
+    document.getElementById('detail-'+c.key).textContent = `${totals[c.key].d} / ${totals[c.key].t} tasks`;
+    document.getElementById('ring-'+c.key).style.strokeDashoffset = offset;
+  });
+
+  document.getElementById('sum-days-logged').textContent = daysLogged;
+  document.getElementById('sum-total-tasks').textContent = grandTotal;
+  document.getElementById('sum-completed').textContent = grandDone;
+  document.getElementById('sum-overall').textContent =
+    grandTotal>0?Math.round(grandDone/grandTotal*100)+'%':'0%';
+
+  // date range label
+  const startMo = today.getMonth(), endDate = new Date(today.getFullYear(), today.getMonth()+3, 0);
+  document.getElementById('dash-range').textContent =
+    `${MONTHS[startMo].substring(0,3)} ${today.getFullYear()} → ${MONTHS[endDate.getMonth()].substring(0,3)} ${endDate.getFullYear()}`;
+}
+
+/* ── NAV ── */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='calendar') buildCalendar();
+  if(id==='dashboard') updateDashboard();
+}
+
+// ── INIT ──
+updateDashboard();
+</script>
+</body>
+</html>
