@@ -180,6 +180,32 @@ svg.ring { transform: rotate(-90deg); }
 }
 .stat-detail { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
 
+/* ── Stat card header row: label + optional flag badge ──
+   The flag appears when today has incomplete tasks in that category.
+   To change the flag emoji: search for FLAG_EMOJI in JS below. */
+.stat-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.stat-flag {
+  /* Red flag badge — shown when today has pending tasks in this category */
+  font-size: 0.85rem; line-height: 1;
+  flex-shrink: 0; margin-left: 4px;
+  animation: flag-pulse 2s ease-in-out infinite;
+}
+@keyframes flag-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* Ring color states:
+   --ring-state-color is set dynamically in JS based on done/total.
+   States: neutral (0/0) | red (0/X) | amber (partial) | green (X/X) */
+.stat-pct.state-neutral { color: var(--text3); }
+.stat-pct.state-red     { color: #f87171; }
+.stat-pct.state-amber   { color: var(--gold); }
+.stat-pct.state-green   { color: var(--green); }
+
 /* Summary strip */
 .dash-summary {
   background: var(--surface); border: 1px solid var(--border);
@@ -521,6 +547,32 @@ svg.ring { transform: rotate(-90deg); }
 .add-role-btn:hover { background: var(--border2); color: var(--text); }
 .role-limit-note { font-size: 0.72rem; color: var(--text3); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
 
+/* ── Inline delete confirmation bar ──
+   Replaces browser confirm() to avoid closing the modal overlay.
+   Appears below the row being deleted. */
+.inline-confirm {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: #1e1010; border: 1px solid #f87171;
+  border-radius: 7px; padding: 8px 12px; margin-bottom: 6px;
+  animation: confirm-in 0.15s ease;
+}
+@keyframes confirm-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.inline-confirm-msg { font-size: 0.78rem; color: #fca5a5; flex: 1; min-width: 160px; }
+.inline-confirm-yes {
+  background: #f87171; border: none; color: #fff;
+  border-radius: 5px; padding: 5px 12px; font-size: 0.78rem;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600;
+  transition: background 0.15s;
+}
+.inline-confirm-yes:hover { background: #ef4444; }
+.inline-confirm-cancel {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--text2); border-radius: 5px; padding: 5px 12px;
+  font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.inline-confirm-cancel:hover { background: var(--surface3); color: var(--text); }
+
 /* ============================================================
    DELETE CONFIRM MODAL (for recurring task deletion)
    ============================================================ */
@@ -743,8 +795,9 @@ let addState = {};
 /* ============================================================
    STORAGE HELPERS
    Keys used in localStorage:
-     lt_settings       — category labels (object)
+     lt_settings       — category labels + _deleted list (object)
      lt_roles          — role definitions array [{id, name, color}]
+     lt_custom_cats    — custom (user-added) base categories [{id, name, color}]
      lt_day_{dateKey}  — per-day task data object
      lt_recur          — recurring task templates array
    ============================================================ */
@@ -755,8 +808,12 @@ function ls_set(key, val) { localStorage.setItem('lt_' + key, JSON.stringify(val
 /* ── Settings (category label overrides) ── */
 function getSettings() {
   const s = ls_get('settings') || {};
-  // defaults
-  BASE_CATS.forEach(c => { if (!s[c.key]) s[c.key] = c.label; });
+  // Only set defaults for non-deleted base cats.
+  // IMPORTANT: never set defaults for keys in _deleted — that would restore them.
+  const deleted = s._deleted || [];
+  BASE_CATS.forEach(c => {
+    if (!deleted.includes(c.key) && !s[c.key]) s[c.key] = c.label;
+  });
   return s;
 }
 function saveSettings(s) { ls_set('settings', s); }
@@ -777,18 +834,29 @@ function getRoles() {
 }
 function saveRoles(r) { ls_set('roles', r); }
 
+/* ── Custom base categories (user-added, same as built-in base cats but stored separately) ──
+   Each entry: { id, name, color }
+   To add a new custom cat via code: push to this array and saveCustomCats().
+   To change the max allowed: there is no hard limit — add one here if desired. */
+function getCustomCats() { return ls_get('custom_cats') || []; }
+function saveCustomCats(c) { ls_set('custom_cats', c); }
+
 /* ── Per-day data ── */
 function getDefaultDay() {
-  // Base cat keys always present
+  // Only include active (non-deleted) built-in base cat keys + custom cats
+  const deleted = (ls_get('settings') || {})._deleted || [];
   const d = {};
-  BASE_CATS.forEach(c => { d[c.key] = []; });
-  // Role task arrays added dynamically as needed
+  BASE_CATS.filter(c => !deleted.includes(c.key)).forEach(c => { d[c.key] = []; });
+  getCustomCats().forEach(c => { d[c.id] = []; });
   return d;
 }
 function getDay(key) {
   const d = ls_get('day_' + key) || getDefaultDay();
-  // Ensure base keys exist (in case BASE_CATS was extended)
-  BASE_CATS.forEach(c => { if (!d[c.key]) d[c.key] = []; });
+  // Ensure active built-in base keys exist; skip deleted ones
+  const deleted = (ls_get('settings') || {})._deleted || [];
+  BASE_CATS.filter(c => !deleted.includes(c.key)).forEach(c => { if (!d[c.key]) d[c.key] = []; });
+  // Ensure custom cat keys exist
+  getCustomCats().forEach(c => { if (!d[c.id]) d[c.id] = []; });
   // Ensure role keys exist
   getRoles().forEach(r => { if (!d[r.id]) d[r.id] = []; });
   return d;
@@ -883,15 +951,10 @@ function dayTotals(key) {
   propagateRecurring(key);
   const d = getDay(key);
   let done = 0, total = 0;
-  // Base cats
-  BASE_CATS.forEach(c => {
+  // Active base cats only (skip deleted)
+  getAllCats().forEach(c => {
     total += (d[c.key] || []).length;
     done  += (d[c.key] || []).filter(t => t.done).length;
-  });
-  // Roles
-  getRoles().forEach(r => {
-    total += (d[r.id] || []).length;
-    done  += (d[r.id] || []).filter(t => t.done).length;
   });
   return { done, total };
 }
@@ -922,10 +985,14 @@ function renderDashboard() {
   document.getElementById('dash-range').textContent =
     `${MONTH_NAMES[today.getMonth()].slice(0,3)} ${today.getFullYear()} → ${MONTH_NAMES[endDate.getMonth()].slice(0,3)} ${endDate.getFullYear()}`;
 
-  // Gather totals across 3 months
+  // Gather totals across 3 months (skip deleted base cats, include custom cats)
+  const deletedCats = (getSettings()._deleted || []);
+  const activeBases = BASE_CATS.filter(c => !deletedCats.includes(c.key));
+  const customCats  = getCustomCats();
   const catTotals = {};
-  BASE_CATS.forEach(c => { catTotals[c.key] = { d: 0, t: 0 }; });
-  roles.forEach(r => { catTotals[r.id] = { d: 0, t: 0 }; });
+  activeBases.forEach(c => { catTotals[c.key] = { d: 0, t: 0 }; });
+  customCats.forEach(c  => { catTotals[c.id]  = { d: 0, t: 0 }; });
+  roles.forEach(r       => { catTotals[r.id]  = { d: 0, t: 0 }; });
   let grandDone = 0, grandTotal = 0, daysLogged = 0;
 
   for (let mo = 0; mo < 3; mo++) {
@@ -939,6 +1006,7 @@ function renderDashboard() {
       let dayHas = false;
       const allKeys = [
         ...BASE_CATS.map(c => c.key),
+        ...customCats.map(c => c.id),
         ...roles.map(r => r.id)
       ];
       allKeys.forEach(k => {
@@ -956,14 +1024,20 @@ function renderDashboard() {
     }
   }
 
-  // Render base categories grid
+  // Render base categories grid (only active/non-deleted ones)
   const baseGrid = document.getElementById('dash-base-grid');
   baseGrid.innerHTML = '';
-  BASE_CATS.forEach(c => {
+  activeBases.forEach(c => {
     const pct = catTotals[c.key].t > 0
       ? Math.round(catTotals[c.key].d / catTotals[c.key].t * 100) : 0;
     baseGrid.appendChild(makeStatCard(c.key, settings[c.key] || c.label, c.color, pct,
       catTotals[c.key].d, catTotals[c.key].t));
+  });
+  // Render custom base categories in same grid
+  customCats.forEach(c => {
+    const tot = catTotals[c.id] || { d: 0, t: 0 };
+    const pct = tot.t > 0 ? Math.round(tot.d / tot.t * 100) : 0;
+    baseGrid.appendChild(makeStatCard(c.id, c.name, c.color, pct, tot.d, tot.t));
   });
 
   // Render roles grid
@@ -975,6 +1049,7 @@ function renderDashboard() {
     roles.forEach(r => {
       const tot = catTotals[r.id] || { d: 0, t: 0 };
       const pct = tot.t > 0 ? Math.round(tot.d / tot.t * 100) : 0;
+      // Pass r.id as catKey so makeStatCard can check today's flag for this role
       rolesGrid.appendChild(makeStatCard(r.id, r.name, r.color, pct, tot.d, tot.t));
     });
   } else {
@@ -989,27 +1064,72 @@ function renderDashboard() {
     grandTotal > 0 ? Math.round(grandDone / grandTotal * 100) + '%' : '0%';
 }
 
-// Build a stat card element
-function makeStatCard(key, label, color, pct, done, total) {
+// ── makeStatCard ──────────────────────────────────────────────
+// Builds one dashboard stat card with:
+//   • 4-state ring color: neutral (0/0) | red (0+/0) | amber (partial) | green (all done)
+//   • 🚩 flag badge when today has incomplete tasks in this category
+//
+// Parameters:
+//   catKey  — storage key for this category (e.g. 'blue', 'role_123')
+//   label   — display name
+//   color   — hex color (used for border accent only now; ring color is state-driven)
+//   pct     — completion % across 3-month window
+//   done    — total completed tasks across 3-month window
+//   total   — total tasks across 3-month window
+// ─────────────────────────────────────────────────────────────
+function makeStatCard(catKey, label, color, pct, done, total) {
   const circ = 138.23;
   const offset = circ - (circ * pct / 100);
+
+  /* ── Ring color state logic ──
+     To change the color thresholds, edit the conditions below.
+     neutral  = no tasks at all (0/0)
+     red      = has tasks but zero completed (0/X)
+     amber    = partially done but not complete (X/Y where X < Y)
+     green    = fully complete and has at least 1 task (X/X, X > 0)  */
+  let ringState, ringColor;
+  if (total === 0) {
+    ringState = 'neutral'; ringColor = '#5a5a70'; // --text3
+  } else if (done === 0) {
+    ringState = 'red';     ringColor = '#f87171';
+  } else if (done < total) {
+    ringState = 'amber';   ringColor = '#f59e0b'; // --gold
+  } else {
+    ringState = 'green';   ringColor = '#22c55e'; // --green
+  }
+
+  /* ── Today's red flag logic ──
+     FLAG_EMOJI — change this string to use a different indicator.
+     Shows 🚩 if today has at least 1 incomplete task in this category. */
+  const FLAG_EMOJI = '🚩';
+  const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  propagateRecurring(todayKey);
+  const todayData = ls_get('day_' + todayKey);
+  const todayArr  = todayData ? (todayData[catKey] || []) : [];
+  const hasFlag   = todayArr.length > 0 && todayArr.some(t => !t.done);
+
   const card = document.createElement('div');
   card.className = 'stat-card';
-  card.style.borderTopColor = color;
+  card.style.borderTopColor = color; // top accent stays the category's brand color
+
   card.innerHTML = `
-    <div class="stat-label" title="${label}">${label}</div>
+    <div class="stat-card-top">
+      <div class="stat-label" title="${label}">${label}</div>
+      ${hasFlag ? `<div class="stat-flag" title="You have incomplete tasks today in this category">${FLAG_EMOJI}</div>` : ''}
+    </div>
     <div class="stat-ring-row">
       <div class="ring-wrap">
         <svg class="ring" width="54" height="54" viewBox="0 0 54 54">
           <circle class="ring-bg" cx="27" cy="27" r="22"/>
           <circle class="ring-fill" cx="27" cy="27" r="22"
-            stroke="${color}" stroke-dasharray="${circ}"
+            stroke="${ringColor}"
+            stroke-dasharray="${circ}"
             stroke-dashoffset="${offset}"
             style="fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1)"/>
         </svg>
       </div>
       <div>
-        <div class="stat-pct" style="color:${color}">${pct}%</div>
+        <div class="stat-pct state-${ringState}">${pct}%</div>
         <div class="stat-detail">${done} / ${total} tasks</div>
       </div>
     </div>`;
@@ -1533,13 +1653,38 @@ function maybeCloseSettings(e) {
   if (e.target === document.getElementById('settings-overlay')) closeSettings();
 }
 
+/* ── Inline delete confirmation (replaces browser confirm() which conflicts with modal overlay) ──
+   Shows a small inline bar inside the settings row asking "Sure? Yes / Cancel"
+   This avoids the browser confirm() dialog closing the modal via the overlay click handler. */
+function showInlineConfirm(parentRow, message, onConfirm) {
+  // Remove any existing confirm bars first
+  document.querySelectorAll('.inline-confirm').forEach(el => el.remove());
+
+  const bar = document.createElement('div');
+  bar.className = 'inline-confirm';
+  bar.innerHTML = `
+    <span class="inline-confirm-msg">${message}</span>
+    <button class="inline-confirm-yes">Delete</button>
+    <button class="inline-confirm-cancel">Cancel</button>`;
+
+  bar.querySelector('.inline-confirm-yes').onclick = () => {
+    bar.remove();
+    onConfirm();
+  };
+  bar.querySelector('.inline-confirm-cancel').onclick = () => bar.remove();
+
+  // Insert below the row
+  parentRow.insertAdjacentElement('afterend', bar);
+}
+
 function renderSettings() {
   const body = document.getElementById('settings-body');
   body.innerHTML = '';
   const settings = getSettings();
   const roles = getRoles();
 
-  /* ── Base categories section ── */
+  /* ── Base categories section ──
+     To prevent deletion of a base category, remove the delBtn block below. */
   const baseSection = document.createElement('div');
   baseSection.innerHTML = '<div class="settings-section-label">Base Categories</div>';
 
@@ -1556,19 +1701,103 @@ function renderSettings() {
     inp.value = settings[c.key] || c.label;
     inp.placeholder = c.label;
 
-    const btn = document.createElement('button');
-    btn.className = 'settings-save-btn'; btn.textContent = 'Save';
-    btn.onclick = () => {
+    // Save renamed label
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
+    saveBtn.onclick = () => {
       const s = getSettings();
       s[c.key] = inp.value.trim() || c.label;
       saveSettings(s);
-      btn.textContent = '✓'; setTimeout(() => { btn.textContent = 'Save'; }, 1200);
+      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200);
     };
 
-    row.appendChild(dot); row.appendChild(inp); row.appendChild(btn);
+    // Delete base category button
+    // Deletion hides the category from all views and removes its task data.
+    // Deleted base categories are tracked in settings under key '_deleted'.
+    const delBtn = document.createElement('button');
+    delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
+    delBtn.title = `Delete "${c.label}" category from all views`;
+    delBtn.onclick = () => {
+      showInlineConfirm(row,
+        `Delete "${inp.value || c.label}"? Removes all its tasks.`,
+        () => { deleteBaseCat(c.key); renderSettings(); }
+      );
+    };
+
+    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
     baseSection.appendChild(row);
   });
   body.appendChild(baseSection);
+
+  /* ── Custom Categories section ──
+     User-added base categories. Stored in lt_custom_cats.
+     Colors cycle through ROLE_COLORS palette.
+     To change the color palette: edit ROLE_COLORS at the top of the script. */
+  const customCatsNow = getCustomCats();
+  const customSection = document.createElement('div');
+  customSection.innerHTML = '<div class="settings-section-label">Custom Categories</div>';
+
+  customCatsNow.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'settings-row';
+
+    const dot = document.createElement('div');
+    dot.className = 'settings-color-dot';
+    dot.style.background = c.color;
+
+    const inp = document.createElement('input');
+    inp.className = 'settings-input';
+    inp.value = c.name;
+    inp.placeholder = 'Category name';
+
+    // Save renamed label
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
+    saveBtn.onclick = () => {
+      const cs = getCustomCats();
+      const target = cs.find(x => x.id === c.id);
+      if (target) { target.name = inp.value.trim() || c.name; saveCustomCats(cs); }
+      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200);
+    };
+
+    // Delete custom category
+    const delBtn = document.createElement('button');
+    delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
+    delBtn.title = `Delete "${c.name}" and all its tasks`;
+    delBtn.onclick = () => {
+      showInlineConfirm(row,
+        `Delete "${inp.value || c.name}"? Removes all its tasks.`,
+        () => { deleteCustomCat(c.id); renderSettings(); }
+      );
+    };
+
+    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
+    customSection.appendChild(row);
+  });
+
+  // Add new custom category row
+  const addCatRow = document.createElement('div');
+  addCatRow.className = 'add-role-row';
+  const addCatInp = document.createElement('input');
+  addCatInp.className = 'settings-input';
+  addCatInp.placeholder = 'New category name…';
+  const addCatBtn = document.createElement('button');
+  addCatBtn.className = 'add-role-btn'; addCatBtn.textContent = '+ Add Category';
+  addCatBtn.onclick = () => {
+    const name = addCatInp.value.trim();
+    if (!name) return;
+    const cs = getCustomCats();
+    // Cycle colors — offset by number of roles so colors don't clash
+    const colorIdx = (cs.length + getRoles().length) % ROLE_COLORS.length;
+    cs.push({ id: 'cat_' + Date.now(), name, color: ROLE_COLORS[colorIdx] });
+    saveCustomCats(cs);
+    addCatInp.value = '';
+    renderSettings();
+  };
+  addCatInp.addEventListener('keydown', e => { if (e.key === 'Enter') addCatBtn.click(); });
+  addCatRow.appendChild(addCatInp); addCatRow.appendChild(addCatBtn);
+  customSection.appendChild(addCatRow);
+  body.appendChild(customSection);
 
   /* ── Roles section ── */
   const rolesSection = document.createElement('div');
@@ -1591,27 +1820,29 @@ function renderSettings() {
     const saveBtn = document.createElement('button');
     saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
     saveBtn.onclick = () => {
+      // Re-fetch roles by id (not index) to avoid stale closure bug
       const rs = getRoles();
-      rs[i].name = inp.value.trim() || r.name;
-      saveRoles(rs);
+      const target = rs.find(x => x.id === r.id);
+      if (target) { target.name = inp.value.trim() || r.name; saveRoles(rs); }
       saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200);
     };
 
-    // Delete role button
+    // Delete role button — uses inline confirm to avoid modal conflict
     const delBtn = document.createElement('button');
     delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
     delBtn.title = 'Delete this role (removes from all days & dashboard)';
     delBtn.onclick = () => {
-      if (!confirm(`Delete role "${r.name}"? This removes it from all days.`)) return;
-      deleteRole(r.id);
-      renderSettings(); // re-render settings list
+      showInlineConfirm(row,
+        `Delete role "${r.name}"? Removes all its tasks.`,
+        () => { deleteRole(r.id); renderSettings(); }
+      );
     };
 
     row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
     rolesSection.appendChild(row);
   });
 
-  // Add role button (shown only if under max)
+  // Add role input (shown only if under max)
   if (roles.length < MAX_ROLES) {
     const addRow = document.createElement('div');
     addRow.className = 'add-role-row';
@@ -1651,23 +1882,78 @@ function renderSettings() {
   body.appendChild(rolesSection);
 }
 
-// Permanently delete a role and all its task data
+// ── deleteBaseCat ─────────────────────────────────────────────
+// Marks a base category as deleted in settings and purges its
+// task data from all stored days and recurring templates.
+// The BASE_CATS array itself is not mutated (it lives in JS source);
+// deletion is tracked via settings._deleted so getAllCats() skips it.
+function deleteBaseCat(catKey) {
+  // Mark as deleted in settings
+  const s = getSettings();
+  if (!s._deleted) s._deleted = [];
+  if (!s._deleted.includes(catKey)) s._deleted.push(catKey);
+  saveSettings(s);
+
+  // Purge task data from all stored days
+  Object.keys(localStorage).forEach(k => {
+    if (!k.startsWith('lt_day_')) return;
+    try {
+      const raw = JSON.parse(localStorage.getItem(k));
+      if (!raw || !(catKey in raw)) return;
+      delete raw[catKey];
+      localStorage.setItem(k, JSON.stringify(raw));
+    } catch(e) {}
+  });
+
+  // Purge recurring templates for this category
+  let templates = getRecurring();
+  templates = templates.filter(t => t.catKey !== catKey);
+  saveRecurring(templates);
+}
+
+// ── deleteCustomCat ──────────────────────────────────────────
+// Permanently removes a custom base category and all its task data.
+function deleteCustomCat(catId) {
+  let cs = getCustomCats();
+  cs = cs.filter(c => c.id !== catId);
+  saveCustomCats(cs);
+
+  // Purge task data from all stored days
+  Object.keys(localStorage).forEach(k => {
+    if (!k.startsWith('lt_day_')) return;
+    try {
+      const raw = JSON.parse(localStorage.getItem(k));
+      if (!raw || !(catId in raw)) return;
+      delete raw[catId];
+      localStorage.setItem(k, JSON.stringify(raw));
+    } catch(e) {}
+  });
+
+  // Purge recurring templates for this category
+  let templates = getRecurring();
+  templates = templates.filter(t => t.catKey !== catId);
+  saveRecurring(templates);
+}
+
+// ── deleteRole ────────────────────────────────────────────────
+// Permanently removes a role and all its associated task data.
 function deleteRole(roleId) {
   let roles = getRoles();
   roles = roles.filter(r => r.id !== roleId);
   saveRoles(roles);
 
-  // Remove role tasks from all stored days
-  // Scans localStorage for any lt_day_ keys
+  // Purge role tasks from all stored days
   Object.keys(localStorage).forEach(k => {
     if (!k.startsWith('lt_day_')) return;
-    const raw = JSON.parse(localStorage.getItem(k));
-    if (!raw || !raw[roleId]) return;
-    delete raw[roleId];
-    localStorage.setItem(k, JSON.stringify(raw));
+    try {
+      const raw = JSON.parse(localStorage.getItem(k));
+      if (!raw || !(roleId in raw)) return;
+      delete raw[roleId];
+      localStorage.setItem(k, JSON.stringify(raw));
+    } catch(e) {}
   });
 
-  // Remove any recurring templates for this role
+  // Purge recurring templates for this role
   let templates = getRecurring();
   templates = templates.filter(t => t.catKey !== roleId);
   saveRecurring(templates);
@@ -1677,21 +1963,37 @@ function deleteRole(roleId) {
    HELPERS
    ============================================================ */
 
-// Returns all active categories (base + roles) in unified format
-// { key, label, color }
+// Returns all active categories in unified format: { key, label, color }
+// Order: active built-in base cats → custom base cats → roles
+// Skips built-in base cats that have been deleted via Settings.
 function getAllCats() {
   const settings = getSettings();
-  const base = BASE_CATS.map(c => ({
-    key: c.key,
-    label: settings[c.key] || c.label,
+  const deleted = settings._deleted || [];
+
+  // Built-in base cats (minus deleted)
+  const base = BASE_CATS
+    .filter(c => !deleted.includes(c.key))
+    .map(c => ({
+      key:   c.key,
+      label: settings[c.key] || c.label,
+      color: c.color
+    }));
+
+  // Custom user-added base cats
+  const custom = getCustomCats().map(c => ({
+    key:   c.id,
+    label: c.name,
     color: c.color
   }));
+
+  // Roles
   const roles = getRoles().map(r => ({
-    key: r.id,
+    key:   r.id,
     label: r.name,
     color: r.color
   }));
-  return [...base, ...roles];
+
+  return [...base, ...custom, ...roles];
 }
 
 // SVG checkmark used in checkboxes
