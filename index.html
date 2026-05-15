@@ -180,6 +180,33 @@ svg.ring { transform: rotate(-90deg); }
 }
 .stat-detail { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
 
+/* ── Panel sort toggle pills ──
+   Two buttons inside the panel to sort categories.
+   Active pill highlights with blue tint; inactive dims.
+   To add more sort options: add a button in the HTML and a case in sortCats(). */
+.panel-sort-bar {
+  display: flex; gap: 6px; align-items: center;
+  padding: 8px 18px 0;
+  flex-shrink: 0;
+}
+.panel-sort-label {
+  font-size: 0.65rem; color: var(--text3); text-transform: uppercase;
+  letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0; margin-right: 2px;
+}
+.sort-pill {
+  font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--text3); cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.sort-pill:hover { border-color: var(--text3); color: var(--text2); }
+.sort-pill.active {
+  background: var(--blue-dim); border-color: var(--blue);
+  color: var(--blue);
+}
+
 /* ── Stat card header row: label + optional flag badge ──
    The flag appears when today has incomplete tasks in that category.
    To change the flag emoji: search for FLAG_EMOJI in JS below. */
@@ -706,6 +733,13 @@ svg.ring { transform: rotate(-90deg); }
     <div class="overall-bar-wrap"><div class="overall-bar" id="overall-bar" style="width:0%"></div></div>
     <div class="overall-pct" id="overall-pct-text">0 of 0 tasks complete — 0%</div>
   </div>
+  <!-- Sort toggle bar — controls category order inside the panel -->
+  <div class="panel-sort-bar" id="panel-sort-bar">
+    <span class="panel-sort-label">Sort:</span>
+    <button class="sort-pill" id="sort-pill-tasks" onclick="setPanelSort('tasks')">Has Tasks</button>
+    <button class="sort-pill" id="sort-pill-alpha" onclick="setPanelSort('alpha')">A → Z</button>
+    <button class="sort-pill" id="sort-pill-default" onclick="setPanelSort('default')">Default</button>
+  </div>
   <!-- Category sections injected here by renderPanel() -->
   <div class="panel-cats" id="panel-cats"></div>
 </div>
@@ -791,6 +825,45 @@ let activeDateKey = null;
 
 // Per-panel add-task state: { catKey -> { recur, customDays[] } }
 let addState = {};
+
+// ── Panel sort state ──
+// Stored in localStorage under lt_panel_sort so preference persists.
+// Valid values: 'default' | 'tasks' | 'alpha'
+// To change the default sort on first load: edit the fallback string below.
+function getPanelSort() { return ls_get('panel_sort') || 'default'; }
+function savePanelSort(v) { ls_set('panel_sort', v); }
+
+function setPanelSort(val) {
+  savePanelSort(val);
+  updateSortPills(val);
+  renderPanel();
+}
+
+function updateSortPills(val) {
+  ['tasks','alpha','default'].forEach(k => {
+    const el = document.getElementById('sort-pill-' + k);
+    if (el) el.classList.toggle('active', val === k);
+  });
+}
+
+// Returns getAllCats() sorted according to current sort preference.
+// Categories with tasks always evaluated against the day currently open in panel.
+function getSortedCats(dayData) {
+  const cats = getAllCats();
+  const sort = getPanelSort();
+  if (sort === 'alpha') {
+    return [...cats].sort((a, b) => a.label.localeCompare(b.label));
+  }
+  if (sort === 'tasks') {
+    return [...cats].sort((a, b) => {
+      const aHas = (dayData[a.key] || []).length > 0 ? 0 : 1;
+      const bHas = (dayData[b.key] || []).length > 0 ? 0 : 1;
+      return aHas - bHas; // cats with tasks float to top
+    });
+  }
+  // 'default' — original order (built-in base → custom → roles)
+  return cats;
+}
 
 /* ============================================================
    STORAGE HELPERS
@@ -1342,6 +1415,9 @@ function openPanel(key, y, m, day) {
     `${MONTH_NAMES[m].slice(0,3).toUpperCase()} ${day}, ${y}`;
   document.getElementById('panel-day-name').textContent = dow.toUpperCase();
 
+  // Apply persisted sort pill highlight when panel opens
+  updateSortPills(getPanelSort());
+
   renderPanel();
 
   document.getElementById('overlay').classList.add('open');
@@ -1373,7 +1449,8 @@ function renderPanel() {
   const container = document.getElementById('panel-cats');
   container.innerHTML = '';
 
-  getAllCats().forEach(cat => {
+  // Use getSortedCats so categories render in the user's chosen order
+  getSortedCats(data).forEach(cat => {
     const tasks = data[cat.key] || [];
     const catDone = tasks.filter(t => t.done).length;
     const catPct  = tasks.length > 0 ? Math.round(catDone / tasks.length * 100) : 0;
