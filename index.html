@@ -906,7 +906,6 @@ function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
   const allDoneToday = todayArr.length > 0 && incompleteTodayCount === 0;
  
   const missedCount = total > 0 ? (total - done) : 0;
-  const stillMissed = total - done;
   const deficitNote = (isNeg || missedCount > 0 || done >= missedCount) ? `<div class="stat-deficit-note">↓ ${incomplete} missed</div>` : '';
  
   const card = document.createElement('div');
