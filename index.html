@@ -6,622 +6,400 @@
 <title>LIFE.TRACK</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   CSS VARIABLES — Edit colors, sizes, fonts here
-   ============================================================ */
 :root {
-  /* Background layers */
   --bg:       #0a0a0c;
   --surface:  #111115;
   --surface2: #18181f;
   --surface3: #1f1f28;
-
-  /* Borders */
   --border:  #2a2a35;
   --border2: #35353f;
-
-  /* Text */
   --text:  #e8e8f0;
   --text2: #9090a8;
   --text3: #5a5a70;
-
-  /* ── BASE CATEGORY COLORS ──
-     To change a category color, update both the base and -dim/-glow variants.
-     Format: --{name}: main hex | --{name}-dim: dark bg | --{name}-glow: transparent overlay */
   --blue:       #3b82f6;
   --blue-dim:   #1e3a5f;
   --blue-glow:  rgba(59,130,246,0.15);
-
   --gold:       #f59e0b;
   --gold-dim:   #4a3010;
   --gold-glow:  rgba(245,158,11,0.15);
-
   --slate:      #64748b;
   --slate-dim:  #1e2530;
   --slate-glow: rgba(100,116,139,0.15);
-
   --green:      #22c55e;
   --green-dim:  #0f3020;
   --green-glow: rgba(34,197,94,0.15);
-
   --purple:     #a855f7;
   --purple-dim: #2d1a4a;
   --purple-glow:rgba(168,85,247,0.15);
-
-  /* ── ROLE COLORS ──
-     Each role slot gets a color from this palette (cycled).
-     Add more hex values here if you want a wider palette. */
-  --role-palette: #f97316, #06b6d4, #ec4899, #84cc16, #eab308, #14b8a6, #6366f1, #f43f5e, #8b5cf6, #10b981;
-
-  /* Layout */
   --panel-w: 400px;
   --radius:  10px;
-
-  /* Ring circumference for r=22 circle: 2*PI*22 ≈ 138.23 */
   --ring-circ: 138.23;
 }
-
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-/* ============================================================
-   NAV BAR
-   ============================================================ */
 nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(10,10,12,0.94);
-  backdrop-filter: blur(12px);
+  background: rgba(10,10,12,0.94); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 20px; height: 56px;
-  gap: 10px;
+  padding: 0 20px; height: 56px; gap: 10px;
 }
-.nav-brand {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.5rem; letter-spacing: 0.08em;
-  color: var(--text); flex-shrink: 0;
-}
+.nav-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em; color: var(--text); flex-shrink: 0; }
 .nav-brand span { color: var(--blue); }
-
-/* Nav tabs scroll on mobile */
-.nav-tabs {
-  display: flex; gap: 4px;
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; flex: 1;
-}
+.nav-tabs { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex: 1; }
 .nav-tabs::-webkit-scrollbar { display: none; }
-
-.nav-tab {
-  padding: 6px 14px; border-radius: 6px;
-  border: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem; font-weight: 500;
-  color: var(--text2); background: transparent;
-  transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
-}
+.nav-tab { padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; color: var(--text2); background: transparent; transition: all 0.18s; white-space: nowrap; flex-shrink: 0; }
 .nav-tab:hover { background: var(--surface2); color: var(--text); }
 .nav-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
-
-/* Settings gear button */
-.nav-settings-btn {
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 7px;
-  width: 34px; height: 34px; font-size: 1rem;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: all 0.15s;
-}
+.nav-settings-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); border-radius: 7px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .nav-settings-btn:hover { background: var(--surface3); color: var(--text); }
 
-/* ============================================================
-   PAGES
-   ============================================================ */
 .page { display: none; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
 .page.active { display: block; }
 
-/* ============================================================
-   DASHBOARD PAGE
-   ============================================================ */
 .dash-header { margin-bottom: 24px; }
-.dash-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.4rem; letter-spacing: 0.06em; line-height: 1;
-}
-.dash-subtitle {
-  color: var(--text3); font-size: 0.82rem; margin-top: 4px;
-  font-family: 'JetBrains Mono', monospace;
-}
+.dash-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 0.06em; line-height: 1; }
+.dash-subtitle { color: var(--text3); font-size: 0.82rem; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
 
-/* Responsive grid — auto-fills columns based on content */
-.dash-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
 
-/* Stat card — base styles */
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top-width: 2px;     /* top accent line color set dynamically via JS */
-  border-radius: var(--radius);
-  padding: 18px 16px;
-  position: relative; overflow: hidden;
-  transition: border-color 0.2s, transform 0.15s;
-}
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-top-width: 2px; border-radius: var(--radius); padding: 18px 16px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.15s; }
 .stat-card:hover { transform: translateY(-1px); }
-
-.stat-label {
-  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text3);
-  margin-bottom: 10px;
-  /* Truncate long role names */
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.stat-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stat-ring-row { display: flex; align-items: center; gap: 12px; }
 .ring-wrap { flex-shrink: 0; }
 svg.ring { transform: rotate(-90deg); }
 .ring-bg { fill: none; stroke: var(--surface3); stroke-width: 5; }
 .ring-fill { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1); }
 
-.stat-pct {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2rem; line-height: 1; letter-spacing: 0.04em;
-}
+.stat-pct { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; letter-spacing: 0.04em; }
+.stat-pct.negative { font-size: 1.55rem; }
 .stat-detail { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
+.stat-deficit-note { font-size: 0.62rem; color: #f87171; font-family: 'JetBrains Mono', monospace; margin-top: 3px; letter-spacing: 0.04em; }
 
-/* ── Panel sort toggle pills ──
-   Two buttons inside the panel to sort categories.
-   Active pill highlights with blue tint; inactive dims.
-   To add more sort options: add a button in the HTML and a case in sortCats(). */
-.panel-sort-bar {
-  display: flex; gap: 6px; align-items: center;
-  padding: 8px 18px 0;
-  flex-shrink: 0;
-}
-.panel-sort-label {
-  font-size: 0.65rem; color: var(--text3); text-transform: uppercase;
-  letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace;
-  flex-shrink: 0; margin-right: 2px;
-}
-.sort-pill {
-  font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
-  padding: 4px 10px; border-radius: 20px;
-  border: 1px solid var(--border2); background: transparent;
-  color: var(--text3); cursor: pointer; transition: all 0.15s;
-  white-space: nowrap;
-}
+.panel-sort-bar { display: flex; gap: 6px; align-items: center; padding: 8px 18px 0; flex-shrink: 0; }
+.panel-sort-label { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; margin-right: 2px; }
+.sort-pill { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
 .sort-pill:hover { border-color: var(--text3); color: var(--text2); }
-.sort-pill.active {
-  background: var(--blue-dim); border-color: var(--blue);
-  color: var(--blue);
-}
+.sort-pill.active { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
 
-/* ── Stat card header row: label + optional flag badge ──
-   The flag appears when today has incomplete tasks in that category.
-   To change the flag emoji: search for FLAG_EMOJI in JS below. */
-.stat-card-top {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 10px;
-}
+.stat-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+
+/* ── Flag button — clickable ── */
 .stat-flag {
-  /* Red flag badge — shown when today has pending tasks in this category */
-  font-size: 0.85rem; line-height: 1;
-  flex-shrink: 0; margin-left: 4px;
+  font-size: 0.85rem; line-height: 1; flex-shrink: 0; margin-left: 4px;
+  cursor: pointer;
+  background: transparent; border: none; padding: 2px 3px;
+  border-radius: 4px;
+  transition: background 0.15s, transform 0.1s;
   animation: flag-pulse 2s ease-in-out infinite;
+  position: relative;
 }
-@keyframes flag-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+.stat-flag:hover {
+  background: rgba(245,158,11,0.15);
+  transform: scale(1.2);
+  animation: none;
 }
+.stat-flag:active { transform: scale(0.95); }
+@keyframes flag-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-/* Ring color states:
-   --ring-state-color is set dynamically in JS based on done/total.
-   States: neutral (0/0) | red (0/X) | amber (partial) | green (X/X) */
 .stat-pct.state-neutral { color: var(--text3); }
 .stat-pct.state-red     { color: #f87171; }
 .stat-pct.state-amber   { color: var(--gold); }
 .stat-pct.state-green   { color: var(--green); }
 
-/* Summary strip */
-.dash-summary {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px 20px;
-  display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
-}
+.dash-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
 .sum-item { text-align: center; }
 .sum-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--text); }
+.sum-val.negative { font-size: 1.3rem; color: #f87171; }
 .sum-lbl { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
 .sum-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; }
 
-/* Section heading used in dashboard for base vs roles split */
-.dash-section-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem; color: var(--text3);
-  text-transform: uppercase; letter-spacing: 0.12em;
-  margin: 20px 0 10px;
-}
+.dash-section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.12em; margin: 20px 0 10px; }
 
-/* ============================================================
-   CALENDAR PAGE
-   ============================================================ */
 .cal-months { display: flex; flex-direction: column; gap: 32px; }
-
-.month-heading {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.6rem; letter-spacing: 0.08em;
-  color: var(--text2); margin-bottom: 12px;
-  display: flex; align-items: baseline; gap: 10px;
-}
+.month-heading { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 12px; display: flex; align-items: baseline; gap: 10px; }
 .month-heading span { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text3); }
-
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-
-.cal-dow {
-  text-align: center; font-size: 0.65rem; font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text3); padding: 6px 0;
-}
-.cal-day {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 7px; min-height: 56px; padding: 6px;
-  cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s;
-  display: flex; flex-direction: column;
-}
+.cal-dow { text-align: center; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); padding: 6px 0; }
+.cal-day { background: var(--surface); border: 1px solid var(--border); border-radius: 7px; min-height: 56px; padding: 6px; cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s; display: flex; flex-direction: column; }
 .cal-day:hover { border-color: var(--border2); background: var(--surface2); transform: translateY(-1px); }
 .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
 .cal-day.empty:hover { transform: none; }
 .cal-day.today { border-color: var(--blue); }
 .cal-day.today .day-num { color: var(--blue); }
 .cal-day.selected { border-color: var(--gold); background: var(--surface2); }
-
 .day-num { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; color: var(--text2); }
-
 .day-dot-row { display: flex; gap: 2px; flex-wrap: wrap; margin-top: 3px; }
 .day-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-
-.day-pct-badge {
-  margin-top: auto; font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem; font-weight: 600;
-  padding: 2px 5px; border-radius: 4px; align-self: flex-start;
-}
+.day-pct-badge { margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 600; padding: 2px 5px; border-radius: 4px; align-self: flex-start; }
 .day-pct-badge.high  { background: #0f3020; color: var(--green); }
 .day-pct-badge.mid   { background: var(--gold-dim); color: var(--gold); }
 .day-pct-badge.low   { background: #2a1010; color: #f87171; }
 .day-pct-badge.zero  { background: var(--surface3); color: var(--text3); }
 
-/* ============================================================
-   TWO-WEEK VIEW PAGE
-   ============================================================ */
 .twoweek-header { margin-bottom: 20px; }
-.twoweek-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2rem; letter-spacing: 0.06em;
-}
+.twoweek-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.06em; }
 .twoweek-sub { font-size: 0.82rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
-
 .twoweek-list { display: flex; flex-direction: column; gap: 16px; }
-
-.tw-day-block {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden;
-}
-.tw-day-head {
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.tw-day-label {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem; letter-spacing: 0.06em;
-}
+.tw-day-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.tw-day-head { padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.tw-day-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.06em; }
 .tw-day-label.today-label { color: var(--blue); }
-.tw-day-pct {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-  color: var(--text3);
-}
+.tw-day-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text3); }
 .tw-day-tasks { padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; }
 .tw-empty { font-size: 0.8rem; color: var(--text3); font-style: italic; padding: 8px 0; }
-
-/* Task row reused in two-week view */
-.tw-task-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px; border-radius: 7px;
-  background: var(--surface2); border: 1px solid var(--border);
-  transition: border-color 0.15s;
-}
+.tw-task-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 7px; background: var(--surface2); border: 1px solid var(--border); transition: border-color 0.15s; }
 .tw-task-item.done { opacity: 0.5; }
-.tw-cat-badge {
-  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em;
-  padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
-  text-transform: uppercase;
-}
+.tw-cat-badge { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; text-transform: uppercase; }
 .tw-task-text { flex: 1; font-size: 0.82rem; color: var(--text); }
 .tw-task-text.done-text { text-decoration: line-through; color: var(--text3); }
-.tw-recur-badge {
-  font-size: 0.62rem; color: var(--text3); font-family: 'JetBrains Mono', monospace;
-  flex-shrink: 0;
-}
+.tw-recur-badge { font-size: 0.62rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
 
-/* ============================================================
-   SLIDE-OUT SIDE PANEL
-   ============================================================ */
-.panel-overlay {
-  display: none; position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,0.55);
-}
+.panel-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.55); }
 .panel-overlay.open { display: block; }
-
-.side-panel {
-  position: fixed; top: 0; right: -100%; bottom: 0;
-  width: min(var(--panel-w), 100vw); z-index: 201;
-  background: var(--surface); border-left: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  transition: right 0.3s cubic-bezier(.4,0,.2,1);
-  overflow: hidden;
-}
+.side-panel { position: fixed; top: 0; right: -100%; bottom: 0; width: min(var(--panel-w), 100vw); z-index: 201; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
 .side-panel.open { right: 0; }
-
-.panel-header {
-  padding: 16px 18px 14px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: flex-start; justify-content: space-between;
-  flex-shrink: 0;
-}
-.panel-date {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.5rem; letter-spacing: 0.06em; line-height: 1;
-}
+.panel-header { padding: 16px 18px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0; }
+.panel-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; line-height: 1; }
 .panel-day-name { font-size: 0.75rem; color: var(--text3); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
-.panel-close {
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 6px; width: 32px; height: 32px;
-  font-size: 1.1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: all 0.15s;
-}
+.panel-close { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); border-radius: 6px; width: 32px; height: 32px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .panel-close:hover { background: var(--surface3); color: var(--text); }
-
-.panel-overall {
-  padding: 12px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
+.panel-overall { padding: 12px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .overall-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
 .overall-bar-wrap { background: var(--surface3); border-radius: 4px; height: 8px; overflow: hidden; }
 .overall-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--blue), var(--green)); transition: width 0.4s; }
 .overall-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text); margin-top: 5px; }
-
-.panel-cats {
-  flex: 1; overflow-y: auto; padding: 12px 18px 20px;
-  display: flex; flex-direction: column; gap: 16px;
-}
+.panel-cats { flex: 1; overflow-y: auto; padding: 12px 18px 20px; display: flex; flex-direction: column; gap: 16px; }
 .panel-cats::-webkit-scrollbar { width: 4px; }
 .panel-cats::-webkit-scrollbar-track { background: transparent; }
 .panel-cats::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
-/* Category block inside panel */
 .cat-block {}
-.cat-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
-}
-.cat-title {
-  display: flex; align-items: center; gap: 7px;
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.1em;
-}
+.cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cat-title { display: flex; align-items: center; gap: 7px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
 .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.cat-pct-pill {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-  padding: 2px 7px; border-radius: 20px;
-}
-
+.cat-pct-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; padding: 2px 7px; border-radius: 20px; }
 .task-list { display: flex; flex-direction: column; gap: 6px; }
-
-.task-item {
-  display: flex; align-items: flex-start; gap: 8px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 7px; padding: 8px 10px;
-  transition: border-color 0.15s;
-}
+.task-item { display: flex; align-items: flex-start; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; transition: border-color 0.15s; }
 .task-item:hover { border-color: var(--border2); }
+.task-cb { width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px; border: 2px solid var(--border2); border-radius: 4px; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.task-cb svg { display: none; }
+.task-cb.checked svg { display: block; }
+.task-info { flex: 1; min-width: 0; }
+.task-text { font-size: 0.82rem; color: var(--text); line-height: 1.3; word-break: break-word; }
+.task-text.done-text { text-decoration: line-through; color: var(--text3); }
+.task-recur-label { font-size: 0.65rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.task-del { background: transparent; border: none; color: var(--text3); cursor: pointer; font-size: 1rem; padding: 2px 4px; border-radius: 4px; transition: color 0.15s, background 0.15s; flex-shrink: 0; }
+.task-del:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+.add-task-area { margin-top: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+.add-task-row { display: flex; gap: 6px; }
+.add-task-input { flex: 1; background: var(--surface3); border: 1px solid var(--border2); border-radius: 6px; padding: 7px 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; outline: none; transition: border-color 0.15s; }
+.add-task-input:focus { border-color: var(--text3); }
+.add-task-input::placeholder { color: var(--text3); }
+.add-task-btn { background: var(--surface3); border: 1px solid var(--border2); color: var(--text2); border-radius: 6px; padding: 7px 12px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.15s; flex-shrink: 0; }
+.add-task-btn:hover { background: var(--border2); color: var(--text); }
+.recur-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+.recur-btn { font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.recur-btn:hover { border-color: var(--text3); color: var(--text2); }
+.recur-btn.selected { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.custom-days-row { display: none; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.custom-days-row.visible { display: flex; }
+.day-pick-btn { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; }
+.day-pick-btn.on { background: var(--purple-dim); border-color: var(--purple); color: var(--purple); }
 
-.task-cb {
-  width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px;
-  border: 2px solid var(--border2); border-radius: 4px;
+/* ============================================================
+   FLAG FOCUS PANEL
+   ============================================================ */
+.flag-panel-overlay {
+  display: none; position: fixed; inset: 0; z-index: 250;
+  background: rgba(0,0,0,0.6);
+  align-items: flex-start; justify-content: center;
+  padding: 20px;
+}
+.flag-panel-overlay.open { display: flex; }
+
+.flag-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--gold);
+  border-radius: var(--radius);
+  width: 100%; max-width: 440px;
+  max-height: min(90vh, 600px);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  margin-top: 60px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,158,11,0.08);
+  animation: flag-panel-in 0.22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes flag-panel-in {
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.flag-panel-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.flag-panel-title-group { display: flex; align-items: center; gap: 10px; }
+.flag-panel-cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.flag-panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.15rem; letter-spacing: 0.07em; line-height: 1;
+}
+.flag-panel-subtitle {
+  font-size: 0.68rem; color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 3px;
+}
+.flag-panel-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 20px;
+  background: rgba(245,158,11,0.12);
+  color: var(--gold);
+  border: 1px solid rgba(245,158,11,0.25);
+  flex-shrink: 0;
+}
+.flag-panel-close {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); border-radius: 6px;
+  width: 28px; height: 28px; font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s; margin-left: 8px;
+}
+.flag-panel-close:hover { background: var(--surface3); color: var(--text); }
+
+.flag-panel-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.flag-panel-body::-webkit-scrollbar { width: 4px; }
+.flag-panel-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+.flag-task-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  transition: border-color 0.15s, opacity 0.2s;
+}
+.flag-task-item:hover { border-color: var(--border2); }
+.flag-task-item.done-fade { opacity: 0.45; }
+
+.flag-task-cb {
+  width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
+  border: 2px solid var(--border2); border-radius: 5px;
   background: transparent; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
 }
-.task-cb svg { display: none; }
-.task-cb.checked svg { display: block; }
+.flag-task-cb svg { display: none; }
+.flag-task-cb.checked svg { display: block; }
 
-.task-info { flex: 1; min-width: 0; }
-.task-text {
-  font-size: 0.82rem; color: var(--text); line-height: 1.3;
+.flag-task-info { flex: 1; min-width: 0; }
+.flag-task-text {
+  font-size: 0.84rem; color: var(--text); line-height: 1.35;
   word-break: break-word;
 }
-.task-text.done-text { text-decoration: line-through; color: var(--text3); }
-.task-recur-label {
-  font-size: 0.65rem; color: var(--text3); font-family: 'JetBrains Mono', monospace;
-  margin-top: 2px;
+.flag-task-text.struck { text-decoration: line-through; color: var(--text3); }
+.flag-task-recur {
+  font-size: 0.64rem; color: var(--text3);
+  font-family: 'JetBrains Mono', monospace; margin-top: 3px;
 }
 
-.task-del {
+.flag-task-del {
   background: transparent; border: none; color: var(--text3);
-  cursor: pointer; font-size: 1rem; padding: 2px 4px; border-radius: 4px;
-  transition: color 0.15s, background 0.15s; flex-shrink: 0;
+  cursor: pointer; font-size: 1rem; padding: 2px 4px;
+  border-radius: 4px; flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
 }
-.task-del:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+.flag-task-del:hover { color: #f87171; background: rgba(248,113,113,0.1); }
 
-/* Add task area */
-.add-task-area {
-  margin-top: 8px; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 10px;
+.flag-panel-empty {
+  text-align: center; color: var(--text3);
+  font-size: 0.82rem; font-style: italic;
+  padding: 24px 0; flex: 1; display: flex; align-items: center; justify-content: center;
 }
-.add-task-row { display: flex; gap: 6px; }
-.add-task-input {
-  flex: 1; background: var(--surface3); border: 1px solid var(--border2);
-  border-radius: 6px; padding: 7px 10px;
-  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
-  outline: none; transition: border-color 0.15s;
-}
-.add-task-input:focus { border-color: var(--text3); }
-.add-task-input::placeholder { color: var(--text3); }
-.add-task-btn {
-  background: var(--surface3); border: 1px solid var(--border2);
-  color: var(--text2); border-radius: 6px; padding: 7px 12px;
-  cursor: pointer; font-size: 1rem; font-weight: 600;
-  transition: all 0.15s; flex-shrink: 0;
-}
-.add-task-btn:hover { background: var(--border2); color: var(--text); }
 
-/* Recurrence picker row */
-.recur-row {
-  display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px;
+.flag-panel-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
 }
-.recur-btn {
-  font-size: 0.68rem; font-family: 'JetBrains Mono', monospace;
-  padding: 3px 8px; border-radius: 4px;
-  border: 1px solid var(--border2); background: transparent;
-  color: var(--text3); cursor: pointer; transition: all 0.15s;
-  white-space: nowrap;
+.flag-panel-progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; color: var(--text3);
 }
-.recur-btn:hover { border-color: var(--text3); color: var(--text2); }
-.recur-btn.selected { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.flag-panel-full-btn {
+  font-size: 0.74rem; font-family: 'DM Sans', sans-serif; font-weight: 500;
+  padding: 6px 12px; border-radius: 6px;
+  background: var(--blue-dim); border: 1px solid var(--blue);
+  color: var(--blue); cursor: pointer; transition: all 0.15s;
+}
+.flag-panel-full-btn:hover { background: var(--blue); color: #fff; }
 
-/* Custom days picker (shown when Custom is selected) */
-.custom-days-row {
-  display: none; gap: 4px; flex-wrap: wrap; margin-top: 6px;
-}
-.custom-days-row.visible { display: flex; }
-.day-pick-btn {
-  font-size: 0.65rem; font-family: 'JetBrains Mono', monospace;
-  padding: 3px 7px; border-radius: 4px;
-  border: 1px solid var(--border2); background: transparent;
-  color: var(--text3); cursor: pointer; transition: all 0.15s;
-}
-.day-pick-btn.on { background: var(--purple-dim); border-color: var(--purple); color: var(--purple); }
+/* ─────────────────────────────── */
 
-/* ============================================================
-   SETTINGS MODAL
-   ============================================================ */
-.modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,0.7);
-  align-items: center; justify-content: center;
-  padding: 20px;
-}
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); width: 100%; max-width: 480px;
-  max-height: 90vh; overflow-y: auto;
-  display: flex; flex-direction: column;
-}
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; }
 .modal::-webkit-scrollbar { width: 4px; }
 .modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-.modal-header {
-  padding: 18px 20px 14px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0; position: sticky; top: 0; background: var(--surface); z-index: 1;
-}
+.modal-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: sticky; top: 0; background: var(--surface); z-index: 1; }
 .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; }
 .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 20px; }
 
-.settings-section-label {
-  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
-}
-.settings-row {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-}
+.settings-section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.settings-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .settings-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.settings-input {
-  flex: 1; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 6px; padding: 7px 10px;
-  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
-  outline: none; transition: border-color 0.15s;
-}
+.settings-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; outline: none; transition: border-color 0.15s; }
 .settings-input:focus { border-color: var(--border2); }
-.settings-save-btn {
-  background: var(--blue-dim); border: 1px solid var(--blue);
-  color: var(--blue); border-radius: 6px; padding: 6px 12px;
-  font-size: 0.78rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-}
+.settings-save-btn { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); border-radius: 6px; padding: 6px 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
 .settings-save-btn:hover { background: var(--blue); color: #fff; }
-.settings-del-btn {
-  background: transparent; border: 1px solid var(--border);
-  color: var(--text3); border-radius: 6px; padding: 6px 10px;
-  font-size: 0.8rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-}
+.settings-del-btn { background: transparent; border: 1px solid var(--border); color: var(--text3); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
 .settings-del-btn:hover { border-color: #f87171; color: #f87171; }
-
 .add-role-row { display: flex; gap: 8px; margin-top: 4px; }
-.add-role-btn {
-  background: var(--surface3); border: 1px solid var(--border2);
-  color: var(--text2); border-radius: 6px; padding: 8px 14px;
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
-  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-}
+.add-role-btn { background: var(--surface3); border: 1px solid var(--border2); color: var(--text2); border-radius: 6px; padding: 8px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
 .add-role-btn:hover { background: var(--border2); color: var(--text); }
 .role-limit-note { font-size: 0.72rem; color: var(--text3); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
 
-/* ── Inline delete confirmation bar ──
-   Replaces browser confirm() to avoid closing the modal overlay.
-   Appears below the row being deleted. */
-.inline-confirm {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  background: #1e1010; border: 1px solid #f87171;
-  border-radius: 7px; padding: 8px 12px; margin-bottom: 6px;
-  animation: confirm-in 0.15s ease;
+.date-window-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+.date-window-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.date-window-select {
+  background: var(--surface3); border: 1px solid var(--border2); border-radius: 6px;
+  padding: 7px 28px 7px 10px; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+  outline: none; cursor: pointer; transition: border-color 0.15s;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a5a70'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
 }
+.date-window-select:focus { border-color: var(--blue); }
+.date-window-end-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text2); padding: 7px 10px; background: var(--surface3); border: 1px solid var(--border); border-radius: 6px; }
+.date-window-apply-btn { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); border-radius: 6px; padding: 7px 14px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; font-weight: 500; }
+.date-window-apply-btn:hover { background: var(--blue); color: #fff; }
+.date-window-note { font-size: 0.68rem; color: var(--text3); margin-top: 8px; font-family: 'JetBrains Mono', monospace; line-height: 1.5; }
+
+.inline-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #1e1010; border: 1px solid #f87171; border-radius: 7px; padding: 8px 12px; margin-bottom: 6px; animation: confirm-in 0.15s ease; }
 @keyframes confirm-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .inline-confirm-msg { font-size: 0.78rem; color: #fca5a5; flex: 1; min-width: 160px; }
-.inline-confirm-yes {
-  background: #f87171; border: none; color: #fff;
-  border-radius: 5px; padding: 5px 12px; font-size: 0.78rem;
-  cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600;
-  transition: background 0.15s;
-}
+.inline-confirm-yes { background: #f87171; border: none; color: #fff; border-radius: 5px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; transition: background 0.15s; }
 .inline-confirm-yes:hover { background: #ef4444; }
-.inline-confirm-cancel {
-  background: transparent; border: 1px solid var(--border2);
-  color: var(--text2); border-radius: 5px; padding: 5px 12px;
-  font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: all 0.15s;
-}
+.inline-confirm-cancel { background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .inline-confirm-cancel:hover { background: var(--surface3); color: var(--text); }
 
-/* ============================================================
-   DELETE CONFIRM MODAL (for recurring task deletion)
-   ============================================================ */
-.confirm-modal {
-  display: none; position: fixed; inset: 0; z-index: 400;
-  background: rgba(0,0,0,0.75);
-  align-items: center; justify-content: center; padding: 20px;
-}
+.confirm-modal { display: none; position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 20px; }
 .confirm-modal.open { display: flex; }
-.confirm-box {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 24px; max-width: 360px; width: 100%;
-}
+.confirm-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; max-width: 360px; width: 100%; }
 .confirm-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.06em; margin-bottom: 8px; }
 .confirm-msg { font-size: 0.84rem; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
 .confirm-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-.confirm-btn {
-  flex: 1; padding: 9px 14px; border-radius: 7px;
-  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border); transition: all 0.15s;
-  min-width: 100px;
-}
+.confirm-btn { flex: 1; padding: 9px 14px; border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); transition: all 0.15s; min-width: 100px; }
 .confirm-btn.primary { background: #2a1010; border-color: #f87171; color: #f87171; }
 .confirm-btn.primary:hover { background: #f87171; color: #fff; }
 .confirm-btn.secondary { background: var(--surface2); color: var(--text2); }
@@ -629,13 +407,11 @@ svg.ring { transform: rotate(-90deg); }
 .confirm-btn.cancel { background: transparent; color: var(--text3); }
 .confirm-btn.cancel:hover { color: var(--text2); }
 
-/* ============================================================
-   RESPONSIVE BREAKPOINTS
-   ============================================================ */
 @media (max-width: 600px) {
   .dash-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .stat-card { padding: 14px 12px; }
   .stat-pct { font-size: 1.7rem; }
+  .stat-pct.negative { font-size: 1.35rem; }
   .page { padding: 16px 12px; }
   .cal-day { min-height: 46px; padding: 4px; }
   .day-num { font-size: 0.72rem; }
@@ -644,6 +420,7 @@ svg.ring { transform: rotate(-90deg); }
   .nav-tab { padding: 5px 10px; font-size: 0.76rem; }
   .dash-title { font-size: 1.8rem; }
   .dash-summary { gap: 12px; }
+  .flag-panel { margin-top: 40px; }
 }
 @media (max-width: 380px) {
   .cal-grid { gap: 2px; }
@@ -654,10 +431,6 @@ svg.ring { transform: rotate(-90deg); }
 </head>
 <body>
 
-<!-- ============================================================
-     NAVIGATION BAR
-     To add a new tab: add a .nav-tab button and a corresponding .page div
-     ============================================================ -->
 <nav>
   <div class="nav-brand">LIFE<span>.</span>TRACK</div>
   <div class="nav-tabs">
@@ -668,24 +441,15 @@ svg.ring { transform: rotate(-90deg); }
   <button class="nav-settings-btn" onclick="openSettings()" title="Settings">⚙</button>
 </nav>
 
-<!-- ============================================================
-     DASHBOARD PAGE
-     ============================================================ -->
 <div id="page-dashboard" class="page active">
   <div class="dash-header">
     <div class="dash-title">YOUR PROGRESS</div>
     <div class="dash-subtitle" id="dash-range">Loading…</div>
   </div>
-
-  <!-- Base category rings — rendered dynamically by renderDashboard() -->
   <div class="dash-section-label">Core Categories</div>
   <div class="dash-grid" id="dash-base-grid"></div>
-
-  <!-- Role rings — rendered dynamically by renderDashboard() -->
   <div class="dash-section-label" id="roles-section-label" style="display:none">My Roles</div>
   <div class="dash-grid" id="dash-roles-grid"></div>
-
-  <!-- Summary strip -->
   <div class="dash-summary">
     <div class="sum-item"><div class="sum-val" id="sum-days-logged">0</div><div class="sum-lbl">Days Logged</div></div>
     <div class="sum-divider"></div>
@@ -697,16 +461,10 @@ svg.ring { transform: rotate(-90deg); }
   </div>
 </div>
 
-<!-- ============================================================
-     CALENDAR PAGE
-     ============================================================ -->
 <div id="page-calendar" class="page">
   <div class="cal-months" id="cal-months"></div>
 </div>
 
-<!-- ============================================================
-     TWO-WEEK PAGE
-     ============================================================ -->
 <div id="page-twoweek" class="page">
   <div class="twoweek-header">
     <div class="twoweek-title">NEXT 2 WEEKS</div>
@@ -715,11 +473,8 @@ svg.ring { transform: rotate(-90deg); }
   <div class="twoweek-list" id="twoweek-list"></div>
 </div>
 
-<!-- ============================================================
-     PANEL OVERLAY + SLIDE-OUT PANEL
-     ============================================================ -->
+<!-- Full-day side panel -->
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-
 <div class="side-panel" id="side-panel">
   <div class="panel-header">
     <div>
@@ -733,20 +488,40 @@ svg.ring { transform: rotate(-90deg); }
     <div class="overall-bar-wrap"><div class="overall-bar" id="overall-bar" style="width:0%"></div></div>
     <div class="overall-pct" id="overall-pct-text">0 of 0 tasks complete — 0%</div>
   </div>
-  <!-- Sort toggle bar — controls category order inside the panel -->
   <div class="panel-sort-bar" id="panel-sort-bar">
     <span class="panel-sort-label">Sort:</span>
     <button class="sort-pill" id="sort-pill-tasks" onclick="setPanelSort('tasks')">Has Tasks</button>
     <button class="sort-pill" id="sort-pill-alpha" onclick="setPanelSort('alpha')">A → Z</button>
     <button class="sort-pill" id="sort-pill-default" onclick="setPanelSort('default')">Default</button>
   </div>
-  <!-- Category sections injected here by renderPanel() -->
   <div class="panel-cats" id="panel-cats"></div>
 </div>
 
-<!-- ============================================================
-     SETTINGS MODAL
-     ============================================================ -->
+<!-- Flag focus panel -->
+<div class="flag-panel-overlay" id="flag-panel-overlay" onclick="closeFlagPanel(event)">
+  <div class="flag-panel" id="flag-panel">
+    <div class="flag-panel-header">
+      <div class="flag-panel-title-group">
+        <div class="flag-panel-cat-dot" id="fp-cat-dot"></div>
+        <div>
+          <div class="flag-panel-title" id="fp-title">—</div>
+          <div class="flag-panel-subtitle">TODAY'S INCOMPLETE TASKS</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="flag-panel-badge" id="fp-badge">0 pending</div>
+        <button class="flag-panel-close" onclick="closeFlagPanelDirect()">✕</button>
+      </div>
+    </div>
+    <div class="flag-panel-body" id="fp-body"></div>
+    <div class="flag-panel-footer">
+      <div class="flag-panel-progress-text" id="fp-progress">0 of 0 complete</div>
+      <button class="flag-panel-full-btn" onclick="openFullDayFromFlag()">Open Full Day →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
 <div class="modal-overlay" id="settings-overlay" onclick="maybeCloseSettings(event)">
   <div class="modal" id="settings-modal">
     <div class="modal-header">
@@ -757,9 +532,6 @@ svg.ring { transform: rotate(-90deg); }
   </div>
 </div>
 
-<!-- ============================================================
-     CONFIRM MODAL (recurring task deletion)
-     ============================================================ -->
 <div class="confirm-modal" id="confirm-modal">
   <div class="confirm-box">
     <div class="confirm-title" id="confirm-title">Delete Task?</div>
@@ -768,156 +540,106 @@ svg.ring { transform: rotate(-90deg); }
   </div>
 </div>
 
-<!-- ============================================================
-     JAVASCRIPT
-     ============================================================ -->
 <script>
 /* ============================================================
-   CONFIG — Edit defaults here
+   CONFIG
    ============================================================ */
-
-// Base categories: key, default label, color hex.
-// To add a new base category: add an entry here, also add to getDefaultDay().
 const BASE_CATS = [
   { key: 'blue',   label: 'Personal Promises',  color: '#3b82f6' },
   { key: 'gold',   label: 'Promises to Others', color: '#f59e0b' },
   { key: 'slate',  label: 'Not Important',       color: '#64748b' },
   { key: 'green',  label: 'Health & Wellness',   color: '#22c55e' },
 ];
-
-// Role color palette — roles cycle through these colors.
-// Add more colors here to support more visual variety.
-const ROLE_COLORS = [
-  '#f97316','#06b6d4','#ec4899','#84cc16',
-  '#eab308','#14b8a6','#6366f1','#f43f5e','#8b5cf6','#10b981'
-];
-
-// Maximum number of roles allowed
+const ROLE_COLORS = ['#f97316','#06b6d4','#ec4899','#84cc16','#eab308','#14b8a6','#6366f1','#f43f5e','#8b5cf6','#10b981'];
 const MAX_ROLES = 10;
-
-// Default role names (first 6 shown immediately)
-// To change defaults: edit this array
 const DEFAULT_ROLE_NAMES = ['Father','Leader','Son','Partner','Professional','Friend'];
-
-// Recurrence options displayed in the panel
-// To add/remove options: edit this array
 const RECUR_OPTIONS = [
-  { key: 'none',      label: 'Once'      },
-  { key: 'daily',     label: 'Daily'     },
-  { key: 'weekly',    label: 'Weekly'    },
-  { key: 'biweekly',  label: 'Biweekly'  },
-  { key: 'monthly',   label: 'Monthly'   },
-  { key: 'custom',    label: 'Custom'    },
+  { key: 'none', label: 'Once' }, { key: 'daily', label: 'Daily' },
+  { key: 'weekly', label: 'Weekly' }, { key: 'biweekly', label: 'Biweekly' },
+  { key: 'monthly', label: 'Monthly' }, { key: 'custom', label: 'Custom' },
 ];
-
 const DOW_LABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 /* ============================================================
    STATE
    ============================================================ */
-
-// today at midnight
 const today = new Date(); today.setHours(0,0,0,0);
-
-// Active date key for the side panel
 let activeDateKey = null;
-
-// Per-panel add-task state: { catKey -> { recur, customDays[] } }
 let addState = {};
 
-// ── Panel sort state ──
-// Stored in localStorage under lt_panel_sort so preference persists.
-// Valid values: 'default' | 'tasks' | 'alpha'
-// To change the default sort on first load: edit the fallback string below.
-function getPanelSort() { return ls_get('panel_sort') || 'default'; }
-function savePanelSort(v) { ls_set('panel_sort', v); }
+// Flag panel state
+let flagPanelCatKey = null;
+let flagPanelCat    = null;
 
-function setPanelSort(val) {
-  savePanelSort(val);
-  updateSortPills(val);
-  renderPanel();
+/* ============================================================
+   DATE WINDOW
+   ============================================================ */
+function getDateWindow() {
+  const s = ls_get('date_window');
+  if (s && typeof s.year === 'number' && typeof s.month === 'number') return s;
+  return { year: today.getFullYear(), month: today.getMonth() };
+}
+function saveDateWindow(year, month) { ls_set('date_window', { year, month }); }
+function getWindowMonths() {
+  const w = getDateWindow();
+  return [0, 1, 2].map(delta => {
+    const raw = w.month + delta;
+    return { y: w.year + Math.floor(raw / 12), m: raw % 12 };
+  });
 }
 
+/* ============================================================
+   PANEL SORT
+   ============================================================ */
+function getPanelSort() { return ls_get('panel_sort') || 'default'; }
+function savePanelSort(v) { ls_set('panel_sort', v); }
+function setPanelSort(val) { savePanelSort(val); updateSortPills(val); renderPanel(); }
 function updateSortPills(val) {
   ['tasks','alpha','default'].forEach(k => {
     const el = document.getElementById('sort-pill-' + k);
     if (el) el.classList.toggle('active', val === k);
   });
 }
-
-// Returns getAllCats() sorted according to current sort preference.
-// Categories with tasks always evaluated against the day currently open in panel.
 function getSortedCats(dayData) {
   const cats = getAllCats();
   const sort = getPanelSort();
-  if (sort === 'alpha') {
-    return [...cats].sort((a, b) => a.label.localeCompare(b.label));
-  }
-  if (sort === 'tasks') {
-    return [...cats].sort((a, b) => {
-      const aHas = (dayData[a.key] || []).length > 0 ? 0 : 1;
-      const bHas = (dayData[b.key] || []).length > 0 ? 0 : 1;
-      return aHas - bHas; // cats with tasks float to top
-    });
-  }
-  // 'default' — original order (built-in base → custom → roles)
+  if (sort === 'alpha') return [...cats].sort((a,b) => a.label.localeCompare(b.label));
+  if (sort === 'tasks') return [...cats].sort((a,b) => {
+    const aHas = (dayData[a.key]||[]).length > 0 ? 0 : 1;
+    const bHas = (dayData[b.key]||[]).length > 0 ? 0 : 1;
+    return aHas - bHas;
+  });
   return cats;
 }
 
 /* ============================================================
-   STORAGE HELPERS
-   Keys used in localStorage:
-     lt_settings       — category labels + _deleted list (object)
-     lt_roles          — role definitions array [{id, name, color}]
-     lt_custom_cats    — custom (user-added) base categories [{id, name, color}]
-     lt_day_{dateKey}  — per-day task data object
-     lt_recur          — recurring task templates array
+   STORAGE
    ============================================================ */
-
 function ls_get(key) { return JSON.parse(localStorage.getItem('lt_' + key) || 'null'); }
 function ls_set(key, val) { localStorage.setItem('lt_' + key, JSON.stringify(val)); }
 
-/* ── Settings (category label overrides) ── */
 function getSettings() {
   const s = ls_get('settings') || {};
-  // Only set defaults for non-deleted base cats.
-  // IMPORTANT: never set defaults for keys in _deleted — that would restore them.
   const deleted = s._deleted || [];
-  BASE_CATS.forEach(c => {
-    if (!deleted.includes(c.key) && !s[c.key]) s[c.key] = c.label;
-  });
+  BASE_CATS.forEach(c => { if (!deleted.includes(c.key) && !s[c.key]) s[c.key] = c.label; });
   return s;
 }
 function saveSettings(s) { ls_set('settings', s); }
-
-/* ── Roles ── */
 function getRoles() {
   let r = ls_get('roles');
   if (!r) {
-    // Initialize with DEFAULT_ROLE_NAMES
-    r = DEFAULT_ROLE_NAMES.map((name, i) => ({
-      id: 'role_' + i,
-      name,
-      color: ROLE_COLORS[i % ROLE_COLORS.length]
-    }));
+    r = DEFAULT_ROLE_NAMES.map((name,i) => ({ id:'role_'+i, name, color: ROLE_COLORS[i%ROLE_COLORS.length] }));
     ls_set('roles', r);
   }
   return r;
 }
 function saveRoles(r) { ls_set('roles', r); }
-
-/* ── Custom base categories (user-added, same as built-in base cats but stored separately) ──
-   Each entry: { id, name, color }
-   To add a new custom cat via code: push to this array and saveCustomCats().
-   To change the max allowed: there is no hard limit — add one here if desired. */
 function getCustomCats() { return ls_get('custom_cats') || []; }
 function saveCustomCats(c) { ls_set('custom_cats', c); }
 
-/* ── Per-day data ── */
 function getDefaultDay() {
-  // Only include active (non-deleted) built-in base cat keys + custom cats
-  const deleted = (ls_get('settings') || {})._deleted || [];
+  const deleted = (ls_get('settings')||{})._deleted || [];
   const d = {};
   BASE_CATS.filter(c => !deleted.includes(c.key)).forEach(c => { d[c.key] = []; });
   getCustomCats().forEach(c => { d[c.id] = []; });
@@ -925,43 +647,26 @@ function getDefaultDay() {
 }
 function getDay(key) {
   const d = ls_get('day_' + key) || getDefaultDay();
-  // Ensure active built-in base keys exist; skip deleted ones
-  const deleted = (ls_get('settings') || {})._deleted || [];
+  const deleted = (ls_get('settings')||{})._deleted || [];
   BASE_CATS.filter(c => !deleted.includes(c.key)).forEach(c => { if (!d[c.key]) d[c.key] = []; });
-  // Ensure custom cat keys exist
   getCustomCats().forEach(c => { if (!d[c.id]) d[c.id] = []; });
-  // Ensure role keys exist
   getRoles().forEach(r => { if (!d[r.id]) d[r.id] = []; });
   return d;
 }
 function setDay(key, val) { ls_set('day_' + key, val); }
-
-/* ── Recurring task templates ──
-   Each template: { id, catKey, text, recur, customDays, startKey }
-   recur: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'custom'
-   customDays: [0-6] array for custom DOW selection
-   startKey: ISO date string YYYY-MM-DD of first occurrence */
 function getRecurring() { return ls_get('recur') || []; }
 function saveRecurring(r) { ls_set('recur', r); }
 
 /* ============================================================
    DATE UTILITIES
    ============================================================ */
-
-// Zero-padded YYYY-MM-DD string
 function dateKey(y, m, d) {
-  return `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
-
-// Parse a dateKey back to a Date at midnight
 function parseKey(key) {
-  const [y, m, d] = key.split('-').map(Number);
-  const dt = new Date(y, m - 1, d);
-  dt.setHours(0,0,0,0);
-  return dt;
+  const [y,m,d] = key.split('-').map(Number);
+  const dt = new Date(y, m-1, d); dt.setHours(0,0,0,0); return dt;
 }
-
-// Check if a recurring template fires on a given Date
 function recurFires(template, dt) {
   const start = parseKey(template.startKey);
   if (dt < start) return false;
@@ -971,65 +676,72 @@ function recurFires(template, dt) {
     case 'weekly':   return diffDays % 7 === 0;
     case 'biweekly': return diffDays % 14 === 0;
     case 'monthly':  return dt.getDate() === start.getDate();
-    case 'custom':   return (template.customDays || []).includes(dt.getDay());
+    case 'custom':   return (template.customDays||[]).includes(dt.getDay());
     default: return false;
   }
 }
-
-// Label for recurrence
 function recurLabel(r, customDays) {
   if (r === 'none' || !r) return '';
-  if (r === 'custom' && customDays && customDays.length) {
-    return '↻ ' + customDays.map(d => DOW_LABELS[d]).join(',');
-  }
+  if (r === 'custom' && customDays && customDays.length) return '↻ ' + customDays.map(d => DOW_LABELS[d]).join(',');
   return '↻ ' + r.charAt(0).toUpperCase() + r.slice(1);
 }
 
 /* ============================================================
-   RECURRING TASK PROPAGATION
-   Ensures recurring tasks appear in a day's data when that day
-   is opened or rendered. Call this before reading getDay().
+   RECURRING PROPAGATION
    ============================================================ */
 function propagateRecurring(key) {
   const dt = parseKey(key);
   const templates = getRecurring();
   const data = getDay(key);
   let changed = false;
-
   templates.forEach(t => {
     if (!recurFires(t, dt)) return;
-    // Check if this template already has a task in this day
     const arr = data[t.catKey] || [];
-    const exists = arr.some(task => task.recurId === t.id);
-    if (!exists) {
+    if (!arr.some(task => task.recurId === t.id)) {
       if (!data[t.catKey]) data[t.catKey] = [];
-      data[t.catKey].push({
-        text: t.text,
-        done: false,
-        recurId: t.id,    // link back to template
-        recur: t.recur,
-        customDays: t.customDays || []
-      });
+      data[t.catKey].push({ text: t.text, done: false, recurId: t.id, recur: t.recur, customDays: t.customDays||[] });
       changed = true;
     }
   });
-
   if (changed) setDay(key, data);
 }
 
 /* ============================================================
-   DAY TOTALS — used for badges and dashboard
+   DAY TOTALS
    ============================================================ */
 function dayTotals(key) {
   propagateRecurring(key);
   const d = getDay(key);
   let done = 0, total = 0;
-  // Active base cats only (skip deleted)
   getAllCats().forEach(c => {
-    total += (d[c.key] || []).length;
-    done  += (d[c.key] || []).filter(t => t.done).length;
+    total += (d[c.key]||[]).length;
+    done  += (d[c.key]||[]).filter(t => t.done).length;
   });
   return { done, total };
+}
+
+/* ============================================================
+   DEFICIT MECHANIC
+   ============================================================ */
+function calcDeficitPct(catKey, windowDays) {
+  let totalTasks = 0, doneTasks = 0, hasPastData = false;
+  windowDays.forEach(key => {
+    const dt = parseKey(key);
+    if (dt >= today) return;
+    propagateRecurring(key);
+    const raw = ls_get('day_' + key);
+    if (!raw) return;
+    const arr = raw[catKey] || [];
+    if (arr.length === 0) return;
+    hasPastData = true;
+    totalTasks += arr.length;
+    doneTasks  += arr.filter(t => t.done).length;
+  });
+  if (!hasPastData || totalTasks === 0) return { pct: 0, done: doneTasks, total: totalTasks, hasPastData: false };
+  const missed = totalTasks - doneTasks;
+  const score  = doneTasks - missed;
+  const pct    = Math.round((score / totalTasks) * 100);
+  return { pct, done: doneTasks, total: totalTasks, hasPastData: true };
 }
 
 /* ============================================================
@@ -1040,7 +752,6 @@ function showPage(id, btn) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
-
   if (id === 'calendar')  buildCalendar();
   if (id === 'dashboard') renderDashboard();
   if (id === 'twoweek')   renderTwoWeek();
@@ -1052,143 +763,125 @@ function showPage(id, btn) {
 function renderDashboard() {
   const settings = getSettings();
   const roles = getRoles();
+  const winMonths = getWindowMonths();
 
-  // Date range label
-  const endDate = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+  const sm = winMonths[0], em = winMonths[2];
   document.getElementById('dash-range').textContent =
-    `${MONTH_NAMES[today.getMonth()].slice(0,3)} ${today.getFullYear()} → ${MONTH_NAMES[endDate.getMonth()].slice(0,3)} ${endDate.getFullYear()}`;
+    `${MONTH_NAMES[sm.m].slice(0,3)} ${sm.y} → ${MONTH_NAMES[em.m].slice(0,3)} ${em.y}`;
 
-  // Gather totals across 3 months (skip deleted base cats, include custom cats)
+  const windowDays = [];
+  winMonths.forEach(({ y, m }) => {
+    const dim = new Date(y, m+1, 0).getDate();
+    for (let day = 1; day <= dim; day++) windowDays.push(dateKey(y, m, day));
+  });
+
+  windowDays.forEach(key => propagateRecurring(key));
+
   const deletedCats = (getSettings()._deleted || []);
   const activeBases = BASE_CATS.filter(c => !deletedCats.includes(c.key));
   const customCats  = getCustomCats();
-  const catTotals = {};
-  activeBases.forEach(c => { catTotals[c.key] = { d: 0, t: 0 }; });
-  customCats.forEach(c  => { catTotals[c.id]  = { d: 0, t: 0 }; });
-  roles.forEach(r       => { catTotals[r.id]  = { d: 0, t: 0 }; });
-  let grandDone = 0, grandTotal = 0, daysLogged = 0;
+  let grandDonePast = 0, grandTotalPast = 0;
+  let grandDoneAll = 0, grandTotalAll = 0, daysLogged = 0;
 
-  for (let mo = 0; mo < 3; mo++) {
-    const base = new Date(today.getFullYear(), today.getMonth() + mo, 1);
-    const dim  = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
-    for (let day = 1; day <= dim; day++) {
-      const key = dateKey(base.getFullYear(), base.getMonth(), day);
-      propagateRecurring(key);
-      const raw = ls_get('day_' + key);
-      if (!raw) continue;
-      let dayHas = false;
-      const allKeys = [
-        ...BASE_CATS.map(c => c.key),
-        ...customCats.map(c => c.id),
-        ...roles.map(r => r.id)
-      ];
-      allKeys.forEach(k => {
-        const arr = raw[k] || [];
-        if (arr.length > 0) {
-          dayHas = true;
-          catTotals[k] = catTotals[k] || { d: 0, t: 0 };
-          catTotals[k].t += arr.length;
-          catTotals[k].d += arr.filter(x => x.done).length;
-          grandTotal += arr.length;
-          grandDone  += arr.filter(x => x.done).length;
+  windowDays.forEach(key => {
+    const raw = ls_get('day_' + key);
+    if (!raw) return;
+    const dt = parseKey(key);
+    const isPast = dt < today;
+    let dayHas = false;
+    const allKeys = [...BASE_CATS.map(c=>c.key), ...customCats.map(c=>c.id), ...roles.map(r=>r.id)];
+    allKeys.forEach(k => {
+      const arr = raw[k] || [];
+      if (arr.length > 0) {
+        dayHas = true;
+        grandTotalAll += arr.length;
+        grandDoneAll  += arr.filter(x => x.done).length;
+        if (isPast) {
+          grandTotalPast += arr.length;
+          grandDonePast  += arr.filter(x => x.done).length;
         }
-      });
-      if (dayHas) daysLogged++;
-    }
+      }
+    });
+    if (dayHas) daysLogged++;
+  });
+
+  let overallPct = 0;
+  if (grandTotalPast > 0) {
+    const missed = grandTotalPast - grandDonePast;
+    overallPct = Math.round(((grandDonePast - missed) / grandTotalPast) * 100);
   }
 
-  // Render base categories grid (only active/non-deleted ones)
   const baseGrid = document.getElementById('dash-base-grid');
   baseGrid.innerHTML = '';
   activeBases.forEach(c => {
-    const pct = catTotals[c.key].t > 0
-      ? Math.round(catTotals[c.key].d / catTotals[c.key].t * 100) : 0;
-    baseGrid.appendChild(makeStatCard(c.key, settings[c.key] || c.label, c.color, pct,
-      catTotals[c.key].d, catTotals[c.key].t));
+    const r = calcDeficitPct(c.key, windowDays);
+    baseGrid.appendChild(makeStatCard(c.key, settings[c.key]||c.label, c.color, r.pct, r.done, r.total, r.hasPastData));
   });
-  // Render custom base categories in same grid
   customCats.forEach(c => {
-    const tot = catTotals[c.id] || { d: 0, t: 0 };
-    const pct = tot.t > 0 ? Math.round(tot.d / tot.t * 100) : 0;
-    baseGrid.appendChild(makeStatCard(c.id, c.name, c.color, pct, tot.d, tot.t));
+    const r = calcDeficitPct(c.id, windowDays);
+    baseGrid.appendChild(makeStatCard(c.id, c.name, c.color, r.pct, r.done, r.total, r.hasPastData));
   });
 
-  // Render roles grid
   const rolesGrid = document.getElementById('dash-roles-grid');
   const rolesLabel = document.getElementById('roles-section-label');
   rolesGrid.innerHTML = '';
   if (roles.length > 0) {
     rolesLabel.style.display = 'block';
-    roles.forEach(r => {
-      const tot = catTotals[r.id] || { d: 0, t: 0 };
-      const pct = tot.t > 0 ? Math.round(tot.d / tot.t * 100) : 0;
-      // Pass r.id as catKey so makeStatCard can check today's flag for this role
-      rolesGrid.appendChild(makeStatCard(r.id, r.name, r.color, pct, tot.d, tot.t));
+    roles.forEach(ro => {
+      const r = calcDeficitPct(ro.id, windowDays);
+      rolesGrid.appendChild(makeStatCard(ro.id, ro.name, ro.color, r.pct, r.done, r.total, r.hasPastData));
     });
   } else {
     rolesLabel.style.display = 'none';
   }
 
-  // Summary strip
+  const overallEl = document.getElementById('sum-overall');
+  overallEl.textContent = grandTotalPast > 0 ? overallPct + '%' : '0%';
+  overallEl.className = 'sum-val' + (overallPct < 0 ? ' negative' : '');
   document.getElementById('sum-days-logged').textContent = daysLogged;
-  document.getElementById('sum-total-tasks').textContent = grandTotal;
-  document.getElementById('sum-completed').textContent   = grandDone;
-  document.getElementById('sum-overall').textContent =
-    grandTotal > 0 ? Math.round(grandDone / grandTotal * 100) + '%' : '0%';
+  document.getElementById('sum-total-tasks').textContent = grandTotalAll;
+  document.getElementById('sum-completed').textContent   = grandDoneAll;
 }
 
-// ── makeStatCard ──────────────────────────────────────────────
-// Builds one dashboard stat card with:
-//   • 4-state ring color: neutral (0/0) | red (0+/0) | amber (partial) | green (all done)
-//   • 🚩 flag badge when today has incomplete tasks in this category
-//
-// Parameters:
-//   catKey  — storage key for this category (e.g. 'blue', 'role_123')
-//   label   — display name
-//   color   — hex color (used for border accent only now; ring color is state-driven)
-//   pct     — completion % across 3-month window
-//   done    — total completed tasks across 3-month window
-//   total   — total tasks across 3-month window
-// ─────────────────────────────────────────────────────────────
-function makeStatCard(catKey, label, color, pct, done, total) {
-  const circ = 138.23;
-  const offset = circ - (circ * pct / 100);
+/* ============================================================
+   makeStatCard  — flag is now a clickable button
+   ============================================================ */
+function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
+  const circ   = 138.23;
+  const fillPct = Math.max(0, Math.min(100, pct));
+  const offset  = circ - (circ * fillPct / 100);
+  const isNeg   = pct < 0;
 
-  /* ── Ring color state logic ──
-     To change the color thresholds, edit the conditions below.
-     neutral  = no tasks at all (0/0)
-     red      = has tasks but zero completed (0/X)
-     amber    = partially done but not complete (X/Y where X < Y)
-     green    = fully complete and has at least 1 task (X/X, X > 0)  */
   let ringState, ringColor;
-  if (total === 0) {
-    ringState = 'neutral'; ringColor = '#5a5a70'; // --text3
-  } else if (done === 0) {
-    ringState = 'red';     ringColor = '#f87171';
-  } else if (done < total) {
-    ringState = 'amber';   ringColor = '#f59e0b'; // --gold
+  if (!hasPastData || total === 0) {
+    ringState = 'neutral'; ringColor = '#5a5a70';
+  } else if (pct <= 0) {
+    ringState = 'red';    ringColor = '#f87171';
+  } else if (pct < 100) {
+    ringState = 'amber';  ringColor = '#f59e0b';
   } else {
-    ringState = 'green';   ringColor = '#22c55e'; // --green
+    ringState = 'green';  ringColor = '#22c55e';
   }
 
-  /* ── Today's red flag logic ──
-     FLAG_EMOJI — change this string to use a different indicator.
-     Shows 🚩 if today has at least 1 incomplete task in this category. */
-  const FLAG_EMOJI = '🚩';
-  const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayKey  = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
   propagateRecurring(todayKey);
   const todayData = ls_get('day_' + todayKey);
-  const todayArr  = todayData ? (todayData[catKey] || []) : [];
-  const hasFlag   = todayArr.length > 0 && todayArr.some(t => !t.done);
+  const todayArr  = todayData ? (todayData[catKey]||[]) : [];
+  const incompleteTodayCount = todayArr.filter(t => !t.done).length;
+  const hasFlag   = incompleteTodayCount > 0;
+
+  const missedCount = total > 0 ? (total - done) : 0;
+  const deficitNote = isNeg ? `<div class="stat-deficit-note">↓ ${missedCount} missed</div>` : '';
 
   const card = document.createElement('div');
   card.className = 'stat-card';
-  card.style.borderTopColor = color; // top accent stays the category's brand color
-
+  card.style.borderTopColor = color;
   card.innerHTML = `
     <div class="stat-card-top">
       <div class="stat-label" title="${label}">${label}</div>
-      ${hasFlag ? `<div class="stat-flag" title="You have incomplete tasks today in this category">${FLAG_EMOJI}</div>` : ''}
+      ${hasFlag
+        ? `<button class="stat-flag" title="${incompleteTodayCount} incomplete task${incompleteTodayCount !== 1 ? 's' : ''} today — click to view" data-catkey="${catKey}" data-label="${label}" data-color="${color}">🚩</button>`
+        : ''}
     </div>
     <div class="stat-ring-row">
       <div class="ring-wrap">
@@ -1202,94 +895,218 @@ function makeStatCard(catKey, label, color, pct, done, total) {
         </svg>
       </div>
       <div>
-        <div class="stat-pct state-${ringState}">${pct}%</div>
-        <div class="stat-detail">${done} / ${total} tasks</div>
+        <div class="stat-pct state-${ringState}${isNeg?' negative':''}">${pct}%</div>
+        <div class="stat-detail">${done} / ${total} past</div>
+        ${deficitNote}
       </div>
     </div>`;
+
+  // Attach flag click handler
+  const flagBtn = card.querySelector('.stat-flag');
+  if (flagBtn) {
+    flagBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openFlagPanel(catKey, label, color);
+    });
+  }
+
   return card;
 }
 
 /* ============================================================
-   CALENDAR BUILD
-   Renders 3 months starting from this month
+   FLAG FOCUS PANEL
+   ============================================================ */
+function openFlagPanel(catKey, catLabel, catColor) {
+  flagPanelCatKey = catKey;
+  flagPanelCat    = { key: catKey, label: catLabel, color: catColor };
+
+  document.getElementById('fp-cat-dot').style.background = catColor;
+  document.getElementById('fp-title').textContent = catLabel.toUpperCase();
+  document.getElementById('fp-cat-dot').style.background = catColor;
+
+  renderFlagPanel();
+  document.getElementById('flag-panel-overlay').classList.add('open');
+}
+
+function renderFlagPanel() {
+  if (!flagPanelCatKey) return;
+  const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  propagateRecurring(todayKey);
+  const data = getDay(todayKey);
+  const tasks = data[flagPanelCatKey] || [];
+
+  const incomplete = tasks.filter(t => !t.done).length;
+  const total      = tasks.length;
+  const done       = total - incomplete;
+
+  document.getElementById('fp-badge').textContent = `${incomplete} pending`;
+  document.getElementById('fp-progress').textContent = `${done} of ${total} complete`;
+
+  const body = document.getElementById('fp-body');
+  body.innerHTML = '';
+
+  if (tasks.length === 0) {
+    body.innerHTML = '<div class="flag-panel-empty">No tasks for today in this category.</div>';
+    return;
+  }
+
+  // Show all tasks (so you can see done ones too), incomplete first
+  const sorted = [...tasks.map((t,i) => ({...t, _idx: i}))].sort((a,b) => {
+    if (a.done === b.done) return 0;
+    return a.done ? 1 : -1;
+  });
+
+  sorted.forEach(task => {
+    const idx = task._idx;
+    const item = document.createElement('div');
+    item.className = 'flag-task-item' + (task.done ? ' done-fade' : '');
+    item.dataset.idx = idx;
+
+    const cb = document.createElement('div');
+    cb.className = 'flag-task-cb' + (task.done ? ' checked' : '');
+    if (task.done) { cb.style.background = flagPanelCat.color; cb.style.borderColor = flagPanelCat.color; }
+    cb.innerHTML = checkSVG();
+    cb.onclick = () => {
+      const d = getDay(todayKey);
+      d[flagPanelCatKey][idx].done = !d[flagPanelCatKey][idx].done;
+      setDay(todayKey, d);
+      renderFlagPanel();
+      renderDashboard();
+    };
+
+    const info = document.createElement('div');
+    info.className = 'flag-task-info';
+    const txt = document.createElement('div');
+    txt.className = 'flag-task-text' + (task.done ? ' struck' : '');
+    txt.textContent = task.text;
+    info.appendChild(txt);
+    if (task.recur && task.recur !== 'none') {
+      const rl = document.createElement('div'); rl.className = 'flag-task-recur';
+      rl.textContent = recurLabel(task.recur, task.customDays); info.appendChild(rl);
+    }
+
+    const del = document.createElement('button');
+    del.className = 'flag-task-del'; del.textContent = '×';
+    del.onclick = () => requestFlagDeleteTask(idx, task);
+
+    item.appendChild(cb); item.appendChild(info); item.appendChild(del);
+    body.appendChild(item);
+  });
+}
+
+function requestFlagDeleteTask(idx, task) {
+  const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  if (task.recurId) {
+    document.getElementById('confirm-title').textContent = 'Delete Recurring Task';
+    document.getElementById('confirm-msg').textContent = `"${task.text}" repeats ${task.recur}. What would you like to delete?`;
+    const btns = document.getElementById('confirm-btns'); btns.innerHTML = '';
+    const b1 = document.createElement('button'); b1.className = 'confirm-btn secondary'; b1.textContent = 'This day only';
+    b1.onclick = () => { deleteFlagTask(todayKey, flagPanelCatKey, idx, false, task.recurId); closeConfirm(); };
+    const b2 = document.createElement('button'); b2.className = 'confirm-btn primary'; b2.textContent = 'This & all future';
+    b2.onclick = () => { deleteFlagTask(todayKey, flagPanelCatKey, idx, true, task.recurId); closeConfirm(); };
+    const b3 = document.createElement('button'); b3.className = 'confirm-btn cancel'; b3.textContent = 'Cancel'; b3.onclick = closeConfirm;
+    btns.appendChild(b1); btns.appendChild(b2); btns.appendChild(b3);
+    document.getElementById('confirm-modal').classList.add('open');
+  } else {
+    deleteFlagTask(todayKey, flagPanelCatKey, idx, false, null);
+  }
+}
+
+function deleteFlagTask(key, catKey, idx, deleteFuture, recurId) {
+  const data = getDay(key);
+  data[catKey].splice(idx, 1);
+  setDay(key, data);
+  if (deleteFuture && recurId) {
+    let templates = getRecurring();
+    templates = templates.filter(t => t.id !== recurId); saveRecurring(templates);
+    for (let i = 1; i <= 90; i++) {
+      const dt = new Date(today); dt.setDate(today.getDate() + i);
+      const fkey = dateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
+      const fdata = ls_get('day_' + fkey); if (!fdata) continue;
+      let changed = false;
+      Object.keys(fdata).forEach(k => {
+        const before = fdata[k].length;
+        fdata[k] = fdata[k].filter(t => t.recurId !== recurId);
+        if (fdata[k].length !== before) changed = true;
+      });
+      if (changed) ls_set('day_' + fkey, fdata);
+    }
+  }
+  renderFlagPanel();
+  renderDashboard();
+  // If full-day panel is open for today, re-render it too
+  if (activeDateKey === key) renderPanel();
+}
+
+function closeFlagPanel(e) {
+  if (e && e.target !== document.getElementById('flag-panel-overlay')) return;
+  closeFlagPanelDirect();
+}
+function closeFlagPanelDirect() {
+  document.getElementById('flag-panel-overlay').classList.remove('open');
+  flagPanelCatKey = null;
+  flagPanelCat    = null;
+}
+
+function openFullDayFromFlag() {
+  closeFlagPanelDirect();
+  const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
+  openPanel(dateKey(y, m, d), y, m, d);
+}
+
+/* ============================================================
+   CALENDAR
    ============================================================ */
 function buildCalendar() {
   const container = document.getElementById('cal-months');
   container.innerHTML = '';
-  for (let mo = 0; mo < 3; mo++) {
-    const d = new Date(today.getFullYear(), today.getMonth() + mo, 1);
-    container.appendChild(buildMonth(d.getFullYear(), d.getMonth()));
-  }
+  getWindowMonths().forEach(({ y, m }) => container.appendChild(buildMonth(y, m)));
 }
 
 function buildMonth(y, m) {
   const wrap = document.createElement('div');
   wrap.className = 'month-block';
-
   const head = document.createElement('div');
   head.className = 'month-heading';
   head.innerHTML = `${MONTH_NAMES[m]} <span>${y}</span>`;
   wrap.appendChild(head);
-
   const grid = document.createElement('div');
   grid.className = 'cal-grid';
-
-  // Day-of-week headers
   DOW_LABELS.forEach(dl => {
-    const el = document.createElement('div');
-    el.className = 'cal-dow'; el.textContent = dl;
-    grid.appendChild(el);
+    const el = document.createElement('div'); el.className = 'cal-dow'; el.textContent = dl; grid.appendChild(el);
   });
-
-  // Empty cells before first day
   const firstDow = new Date(y, m, 1).getDay();
   for (let i = 0; i < firstDow; i++) {
-    const el = document.createElement('div'); el.className = 'cal-day empty';
-    grid.appendChild(el);
+    const el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el);
   }
-
-  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
   for (let day = 1; day <= daysInMonth; day++) {
     const key = dateKey(y, m, day);
     const cellDate = new Date(y, m, day); cellDate.setHours(0,0,0,0);
     propagateRecurring(key);
-
     const cell = document.createElement('div');
     cell.className = 'cal-day';
     if (cellDate.getTime() === today.getTime()) cell.classList.add('today');
     if (cellDate < today) cell.classList.add('past');
-
-    // Day number
     const numEl = document.createElement('div');
-    numEl.className = 'day-num'; numEl.textContent = day;
-    cell.appendChild(numEl);
-
-    // Colored dots per category with tasks
-    const dotRow = document.createElement('div');
-    dotRow.className = 'day-dot-row';
+    numEl.className = 'day-num'; numEl.textContent = day; cell.appendChild(numEl);
+    const dotRow = document.createElement('div'); dotRow.className = 'day-dot-row';
     const dayData = getDay(key);
     getAllCats().forEach(c => {
-      if ((dayData[c.key] || []).length > 0) {
-        const dot = document.createElement('div');
-        dot.className = 'day-dot';
-        dot.style.background = c.color;
-        dotRow.appendChild(dot);
+      if ((dayData[c.key]||[]).length > 0) {
+        const dot = document.createElement('div'); dot.className = 'day-dot'; dot.style.background = c.color; dotRow.appendChild(dot);
       }
     });
     cell.appendChild(dotRow);
-
-    // % badge for past/today days
     if (cellDate <= today) {
       const { done, total } = dayTotals(key);
       if (total > 0) {
-        const pct = Math.round(done / total * 100);
+        const pct = Math.round(done/total*100);
         const badge = document.createElement('div');
         badge.className = 'day-pct-badge ' + (pct >= 80 ? 'high' : pct >= 40 ? 'mid' : 'low');
-        badge.textContent = pct + '%';
-        cell.appendChild(badge);
+        badge.textContent = pct + '%'; cell.appendChild(badge);
       }
     }
-
     cell.dataset.key = key;
     cell.addEventListener('click', () => openPanel(key, y, m, day));
     grid.appendChild(cell);
@@ -1300,99 +1117,59 @@ function buildMonth(y, m) {
 
 /* ============================================================
    TWO-WEEK VIEW
-   Shows all tasks for today + next 13 days
    ============================================================ */
 function renderTwoWeek() {
   const list = document.getElementById('twoweek-list');
   list.innerHTML = '';
   const end = new Date(today); end.setDate(end.getDate() + 13);
-
-  // Update range label
   const fmt = dt => `${MONTH_NAMES[dt.getMonth()].slice(0,3)} ${dt.getDate()}`;
-  document.getElementById('twoweek-range').textContent =
-    `${fmt(today)} — ${fmt(end)}, ${end.getFullYear()}`;
-
+  document.getElementById('twoweek-range').textContent = `${fmt(today)} — ${fmt(end)}, ${end.getFullYear()}`;
   for (let i = 0; i < 14; i++) {
     const dt = new Date(today); dt.setDate(dt.getDate() + i);
     const y = dt.getFullYear(), m = dt.getMonth(), d = dt.getDate();
     const key = dateKey(y, m, d);
     propagateRecurring(key);
     const dayData = getDay(key);
-
-    // Collect all tasks across all categories
     const allTasks = [];
-    getAllCats().forEach(c => {
-      (dayData[c.key] || []).forEach((t, idx) => {
-        allTasks.push({ cat: c, task: t, idx });
-      });
-    });
-
+    getAllCats().forEach(c => { (dayData[c.key]||[]).forEach((t, idx) => allTasks.push({ cat: c, task: t, idx })); });
     const block = document.createElement('div');
     block.className = 'tw-day-block';
-
     const isToday = dt.getTime() === today.getTime();
     const dow = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dt.getDay()];
     const { done, total } = dayTotals(key);
-    const pct = total > 0 ? Math.round(done / total * 100) : 0;
-
-    const headHTML = `
-      <div class="tw-day-head">
-        <div class="tw-day-label ${isToday ? 'today-label' : ''}">
-          ${isToday ? '★ ' : ''}${dow.toUpperCase()}, ${MONTH_NAMES[m].slice(0,3).toUpperCase()} ${d}
-        </div>
-        <div class="tw-day-pct">${total > 0 ? pct + '%' : '—'}</div>
-      </div>`;
-    block.innerHTML = headHTML;
-
+    const pct = total > 0 ? Math.round(done/total*100) : 0;
+    block.innerHTML = `<div class="tw-day-head"><div class="tw-day-label ${isToday?'today-label':''}">${isToday?'★ ':''}${dow.toUpperCase()}, ${MONTH_NAMES[m].slice(0,3).toUpperCase()} ${d}</div><div class="tw-day-pct">${total > 0 ? pct+'%' : '—'}</div></div>`;
     const taskDiv = document.createElement('div');
     taskDiv.className = 'tw-day-tasks';
-
     if (allTasks.length === 0) {
       taskDiv.innerHTML = '<div class="tw-empty">No tasks scheduled</div>';
     } else {
       allTasks.forEach(({ cat, task, idx }) => {
         const row = document.createElement('div');
         row.className = 'tw-task-item' + (task.done ? ' done' : '');
-
         const badge = document.createElement('div');
         badge.className = 'tw-cat-badge';
-        badge.style.background = hexAlpha(cat.color, 0.15);
-        badge.style.color = cat.color;
-        badge.textContent = cat.label.split(' ')[0]; // First word of category
-
+        badge.style.background = hexAlpha(cat.color, 0.15); badge.style.color = cat.color;
+        badge.textContent = cat.label.split(' ')[0];
         const txt = document.createElement('div');
         txt.className = 'tw-task-text' + (task.done ? ' done-text' : '');
         txt.textContent = task.text;
-
-        const recLbl = task.recur && task.recur !== 'none'
-          ? document.createElement('div') : null;
-        if (recLbl) {
-          recLbl.className = 'tw-recur-badge';
-          recLbl.textContent = recurLabel(task.recur, task.customDays);
-        }
-
-        // Checkbox — toggles task and refreshes view
+        const recLbl = task.recur && task.recur !== 'none' ? document.createElement('div') : null;
+        if (recLbl) { recLbl.className = 'tw-recur-badge'; recLbl.textContent = recurLabel(task.recur, task.customDays); }
         const cb = document.createElement('div');
         cb.className = 'task-cb' + (task.done ? ' checked' : '');
-        cb.style.setProperty('--cb-color', cat.color);
         cb.innerHTML = checkSVG();
         if (task.done) { cb.style.background = cat.color; cb.style.borderColor = cat.color; }
         cb.onclick = () => {
           const data = getDay(key);
           data[cat.key][idx].done = !data[cat.key][idx].done;
-          setDay(key, data);
-          renderTwoWeek();
-          renderDashboard();
+          setDay(key, data); renderTwoWeek(); renderDashboard();
         };
-
-        row.appendChild(cb);
-        row.appendChild(badge);
-        row.appendChild(txt);
+        row.appendChild(cb); row.appendChild(badge); row.appendChild(txt);
         if (recLbl) row.appendChild(recLbl);
         taskDiv.appendChild(row);
       });
     }
-
     block.appendChild(taskDiv);
     list.appendChild(block);
   }
@@ -1404,26 +1181,16 @@ function renderTwoWeek() {
 function openPanel(key, y, m, day) {
   activeDateKey = key;
   propagateRecurring(key);
-
-  // Initialize addState for this open session
   addState = {};
   getAllCats().forEach(c => { addState[c.key] = { recur: 'none', customDays: [] }; });
-
   const dt = new Date(y, m, day);
   const dow = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dt.getDay()];
-  document.getElementById('panel-date-text').textContent =
-    `${MONTH_NAMES[m].slice(0,3).toUpperCase()} ${day}, ${y}`;
+  document.getElementById('panel-date-text').textContent = `${MONTH_NAMES[m].slice(0,3).toUpperCase()} ${day}, ${y}`;
   document.getElementById('panel-day-name').textContent = dow.toUpperCase();
-
-  // Apply persisted sort pill highlight when panel opens
   updateSortPills(getPanelSort());
-
   renderPanel();
-
   document.getElementById('overlay').classList.add('open');
   document.getElementById('side-panel').classList.add('open');
-
-  // Highlight selected cell
   document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected'));
   const sel = document.querySelector(`[data-key="${key}"]`);
   if (sel) sel.classList.add('selected');
@@ -1440,174 +1207,109 @@ function renderPanel() {
   if (!activeDateKey) return;
   const data = getDay(activeDateKey);
   const { done, total } = dayTotals(activeDateKey);
-  const pct = total > 0 ? Math.round(done / total * 100) : 0;
-
-  document.getElementById('overall-bar').style.width = pct + '%';
-  document.getElementById('overall-pct-text').textContent =
-    `${done} of ${total} tasks complete — ${pct}%`;
-
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+  document.getElementById('overall-bar').style.width = Math.max(0, pct) + '%';
+  document.getElementById('overall-pct-text').textContent = `${done} of ${total} tasks complete — ${pct}%`;
   const container = document.getElementById('panel-cats');
   container.innerHTML = '';
-
-  // Use getSortedCats so categories render in the user's chosen order
   getSortedCats(data).forEach(cat => {
     const tasks = data[cat.key] || [];
     const catDone = tasks.filter(t => t.done).length;
-    const catPct  = tasks.length > 0 ? Math.round(catDone / tasks.length * 100) : 0;
-
+    const catPct  = tasks.length > 0 ? Math.round(catDone/tasks.length*100) : 0;
     const block = document.createElement('div');
     block.className = 'cat-block';
-
-    // Category header
     const header = document.createElement('div');
     header.className = 'cat-header';
-    header.innerHTML = `
-      <div class="cat-title">
-        <div class="cat-dot" style="background:${cat.color}"></div>
-        ${cat.label}
-      </div>
-      <div class="cat-pct-pill" style="background:${hexAlpha(cat.color,0.15)};color:${cat.color}">${catPct}%</div>`;
+    header.innerHTML = `<div class="cat-title"><div class="cat-dot" style="background:${cat.color}"></div>${cat.label}</div><div class="cat-pct-pill" style="background:${hexAlpha(cat.color,0.15)};color:${cat.color}">${catPct}%</div>`;
     block.appendChild(header);
-
-    // Task list
     const taskList = document.createElement('div');
     taskList.className = 'task-list';
-    tasks.forEach((t, i) => {
-      taskList.appendChild(makeTaskEl(cat, t, i));
-    });
+    tasks.forEach((t, i) => taskList.appendChild(makeTaskEl(cat, t, i)));
     block.appendChild(taskList);
-
-    // Add task area
     const addArea = document.createElement('div');
     addArea.className = 'add-task-area';
-
-    // Input row
     const addRow = document.createElement('div');
     addRow.className = 'add-task-row';
     const inp = document.createElement('input');
-    inp.className = 'add-task-input';
-    inp.placeholder = 'Add task…';
-    inp.id = 'inp-' + cat.key;
+    inp.className = 'add-task-input'; inp.placeholder = 'Add task…'; inp.id = 'inp-' + cat.key;
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(cat.key); });
     const addBtn = document.createElement('button');
-    addBtn.className = 'add-task-btn'; addBtn.textContent = '+';
-    addBtn.onclick = () => addTask(cat.key);
+    addBtn.className = 'add-task-btn'; addBtn.textContent = '+'; addBtn.onclick = () => addTask(cat.key);
     addRow.appendChild(inp); addRow.appendChild(addBtn);
     addArea.appendChild(addRow);
-
-    // Recurrence picker
     const recurRow = document.createElement('div');
     recurRow.className = 'recur-row';
+    const customRow = document.createElement('div');
+    customRow.className = 'custom-days-row';
     RECUR_OPTIONS.forEach(ro => {
       const btn = document.createElement('button');
       btn.className = 'recur-btn' + (addState[cat.key].recur === ro.key ? ' selected' : '');
-      btn.textContent = ro.label;
-      btn.dataset.val = ro.key;
+      btn.textContent = ro.label; btn.dataset.val = ro.key;
       btn.onclick = () => {
         addState[cat.key].recur = ro.key;
-        // Refresh just the recur buttons for this cat
-        recurRow.querySelectorAll('.recur-btn').forEach(b => {
-          b.classList.toggle('selected', b.dataset.val === ro.key);
-        });
-        // Show/hide custom days
+        recurRow.querySelectorAll('.recur-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === ro.key));
         customRow.classList.toggle('visible', ro.key === 'custom');
       };
       recurRow.appendChild(btn);
     });
     addArea.appendChild(recurRow);
-
-    // Custom day picker (hidden until 'Custom' selected)
-    const customRow = document.createElement('div');
-    customRow.className = 'custom-days-row';
     DOW_LABELS.forEach((dl, di) => {
       const btn = document.createElement('button');
-      btn.className = 'day-pick-btn';
-      btn.textContent = dl;
+      btn.className = 'day-pick-btn'; btn.textContent = dl;
       btn.onclick = () => {
         const st = addState[cat.key];
-        if (st.customDays.includes(di)) {
-          st.customDays = st.customDays.filter(x => x !== di);
-        } else {
-          st.customDays.push(di);
-        }
+        if (st.customDays.includes(di)) st.customDays = st.customDays.filter(x => x !== di);
+        else st.customDays.push(di);
         btn.classList.toggle('on', st.customDays.includes(di));
       };
       customRow.appendChild(btn);
     });
     addArea.appendChild(customRow);
-
     block.appendChild(addArea);
     container.appendChild(block);
   });
-
   refreshCalCell(activeDateKey);
   renderDashboard();
 }
 
-// Build a single task row element in the side panel
 function makeTaskEl(cat, task, idx) {
   const item = document.createElement('div');
   item.className = 'task-item' + (task.done ? ' done' : '');
-
-  // Checkbox
   const cb = document.createElement('div');
   cb.className = 'task-cb' + (task.done ? ' checked' : '');
   if (task.done) { cb.style.background = cat.color; cb.style.borderColor = cat.color; }
-  cb.innerHTML = checkSVG();
-  cb.onclick = () => toggleTask(cat.key, idx);
-
-  // Text + recurrence info
-  const info = document.createElement('div');
-  info.className = 'task-info';
+  cb.innerHTML = checkSVG(); cb.onclick = () => toggleTask(cat.key, idx);
+  const info = document.createElement('div'); info.className = 'task-info';
   const txt = document.createElement('div');
-  txt.className = 'task-text' + (task.done ? ' done-text' : '');
-  txt.textContent = task.text;
+  txt.className = 'task-text' + (task.done ? ' done-text' : ''); txt.textContent = task.text;
   info.appendChild(txt);
   if (task.recur && task.recur !== 'none') {
-    const rl = document.createElement('div');
-    rl.className = 'task-recur-label';
-    rl.textContent = recurLabel(task.recur, task.customDays);
-    info.appendChild(rl);
+    const rl = document.createElement('div'); rl.className = 'task-recur-label';
+    rl.textContent = recurLabel(task.recur, task.customDays); info.appendChild(rl);
   }
-
-  // Delete button
   const del = document.createElement('button');
-  del.className = 'task-del'; del.textContent = '×';
-  del.onclick = () => requestDeleteTask(cat.key, idx, task);
-
+  del.className = 'task-del'; del.textContent = '×'; del.onclick = () => requestDeleteTask(cat.key, idx, task);
   item.appendChild(cb); item.appendChild(info); item.appendChild(del);
   return item;
 }
 
-/* ── Task CRUD ── */
-
 function addTask(catKey) {
   const inp = document.getElementById('inp-' + catKey);
-  const text = inp.value.trim();
-  if (!text) return;
-
+  const text = inp.value.trim(); if (!text) return;
   const st = addState[catKey];
-  const recur  = st.recur;
-  const customDays = [...st.customDays];
-
+  const recur = st.recur, customDays = [...st.customDays];
   const data = getDay(activeDateKey);
   if (!data[catKey]) data[catKey] = [];
-
-  // If recurring, save a template so future days auto-populate
   if (recur !== 'none') {
     const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
     const templates = getRecurring();
     templates.push({ id: templateId, catKey, text, recur, customDays, startKey: activeDateKey });
     saveRecurring(templates);
-
     data[catKey].push({ text, done: false, recurId: templateId, recur, customDays });
   } else {
     data[catKey].push({ text, done: false, recur: 'none', customDays: [] });
   }
-
-  setDay(activeDateKey, data);
-  inp.value = '';
-  // Reset recur state for this cat
+  setDay(activeDateKey, data); inp.value = '';
   addState[catKey] = { recur: 'none', customDays: [] };
   renderPanel();
 }
@@ -1615,32 +1317,19 @@ function addTask(catKey) {
 function toggleTask(catKey, idx) {
   const data = getDay(activeDateKey);
   data[catKey][idx].done = !data[catKey][idx].done;
-  setDay(activeDateKey, data);
-  renderPanel();
+  setDay(activeDateKey, data); renderPanel();
 }
 
-// If recurring, ask user which scope to delete
 function requestDeleteTask(catKey, idx, task) {
   if (task.recurId) {
-    // Show confirm modal
     document.getElementById('confirm-title').textContent = 'Delete Recurring Task';
-    document.getElementById('confirm-msg').textContent =
-      `"${task.text}" repeats ${task.recur}. What would you like to delete?`;
-    const btns = document.getElementById('confirm-btns');
-    btns.innerHTML = '';
-
-    const b1 = document.createElement('button');
-    b1.className = 'confirm-btn secondary'; b1.textContent = 'This day only';
+    document.getElementById('confirm-msg').textContent = `"${task.text}" repeats ${task.recur}. What would you like to delete?`;
+    const btns = document.getElementById('confirm-btns'); btns.innerHTML = '';
+    const b1 = document.createElement('button'); b1.className = 'confirm-btn secondary'; b1.textContent = 'This day only';
     b1.onclick = () => { deleteTask(catKey, idx, false, task.recurId); closeConfirm(); };
-
-    const b2 = document.createElement('button');
-    b2.className = 'confirm-btn primary'; b2.textContent = 'This & all future';
+    const b2 = document.createElement('button'); b2.className = 'confirm-btn primary'; b2.textContent = 'This & all future';
     b2.onclick = () => { deleteTask(catKey, idx, true, task.recurId); closeConfirm(); };
-
-    const b3 = document.createElement('button');
-    b3.className = 'confirm-btn cancel'; b3.textContent = 'Cancel';
-    b3.onclick = closeConfirm;
-
+    const b3 = document.createElement('button'); b3.className = 'confirm-btn cancel'; b3.textContent = 'Cancel'; b3.onclick = closeConfirm;
     btns.appendChild(b1); btns.appendChild(b2); btns.appendChild(b3);
     document.getElementById('confirm-modal').classList.add('open');
   } else {
@@ -1650,21 +1339,14 @@ function requestDeleteTask(catKey, idx, task) {
 
 function deleteTask(catKey, idx, deleteFuture, recurId) {
   const data = getDay(activeDateKey);
-  data[catKey].splice(idx, 1);
-  setDay(activeDateKey, data);
-
-  // If deleting all future, remove the recurring template
+  data[catKey].splice(idx, 1); setDay(activeDateKey, data);
   if (deleteFuture && recurId) {
     let templates = getRecurring();
-    templates = templates.filter(t => t.id !== recurId);
-    saveRecurring(templates);
-    // Also scrub from already-populated future days
-    // (walk forward 90 days and remove matching tasks)
+    templates = templates.filter(t => t.id !== recurId); saveRecurring(templates);
     for (let i = 1; i <= 90; i++) {
       const dt = new Date(today); dt.setDate(today.getDate() + i);
       const fkey = dateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
-      const fdata = ls_get('day_' + fkey);
-      if (!fdata) continue;
+      const fdata = ls_get('day_' + fkey); if (!fdata) continue;
       let changed = false;
       Object.keys(fdata).forEach(k => {
         const before = fdata[k].length;
@@ -1677,38 +1359,28 @@ function deleteTask(catKey, idx, deleteFuture, recurId) {
   renderPanel();
 }
 
-function closeConfirm() {
-  document.getElementById('confirm-modal').classList.remove('open');
-}
+function closeConfirm() { document.getElementById('confirm-modal').classList.remove('open'); }
 
-/* ── Calendar cell refresh after panel edits ── */
 function refreshCalCell(key) {
   const cell = document.querySelector(`[data-key="${key}"]`);
   if (!cell) return;
   cell.querySelectorAll('.day-pct-badge, .day-dot-row').forEach(el => el.remove());
-
   const dayData = getDay(key);
-  const dotRow = document.createElement('div');
-  dotRow.className = 'day-dot-row';
+  const dotRow = document.createElement('div'); dotRow.className = 'day-dot-row';
   getAllCats().forEach(c => {
-    if ((dayData[c.key] || []).length > 0) {
-      const dot = document.createElement('div');
-      dot.className = 'day-dot';
-      dot.style.background = c.color;
-      dotRow.appendChild(dot);
+    if ((dayData[c.key]||[]).length > 0) {
+      const dot = document.createElement('div'); dot.className = 'day-dot'; dot.style.background = c.color; dotRow.appendChild(dot);
     }
   });
   cell.appendChild(dotRow);
-
   const cellDate = parseKey(key);
   if (cellDate <= today) {
     const { done, total } = dayTotals(key);
     if (total > 0) {
-      const pct = Math.round(done / total * 100);
+      const pct = Math.round(done/total*100);
       const badge = document.createElement('div');
       badge.className = 'day-pct-badge ' + (pct >= 80 ? 'high' : pct >= 40 ? 'mid' : 'low');
-      badge.textContent = pct + '%';
-      cell.appendChild(badge);
+      badge.textContent = pct + '%'; cell.appendChild(badge);
     }
   }
 }
@@ -1716,41 +1388,20 @@ function refreshCalCell(key) {
 /* ============================================================
    SETTINGS MODAL
    ============================================================ */
-function openSettings() {
-  renderSettings();
-  document.getElementById('settings-overlay').classList.add('open');
-}
+function openSettings() { renderSettings(); document.getElementById('settings-overlay').classList.add('open'); }
 function closeSettings() {
   document.getElementById('settings-overlay').classList.remove('open');
-  // Refresh everything to reflect name/deletion changes
-  renderDashboard();
-  buildCalendar();
+  renderDashboard(); buildCalendar();
 }
-function maybeCloseSettings(e) {
-  if (e.target === document.getElementById('settings-overlay')) closeSettings();
-}
+function maybeCloseSettings(e) { if (e.target === document.getElementById('settings-overlay')) closeSettings(); }
 
-/* ── Inline delete confirmation (replaces browser confirm() which conflicts with modal overlay) ──
-   Shows a small inline bar inside the settings row asking "Sure? Yes / Cancel"
-   This avoids the browser confirm() dialog closing the modal via the overlay click handler. */
 function showInlineConfirm(parentRow, message, onConfirm) {
-  // Remove any existing confirm bars first
   document.querySelectorAll('.inline-confirm').forEach(el => el.remove());
-
   const bar = document.createElement('div');
   bar.className = 'inline-confirm';
-  bar.innerHTML = `
-    <span class="inline-confirm-msg">${message}</span>
-    <button class="inline-confirm-yes">Delete</button>
-    <button class="inline-confirm-cancel">Cancel</button>`;
-
-  bar.querySelector('.inline-confirm-yes').onclick = () => {
-    bar.remove();
-    onConfirm();
-  };
+  bar.innerHTML = `<span class="inline-confirm-msg">${message}</span><button class="inline-confirm-yes">Delete</button><button class="inline-confirm-cancel">Cancel</button>`;
+  bar.querySelector('.inline-confirm-yes').onclick = () => { bar.remove(); onConfirm(); };
   bar.querySelector('.inline-confirm-cancel').onclick = () => bar.remove();
-
-  // Insert below the row
   parentRow.insertAdjacentElement('afterend', bar);
 }
 
@@ -1760,336 +1411,174 @@ function renderSettings() {
   const settings = getSettings();
   const roles = getRoles();
 
-  /* ── Base categories section ──
-     To prevent deletion of a base category, remove the delBtn block below. */
+  const windowSection = document.createElement('div');
+  windowSection.innerHTML = '<div class="settings-section-label">Dashboard Date Window</div>';
+  const windowBox = document.createElement('div');
+  windowBox.className = 'date-window-box';
+
+  const currentWindow = getDateWindow();
+  const startSelect = document.createElement('select');
+  startSelect.className = 'date-window-select';
+  startSelect.title = 'Window start month';
+
+  for (let delta = -12; delta <= 12; delta++) {
+    const raw = today.getMonth() + delta;
+    const y   = today.getFullYear() + Math.floor(raw / 12);
+    const m   = ((raw % 12) + 12) % 12;
+    const opt = document.createElement('option');
+    opt.value = JSON.stringify({ year: y, month: m });
+    opt.textContent = `${MONTH_NAMES[m].slice(0,3)} ${y}`;
+    if (y === currentWindow.year && m === currentWindow.month) opt.selected = true;
+    startSelect.appendChild(opt);
+  }
+
+  const endLabel = document.createElement('div');
+  endLabel.className = 'date-window-end-label';
+  function updateEndLabel() {
+    const val = JSON.parse(startSelect.value);
+    const endRaw = val.month + 2;
+    const ey = val.year + Math.floor(endRaw / 12);
+    const em = endRaw % 12;
+    endLabel.textContent = `→ ${MONTH_NAMES[em].slice(0,3)} ${ey}`;
+  }
+  updateEndLabel();
+  startSelect.addEventListener('change', updateEndLabel);
+
+  const applyBtn = document.createElement('button');
+  applyBtn.className = 'date-window-apply-btn';
+  applyBtn.textContent = 'Apply';
+  applyBtn.onclick = () => {
+    const val = JSON.parse(startSelect.value);
+    saveDateWindow(val.year, val.month);
+    applyBtn.textContent = '✓ Saved';
+    setTimeout(() => { applyBtn.textContent = 'Apply'; }, 1400);
+    updateEndLabel();
+    renderDashboard(); buildCalendar();
+  };
+
+  const dwRow = document.createElement('div');
+  dwRow.className = 'date-window-row';
+  dwRow.appendChild(startSelect); dwRow.appendChild(endLabel); dwRow.appendChild(applyBtn);
+  windowBox.appendChild(dwRow);
+
+  const dwNote = document.createElement('div');
+  dwNote.className = 'date-window-note';
+  dwNote.textContent = 'Sets the 3-month window shown on Dashboard and Calendar. Persisted across sessions.';
+  windowBox.appendChild(dwNote);
+  windowSection.appendChild(windowBox);
+  body.appendChild(windowSection);
+
   const baseSection = document.createElement('div');
   baseSection.innerHTML = '<div class="settings-section-label">Base Categories</div>';
-
   BASE_CATS.forEach(c => {
-    const row = document.createElement('div');
-    row.className = 'settings-row';
-
-    const dot = document.createElement('div');
-    dot.className = 'settings-color-dot';
-    dot.style.background = c.color;
-
-    const inp = document.createElement('input');
-    inp.className = 'settings-input';
-    inp.value = settings[c.key] || c.label;
-    inp.placeholder = c.label;
-
-    // Save renamed label
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
-    saveBtn.onclick = () => {
-      const s = getSettings();
-      s[c.key] = inp.value.trim() || c.label;
-      saveSettings(s);
-      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200);
-    };
-
-    // Delete base category button
-    // Deletion hides the category from all views and removes its task data.
-    // Deleted base categories are tracked in settings under key '_deleted'.
-    const delBtn = document.createElement('button');
-    delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
-    delBtn.title = `Delete "${c.label}" category from all views`;
-    delBtn.onclick = () => {
-      showInlineConfirm(row,
-        `Delete "${inp.value || c.label}"? Removes all its tasks.`,
-        () => { deleteBaseCat(c.key); renderSettings(); }
-      );
-    };
-
+    const row = document.createElement('div'); row.className = 'settings-row';
+    const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = c.color;
+    const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = settings[c.key]||c.label; inp.placeholder = c.label;
+    const saveBtn = document.createElement('button'); saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
+    saveBtn.onclick = () => { const s = getSettings(); s[c.key] = inp.value.trim()||c.label; saveSettings(s); saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200); };
+    const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
+    delBtn.onclick = () => showInlineConfirm(row, `Delete "${inp.value||c.label}"? Removes all its tasks.`, () => { deleteBaseCat(c.key); renderSettings(); });
     row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
     baseSection.appendChild(row);
   });
   body.appendChild(baseSection);
 
-  /* ── Custom Categories section ──
-     User-added base categories. Stored in lt_custom_cats.
-     Colors cycle through ROLE_COLORS palette.
-     To change the color palette: edit ROLE_COLORS at the top of the script. */
   const customCatsNow = getCustomCats();
   const customSection = document.createElement('div');
   customSection.innerHTML = '<div class="settings-section-label">Custom Categories</div>';
-
-  customCatsNow.forEach((c, i) => {
-    const row = document.createElement('div');
-    row.className = 'settings-row';
-
-    const dot = document.createElement('div');
-    dot.className = 'settings-color-dot';
-    dot.style.background = c.color;
-
-    const inp = document.createElement('input');
-    inp.className = 'settings-input';
-    inp.value = c.name;
-    inp.placeholder = 'Category name';
-
-    // Save renamed label
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
-    saveBtn.onclick = () => {
-      const cs = getCustomCats();
-      const target = cs.find(x => x.id === c.id);
-      if (target) { target.name = inp.value.trim() || c.name; saveCustomCats(cs); }
-      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200);
-    };
-
-    // Delete custom category
-    const delBtn = document.createElement('button');
-    delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
-    delBtn.title = `Delete "${c.name}" and all its tasks`;
-    delBtn.onclick = () => {
-      showInlineConfirm(row,
-        `Delete "${inp.value || c.name}"? Removes all its tasks.`,
-        () => { deleteCustomCat(c.id); renderSettings(); }
-      );
-    };
-
+  customCatsNow.forEach(c => {
+    const row = document.createElement('div'); row.className = 'settings-row';
+    const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = c.color;
+    const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = c.name; inp.placeholder = 'Category name';
+    const saveBtn = document.createElement('button'); saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
+    saveBtn.onclick = () => { const cs = getCustomCats(); const t = cs.find(x => x.id===c.id); if(t){t.name=inp.value.trim()||c.name; saveCustomCats(cs);} saveBtn.textContent='✓'; setTimeout(()=>{saveBtn.textContent='Save';},1200); };
+    const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
+    delBtn.onclick = () => showInlineConfirm(row, `Delete "${inp.value||c.name}"? Removes all its tasks.`, () => { deleteCustomCat(c.id); renderSettings(); });
     row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
     customSection.appendChild(row);
   });
-
-  // Add new custom category row
-  const addCatRow = document.createElement('div');
-  addCatRow.className = 'add-role-row';
-  const addCatInp = document.createElement('input');
-  addCatInp.className = 'settings-input';
-  addCatInp.placeholder = 'New category name…';
-  const addCatBtn = document.createElement('button');
-  addCatBtn.className = 'add-role-btn'; addCatBtn.textContent = '+ Add Category';
+  const addCatRow = document.createElement('div'); addCatRow.className = 'add-role-row';
+  const addCatInp = document.createElement('input'); addCatInp.className = 'settings-input'; addCatInp.placeholder = 'New category name…';
+  const addCatBtn = document.createElement('button'); addCatBtn.className = 'add-role-btn'; addCatBtn.textContent = '+ Add Category';
   addCatBtn.onclick = () => {
-    const name = addCatInp.value.trim();
-    if (!name) return;
-    const cs = getCustomCats();
-    // Cycle colors — offset by number of roles so colors don't clash
-    const colorIdx = (cs.length + getRoles().length) % ROLE_COLORS.length;
-    cs.push({ id: 'cat_' + Date.now(), name, color: ROLE_COLORS[colorIdx] });
-    saveCustomCats(cs);
-    addCatInp.value = '';
-    renderSettings();
+    const name = addCatInp.value.trim(); if (!name) return;
+    const cs = getCustomCats(); cs.push({ id:'cat_'+Date.now(), name, color: ROLE_COLORS[(cs.length+getRoles().length)%ROLE_COLORS.length] });
+    saveCustomCats(cs); addCatInp.value=''; renderSettings();
   };
-  addCatInp.addEventListener('keydown', e => { if (e.key === 'Enter') addCatBtn.click(); });
+  addCatInp.addEventListener('keydown', e => { if(e.key==='Enter') addCatBtn.click(); });
   addCatRow.appendChild(addCatInp); addCatRow.appendChild(addCatBtn);
   customSection.appendChild(addCatRow);
   body.appendChild(customSection);
 
-  /* ── Roles section ── */
   const rolesSection = document.createElement('div');
   rolesSection.innerHTML = `<div class="settings-section-label">My Roles (${roles.length}/${MAX_ROLES})</div>`;
-
-  roles.forEach((r, i) => {
-    const row = document.createElement('div');
-    row.className = 'settings-row';
-
-    const dot = document.createElement('div');
-    dot.className = 'settings-color-dot';
-    dot.style.background = r.color;
-
-    const inp = document.createElement('input');
-    inp.className = 'settings-input';
-    inp.value = r.name;
-    inp.placeholder = 'Role name';
-
-    // Save name button
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
-    saveBtn.onclick = () => {
-      // Re-fetch roles by id (not index) to avoid stale closure bug
-      const rs = getRoles();
-      const target = rs.find(x => x.id === r.id);
-      if (target) { target.name = inp.value.trim() || r.name; saveRoles(rs); }
-      saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200);
-    };
-
-    // Delete role button — uses inline confirm to avoid modal conflict
-    const delBtn = document.createElement('button');
-    delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
-    delBtn.title = 'Delete this role (removes from all days & dashboard)';
-    delBtn.onclick = () => {
-      showInlineConfirm(row,
-        `Delete role "${r.name}"? Removes all its tasks.`,
-        () => { deleteRole(r.id); renderSettings(); }
-      );
-    };
-
+  roles.forEach(r => {
+    const row = document.createElement('div'); row.className = 'settings-row';
+    const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = r.color;
+    const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = r.name; inp.placeholder = 'Role name';
+    const saveBtn = document.createElement('button'); saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
+    saveBtn.onclick = () => { const rs=getRoles(); const t=rs.find(x=>x.id===r.id); if(t){t.name=inp.value.trim()||r.name; saveRoles(rs);} saveBtn.textContent='✓'; setTimeout(()=>{saveBtn.textContent='Save';},1200); };
+    const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
+    delBtn.onclick = () => showInlineConfirm(row, `Delete role "${r.name}"? Removes all its tasks.`, () => { deleteRole(r.id); renderSettings(); });
     row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
     rolesSection.appendChild(row);
   });
-
-  // Add role input (shown only if under max)
   if (roles.length < MAX_ROLES) {
-    const addRow = document.createElement('div');
-    addRow.className = 'add-role-row';
-    const addInp = document.createElement('input');
-    addInp.className = 'settings-input'; addInp.placeholder = 'New role name…';
-    addInp.id = 'new-role-input';
-    const addBtn = document.createElement('button');
-    addBtn.className = 'add-role-btn'; addBtn.textContent = '+ Add Role';
+    const addRow = document.createElement('div'); addRow.className = 'add-role-row';
+    const addInp = document.createElement('input'); addInp.className = 'settings-input'; addInp.placeholder = 'New role name…'; addInp.id = 'new-role-input';
+    const addBtn = document.createElement('button'); addBtn.className = 'add-role-btn'; addBtn.textContent = '+ Add Role';
     addBtn.onclick = () => {
-      const name = addInp.value.trim();
-      if (!name) return;
-      const rs = getRoles();
-      if (rs.length >= MAX_ROLES) return;
-      rs.push({
-        id: 'role_' + Date.now(),
-        name,
-        color: ROLE_COLORS[rs.length % ROLE_COLORS.length]
-      });
-      saveRoles(rs);
-      addInp.value = '';
-      renderSettings();
+      const name = addInp.value.trim(); if(!name) return;
+      const rs = getRoles(); if(rs.length>=MAX_ROLES) return;
+      rs.push({ id:'role_'+Date.now(), name, color: ROLE_COLORS[rs.length%ROLE_COLORS.length] });
+      saveRoles(rs); addInp.value=''; renderSettings();
     };
-    addInp.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
+    addInp.addEventListener('keydown', e => { if(e.key==='Enter') addBtn.click(); });
     addRow.appendChild(addInp); addRow.appendChild(addBtn);
     rolesSection.appendChild(addRow);
-    const note = document.createElement('div');
-    note.className = 'role-limit-note';
-    note.textContent = `${MAX_ROLES - roles.length} role slot(s) remaining`;
-    rolesSection.appendChild(note);
+    const note = document.createElement('div'); note.className = 'role-limit-note'; note.textContent = `${MAX_ROLES - roles.length} role slot(s) remaining`; rolesSection.appendChild(note);
   } else {
-    const note = document.createElement('div');
-    note.className = 'role-limit-note';
-    note.textContent = `Maximum of ${MAX_ROLES} roles reached`;
-    rolesSection.appendChild(note);
+    const note = document.createElement('div'); note.className = 'role-limit-note'; note.textContent = `Maximum of ${MAX_ROLES} roles reached`; rolesSection.appendChild(note);
   }
-
   body.appendChild(rolesSection);
 }
 
-// ── deleteBaseCat ─────────────────────────────────────────────
-// Marks a base category as deleted in settings and purges its
-// task data from all stored days and recurring templates.
-// The BASE_CATS array itself is not mutated (it lives in JS source);
-// deletion is tracked via settings._deleted so getAllCats() skips it.
 function deleteBaseCat(catKey) {
-  // Mark as deleted in settings
-  const s = getSettings();
-  if (!s._deleted) s._deleted = [];
-  if (!s._deleted.includes(catKey)) s._deleted.push(catKey);
-  saveSettings(s);
-
-  // Purge task data from all stored days
-  Object.keys(localStorage).forEach(k => {
-    if (!k.startsWith('lt_day_')) return;
-    try {
-      const raw = JSON.parse(localStorage.getItem(k));
-      if (!raw || !(catKey in raw)) return;
-      delete raw[catKey];
-      localStorage.setItem(k, JSON.stringify(raw));
-    } catch(e) {}
-  });
-
-  // Purge recurring templates for this category
-  let templates = getRecurring();
-  templates = templates.filter(t => t.catKey !== catKey);
-  saveRecurring(templates);
+  const s = getSettings(); if (!s._deleted) s._deleted = []; if (!s._deleted.includes(catKey)) s._deleted.push(catKey); saveSettings(s);
+  Object.keys(localStorage).forEach(k => { if (!k.startsWith('lt_day_')) return; try { const raw = JSON.parse(localStorage.getItem(k)); if (!raw||!(catKey in raw)) return; delete raw[catKey]; localStorage.setItem(k, JSON.stringify(raw)); } catch(e){} });
+  saveRecurring(getRecurring().filter(t => t.catKey !== catKey));
 }
-
-// ── deleteCustomCat ──────────────────────────────────────────
-// Permanently removes a custom base category and all its task data.
 function deleteCustomCat(catId) {
-  let cs = getCustomCats();
-  cs = cs.filter(c => c.id !== catId);
-  saveCustomCats(cs);
-
-  // Purge task data from all stored days
-  Object.keys(localStorage).forEach(k => {
-    if (!k.startsWith('lt_day_')) return;
-    try {
-      const raw = JSON.parse(localStorage.getItem(k));
-      if (!raw || !(catId in raw)) return;
-      delete raw[catId];
-      localStorage.setItem(k, JSON.stringify(raw));
-    } catch(e) {}
-  });
-
-  // Purge recurring templates for this category
-  let templates = getRecurring();
-  templates = templates.filter(t => t.catKey !== catId);
-  saveRecurring(templates);
+  saveCustomCats(getCustomCats().filter(c => c.id !== catId));
+  Object.keys(localStorage).forEach(k => { if (!k.startsWith('lt_day_')) return; try { const raw = JSON.parse(localStorage.getItem(k)); if (!raw||!(catId in raw)) return; delete raw[catId]; localStorage.setItem(k, JSON.stringify(raw)); } catch(e){} });
+  saveRecurring(getRecurring().filter(t => t.catKey !== catId));
 }
-
-// ── deleteRole ────────────────────────────────────────────────
-// Permanently removes a role and all its associated task data.
 function deleteRole(roleId) {
-  let roles = getRoles();
-  roles = roles.filter(r => r.id !== roleId);
-  saveRoles(roles);
-
-  // Purge role tasks from all stored days
-  Object.keys(localStorage).forEach(k => {
-    if (!k.startsWith('lt_day_')) return;
-    try {
-      const raw = JSON.parse(localStorage.getItem(k));
-      if (!raw || !(roleId in raw)) return;
-      delete raw[roleId];
-      localStorage.setItem(k, JSON.stringify(raw));
-    } catch(e) {}
-  });
-
-  // Purge recurring templates for this role
-  let templates = getRecurring();
-  templates = templates.filter(t => t.catKey !== roleId);
-  saveRecurring(templates);
+  saveRoles(getRoles().filter(r => r.id !== roleId));
+  Object.keys(localStorage).forEach(k => { if (!k.startsWith('lt_day_')) return; try { const raw = JSON.parse(localStorage.getItem(k)); if (!raw||!(roleId in raw)) return; delete raw[roleId]; localStorage.setItem(k, JSON.stringify(raw)); } catch(e){} });
+  saveRecurring(getRecurring().filter(t => t.catKey !== roleId));
 }
 
 /* ============================================================
    HELPERS
    ============================================================ */
-
-// Returns all active categories in unified format: { key, label, color }
-// Order: active built-in base cats → custom base cats → roles
-// Skips built-in base cats that have been deleted via Settings.
 function getAllCats() {
-  const settings = getSettings();
-  const deleted = settings._deleted || [];
-
-  // Built-in base cats (minus deleted)
-  const base = BASE_CATS
-    .filter(c => !deleted.includes(c.key))
-    .map(c => ({
-      key:   c.key,
-      label: settings[c.key] || c.label,
-      color: c.color
-    }));
-
-  // Custom user-added base cats
-  const custom = getCustomCats().map(c => ({
-    key:   c.id,
-    label: c.name,
-    color: c.color
-  }));
-
-  // Roles
-  const roles = getRoles().map(r => ({
-    key:   r.id,
-    label: r.name,
-    color: r.color
-  }));
-
+  const settings = getSettings(); const deleted = settings._deleted || [];
+  const base   = BASE_CATS.filter(c => !deleted.includes(c.key)).map(c => ({ key: c.key, label: settings[c.key]||c.label, color: c.color }));
+  const custom = getCustomCats().map(c => ({ key: c.id, label: c.name, color: c.color }));
+  const roles  = getRoles().map(r => ({ key: r.id, label: r.name, color: r.color }));
   return [...base, ...custom, ...roles];
 }
-
-// SVG checkmark used in checkboxes
 function checkSVG() {
-  return `<svg width="10" height="8" viewBox="0 0 10 8">
-    <polyline points="1,4 4,7 9,1" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
-  </svg>`;
+  return `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
-
-// Convert hex color to rgba with alpha
 function hexAlpha(hex, alpha) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
 /* ============================================================
-   INIT — runs on page load
+   INIT
    ============================================================ */
 renderDashboard();
 </script>
