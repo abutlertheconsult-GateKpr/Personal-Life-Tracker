@@ -769,7 +769,7 @@ function calcDeficitPct(catKey, windowDays) {
   const missed = totalTasks - doneTasks;
   const score  = (doneTasks - missed) + todayDoneBonus;
   const pct    = Math.round((score / combinedTotal) * 100);
-  return { pct, done: doneTasks + todayDoneBonus, total: totalTasks, hasPastData: true };
+  return {pct, done: doneTasks + todayDoneBonus, total: totalTasks, missed: totalTasks - doneTasks, hasPastData: true};
 }
  
 /* ============================================================
@@ -905,8 +905,7 @@ function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
   const hasFlag   = incompleteTodayCount > 0;
   const allDoneToday = todayArr.length > 0 && incompleteTodayCount === 0;
  
-  const missedCount = total > 0 ? (total - done) : 0;
-  const deficitNote = (isNeg || missedCount > 0 || done >= missedCount) ? `<div class="stat-deficit-note">↓ ${done} missed</div>` : '';
+  const deficitNote = (isNeg || missedCount > 0 || done >= missedCount) ? `<div class="stat-deficit-note">↓ ${missedCount} missed</div>` : '';
  
   const card = document.createElement('div');
   card.className = 'stat-card';
