@@ -725,23 +725,44 @@ function dayTotals(key) {
    ============================================================ */
 function calcDeficitPct(catKey, windowDays) {
   let totalTasks = 0, doneTasks = 0, hasPastData = false;
+  // Today's completed tasks: each done = +1, each incomplete = 0 (no penalty while live)
+  // We model this by only counting done tasks from today toward the score,
+  // treating each as if it were a "task with no missed counterpart".
+  // Mechanically: score += doneTodayCount (not subject to the missed penalty).
+  let todayDoneBonus = 0;
   windowDays.forEach(key => {
     const dt = parseKey(key);
-    if (dt >= today) return;
+    const isToday = dt.getTime() === today.getTime();
+    if (dt > today) return;  // future → skip
     propagateRecurring(key);
     const raw = ls_get('day_' + key);
     if (!raw) return;
     const arr = raw[catKey] || [];
     if (arr.length === 0) return;
+    if (isToday) {
+      // Only completed tasks from today contribute; incomplete are neutral
+      const doneToday = arr.filter(t => t.done).length;
+      if (doneToday > 0) {
+        todayDoneBonus += doneToday;
+        hasPastData = true;
+      }
+      return;
+    }
+    // Past days: full deficit logic
     hasPastData = true;
     totalTasks += arr.length;
     doneTasks  += arr.filter(t => t.done).length;
   });
-  if (!hasPastData || totalTasks === 0) return { pct: 0, done: doneTasks, total: totalTasks, hasPastData: false };
+  // Build score: past deficit + today bonus
+  // Past score = doneTasks - missed = 2*doneTasks - totalTasks
+  // Today bonus = +1 per completed task (no corresponding miss)
+  // Denominator = totalTasks (past) + todayDoneBonus (today's contributing tasks)
+  const combinedTotal = totalTasks + todayDoneBonus;
+  if (!hasPastData || combinedTotal === 0) return { pct: 0, done: doneTasks + todayDoneBonus, total: totalTasks, hasPastData: false };
   const missed = totalTasks - doneTasks;
-  const score  = doneTasks - missed;
-  const pct    = Math.round((score / totalTasks) * 100);
-  return { pct, done: doneTasks, total: totalTasks, hasPastData: true };
+  const score  = (doneTasks - missed) + todayDoneBonus;
+  const pct    = Math.round((score / combinedTotal) * 100);
+  return { pct, done: doneTasks + todayDoneBonus, total: totalTasks, hasPastData: true };
 }
 
 /* ============================================================
@@ -781,13 +802,15 @@ function renderDashboard() {
   const activeBases = BASE_CATS.filter(c => !deletedCats.includes(c.key));
   const customCats  = getCustomCats();
   let grandDonePast = 0, grandTotalPast = 0;
+  let grandTodayDoneBonus = 0;
   let grandDoneAll = 0, grandTotalAll = 0, daysLogged = 0;
 
   windowDays.forEach(key => {
     const raw = ls_get('day_' + key);
     if (!raw) return;
     const dt = parseKey(key);
-    const isPast = dt < today;
+    const isPast  = dt < today;
+    const isToday = dt.getTime() === today.getTime();
     let dayHas = false;
     const allKeys = [...BASE_CATS.map(c=>c.key), ...customCats.map(c=>c.id), ...roles.map(r=>r.id)];
     allKeys.forEach(k => {
@@ -799,6 +822,8 @@ function renderDashboard() {
         if (isPast) {
           grandTotalPast += arr.length;
           grandDonePast  += arr.filter(x => x.done).length;
+        } else if (isToday) {
+          grandTodayDoneBonus += arr.filter(x => x.done).length;
         }
       }
     });
@@ -806,9 +831,11 @@ function renderDashboard() {
   });
 
   let overallPct = 0;
-  if (grandTotalPast > 0) {
+  const grandCombinedTotal = grandTotalPast + grandTodayDoneBonus;
+  if (grandCombinedTotal > 0) {
     const missed = grandTotalPast - grandDonePast;
-    overallPct = Math.round(((grandDonePast - missed) / grandTotalPast) * 100);
+    const score  = (grandDonePast - missed) + grandTodayDoneBonus;
+    overallPct = Math.round((score / grandCombinedTotal) * 100);
   }
 
   const baseGrid = document.getElementById('dash-base-grid');
@@ -836,7 +863,7 @@ function renderDashboard() {
   }
 
   const overallEl = document.getElementById('sum-overall');
-  overallEl.textContent = grandTotalPast > 0 ? overallPct + '%' : '0%';
+  overallEl.textContent = grandCombinedTotal > 0 ? overallPct + '%' : '0%';
   overallEl.className = 'sum-val' + (overallPct < 0 ? ' negative' : '');
   document.getElementById('sum-days-logged').textContent = daysLogged;
   document.getElementById('sum-total-tasks').textContent = grandTotalAll;
