@@ -871,9 +871,7 @@ function renderDashboard() {
   let overallPct = 0;
   const grandCombinedTotal = grandTotalPast + grandTodayDoneBonus;
   if (grandCombinedTotal > 0) {
-    const missed = grandTotalPast - grandDonePast;
-    const score  = (grandDonePast - missed) + grandTodayDoneBonus;
-    overallPct = Math.round((score / grandCombinedTotal) * 100);
+    overallPct = Math.round(((grandDonePast + grandTodayDoneBonus) / grandCombinedTotal) * 100);
   }
 
   const baseGrid = document.getElementById('dash-base-grid');
