@@ -38,7 +38,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
- 
+
 nav {
   position: sticky; top: 0; z-index: 100;
   background: rgba(10,10,12,0.94); backdrop-filter: blur(12px);
@@ -55,16 +55,16 @@ nav {
 .nav-tab.active { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
 .nav-settings-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); border-radius: 7px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .nav-settings-btn:hover { background: var(--surface3); color: var(--text); }
- 
+
 .page { display: none; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
 .page.active { display: block; }
- 
+
 .dash-header { margin-bottom: 24px; }
 .dash-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 0.06em; line-height: 1; }
 .dash-subtitle { color: var(--text3); font-size: 0.82rem; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
- 
+
 .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
- 
+
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-top-width: 2px; border-radius: var(--radius); padding: 18px 16px; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.15s; }
 .stat-card:hover { transform: translateY(-1px); }
 .stat-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -73,20 +73,20 @@ nav {
 svg.ring { transform: rotate(-90deg); }
 .ring-bg { fill: none; stroke: var(--surface3); stroke-width: 5; }
 .ring-fill { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1); }
- 
+
 .stat-pct { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; letter-spacing: 0.04em; }
 .stat-pct.negative { font-size: 1.55rem; }
 .stat-detail { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
 .stat-deficit-note { font-size: 0.62rem; color: #f87171; font-family: 'JetBrains Mono', monospace; margin-top: 3px; letter-spacing: 0.04em; }
- 
+
 .panel-sort-bar { display: flex; gap: 6px; align-items: center; padding: 8px 18px 0; flex-shrink: 0; }
 .panel-sort-label { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace; flex-shrink: 0; margin-right: 2px; }
 .sort-pill { font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
 .sort-pill:hover { border-color: var(--text3); color: var(--text2); }
 .sort-pill.active { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
- 
+
 .stat-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
- 
+
 /* ── Flag button — clickable ── */
 .stat-flag {
   font-size: 0.85rem; line-height: 1; flex-shrink: 0; margin-left: 4px;
@@ -111,21 +111,21 @@ svg.ring { transform: rotate(-90deg); }
 }
 .stat-flag:active { transform: scale(0.95); }
 @keyframes flag-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
- 
+
 .stat-pct.state-neutral { color: var(--text3); }
 .stat-pct.state-red     { color: #f87171; }
 .stat-pct.state-amber   { color: var(--gold); }
 .stat-pct.state-green   { color: var(--green); }
- 
+
 .dash-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
 .sum-item { text-align: center; }
 .sum-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--text); }
 .sum-val.negative { font-size: 1.3rem; color: #f87171; }
 .sum-lbl { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
 .sum-divider { width: 1px; height: 36px; background: var(--border); flex-shrink: 0; }
- 
+
 .dash-section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.12em; margin: 20px 0 10px; }
- 
+
 .cal-months { display: flex; flex-direction: column; gap: 32px; }
 .month-heading { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 12px; display: flex; align-items: baseline; gap: 10px; }
 .month-heading span { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text3); }
@@ -146,7 +146,7 @@ svg.ring { transform: rotate(-90deg); }
 .day-pct-badge.mid   { background: var(--gold-dim); color: var(--gold); }
 .day-pct-badge.low   { background: #2a1010; color: #f87171; }
 .day-pct-badge.zero  { background: var(--surface3); color: var(--text3); }
- 
+
 .twoweek-header { margin-bottom: 20px; }
 .twoweek-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.06em; }
 .twoweek-sub { font-size: 0.82rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
@@ -164,7 +164,7 @@ svg.ring { transform: rotate(-90deg); }
 .tw-task-text { flex: 1; font-size: 0.82rem; color: var(--text); }
 .tw-task-text.done-text { text-decoration: line-through; color: var(--text3); }
 .tw-recur-badge { font-size: 0.62rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
- 
+
 .panel-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.55); }
 .panel-overlay.open { display: block; }
 .side-panel { position: fixed; top: 0; right: -100%; bottom: 0; width: min(var(--panel-w), 100vw); z-index: 201; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
@@ -183,7 +183,7 @@ svg.ring { transform: rotate(-90deg); }
 .panel-cats::-webkit-scrollbar { width: 4px; }
 .panel-cats::-webkit-scrollbar-track { background: transparent; }
 .panel-cats::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
- 
+
 .cat-block {}
 .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .cat-title { display: flex; align-items: center; gap: 7px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
@@ -216,7 +216,7 @@ svg.ring { transform: rotate(-90deg); }
 .custom-days-row.visible { display: flex; }
 .day-pick-btn { font-size: 0.65rem; font-family: 'JetBrains Mono', monospace; padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; }
 .day-pick-btn.on { background: var(--purple-dim); border-color: var(--purple); color: var(--purple); }
- 
+
 /* ============================================================
    FLAG FOCUS PANEL
    ============================================================ */
@@ -227,7 +227,7 @@ svg.ring { transform: rotate(-90deg); }
   padding: 20px;
 }
 .flag-panel-overlay.open { display: flex; }
- 
+
 .flag-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -245,7 +245,7 @@ svg.ring { transform: rotate(-90deg); }
   from { opacity: 0; transform: translateY(-12px) scale(0.97); }
   to   { opacity: 1; transform: none; }
 }
- 
+
 .flag-panel-header {
   padding: 14px 16px 12px;
   border-bottom: 1px solid var(--border);
@@ -280,14 +280,14 @@ svg.ring { transform: rotate(-90deg); }
   flex-shrink: 0; transition: all 0.15s; margin-left: 8px;
 }
 .flag-panel-close:hover { background: var(--surface3); color: var(--text); }
- 
+
 .flag-panel-body {
   flex: 1; overflow-y: auto; padding: 12px 16px 16px;
   display: flex; flex-direction: column; gap: 8px;
 }
 .flag-panel-body::-webkit-scrollbar { width: 4px; }
 .flag-panel-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
- 
+
 .flag-task-item {
   display: flex; align-items: flex-start; gap: 10px;
   background: var(--surface2); border: 1px solid var(--border);
@@ -296,7 +296,7 @@ svg.ring { transform: rotate(-90deg); }
 }
 .flag-task-item:hover { border-color: var(--border2); }
 .flag-task-item.done-fade { opacity: 0.45; }
- 
+
 .flag-task-cb {
   width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;
   border: 2px solid var(--border2); border-radius: 5px;
@@ -306,7 +306,7 @@ svg.ring { transform: rotate(-90deg); }
 }
 .flag-task-cb svg { display: none; }
 .flag-task-cb.checked svg { display: block; }
- 
+
 .flag-task-info { flex: 1; min-width: 0; }
 .flag-task-text {
   font-size: 0.84rem; color: var(--text); line-height: 1.35;
@@ -317,7 +317,7 @@ svg.ring { transform: rotate(-90deg); }
   font-size: 0.64rem; color: var(--text3);
   font-family: 'JetBrains Mono', monospace; margin-top: 3px;
 }
- 
+
 .flag-task-del {
   background: transparent; border: none; color: var(--text3);
   cursor: pointer; font-size: 1rem; padding: 2px 4px;
@@ -325,13 +325,19 @@ svg.ring { transform: rotate(-90deg); }
   transition: color 0.15s, background 0.15s;
 }
 .flag-task-del:hover { color: #f87171; background: rgba(248,113,113,0.1); }
- 
+
 .flag-panel-empty {
   text-align: center; color: var(--text3);
   font-size: 0.82rem; font-style: italic;
   padding: 24px 0; flex: 1; display: flex; align-items: center; justify-content: center;
 }
- 
+
+.flag-panel-add {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
 .flag-panel-footer {
   padding: 10px 16px;
   border-top: 1px solid var(--border);
@@ -349,9 +355,9 @@ svg.ring { transform: rotate(-90deg); }
   color: var(--blue); cursor: pointer; transition: all 0.15s;
 }
 .flag-panel-full-btn:hover { background: var(--blue); color: #fff; }
- 
+
 /* ─────────────────────────────── */
- 
+
 .modal-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
 .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; }
@@ -360,7 +366,7 @@ svg.ring { transform: rotate(-90deg); }
 .modal-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: sticky; top: 0; background: var(--surface); z-index: 1; }
 .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; }
 .modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 20px; }
- 
+
 .settings-section-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
 .settings-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .settings-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -374,7 +380,7 @@ svg.ring { transform: rotate(-90deg); }
 .add-role-btn { background: var(--surface3); border: 1px solid var(--border2); color: var(--text2); border-radius: 6px; padding: 8px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
 .add-role-btn:hover { background: var(--border2); color: var(--text); }
 .role-limit-note { font-size: 0.72rem; color: var(--text3); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
- 
+
 .date-window-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
 .date-window-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 .date-window-select {
@@ -391,7 +397,7 @@ svg.ring { transform: rotate(-90deg); }
 .date-window-apply-btn { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); border-radius: 6px; padding: 7px 14px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; font-weight: 500; }
 .date-window-apply-btn:hover { background: var(--blue); color: #fff; }
 .date-window-note { font-size: 0.68rem; color: var(--text3); margin-top: 8px; font-family: 'JetBrains Mono', monospace; line-height: 1.5; }
- 
+
 .inline-confirm { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #1e1010; border: 1px solid #f87171; border-radius: 7px; padding: 8px 12px; margin-bottom: 6px; animation: confirm-in 0.15s ease; }
 @keyframes confirm-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .inline-confirm-msg { font-size: 0.78rem; color: #fca5a5; flex: 1; min-width: 160px; }
@@ -399,7 +405,7 @@ svg.ring { transform: rotate(-90deg); }
 .inline-confirm-yes:hover { background: #ef4444; }
 .inline-confirm-cancel { background: transparent; border: 1px solid var(--border2); color: var(--text2); border-radius: 5px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .inline-confirm-cancel:hover { background: var(--surface3); color: var(--text); }
- 
+
 .confirm-modal { display: none; position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 20px; }
 .confirm-modal.open { display: flex; }
 .confirm-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; max-width: 360px; width: 100%; }
@@ -413,7 +419,7 @@ svg.ring { transform: rotate(-90deg); }
 .confirm-btn.secondary:hover { background: var(--surface3); color: var(--text); }
 .confirm-btn.cancel { background: transparent; color: var(--text3); }
 .confirm-btn.cancel:hover { color: var(--text2); }
- 
+
 @media (max-width: 600px) {
   .dash-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .stat-card { padding: 14px 12px; }
@@ -437,7 +443,7 @@ svg.ring { transform: rotate(-90deg); }
 </style>
 </head>
 <body>
- 
+
 <nav>
   <div class="nav-brand">LIFE<span>.</span>TRACK</div>
   <div class="nav-tabs">
@@ -447,7 +453,7 @@ svg.ring { transform: rotate(-90deg); }
   </div>
   <button class="nav-settings-btn" onclick="openSettings()" title="Settings">⚙</button>
 </nav>
- 
+
 <div id="page-dashboard" class="page active">
   <div class="dash-header">
     <div class="dash-title">YOUR PROGRESS</div>
@@ -467,11 +473,11 @@ svg.ring { transform: rotate(-90deg); }
     <div class="sum-item"><div class="sum-val" id="sum-overall">0%</div><div class="sum-lbl">Overall</div></div>
   </div>
 </div>
- 
+
 <div id="page-calendar" class="page">
   <div class="cal-months" id="cal-months"></div>
 </div>
- 
+
 <div id="page-twoweek" class="page">
   <div class="twoweek-header">
     <div class="twoweek-title">NEXT 2 WEEKS</div>
@@ -479,7 +485,7 @@ svg.ring { transform: rotate(-90deg); }
   </div>
   <div class="twoweek-list" id="twoweek-list"></div>
 </div>
- 
+
 <!-- Full-day side panel -->
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 <div class="side-panel" id="side-panel">
@@ -503,7 +509,7 @@ svg.ring { transform: rotate(-90deg); }
   </div>
   <div class="panel-cats" id="panel-cats"></div>
 </div>
- 
+
 <!-- Flag focus panel -->
 <div class="flag-panel-overlay" id="flag-panel-overlay" onclick="closeFlagPanel(event)">
   <div class="flag-panel" id="flag-panel">
@@ -521,13 +527,21 @@ svg.ring { transform: rotate(-90deg); }
       </div>
     </div>
     <div class="flag-panel-body" id="fp-body"></div>
+    <div class="flag-panel-add" id="fp-add-area">
+      <div class="add-task-row">
+        <input class="add-task-input" id="fp-add-input" placeholder="Add task for today…" />
+        <button class="add-task-btn" onclick="addFlagTask()">+</button>
+      </div>
+      <div class="recur-row" id="fp-recur-row"></div>
+      <div class="custom-days-row" id="fp-custom-days"></div>
+    </div>
     <div class="flag-panel-footer">
       <div class="flag-panel-progress-text" id="fp-progress">0 of 0 complete</div>
       <button class="flag-panel-full-btn" onclick="openFullDayFromFlag()">Open Full Day →</button>
     </div>
   </div>
 </div>
- 
+
 <!-- Settings modal -->
 <div class="modal-overlay" id="settings-overlay" onclick="maybeCloseSettings(event)">
   <div class="modal" id="settings-modal">
@@ -538,7 +552,7 @@ svg.ring { transform: rotate(-90deg); }
     <div class="modal-body" id="settings-body"></div>
   </div>
 </div>
- 
+
 <div class="confirm-modal" id="confirm-modal">
   <div class="confirm-box">
     <div class="confirm-title" id="confirm-title">Delete Task?</div>
@@ -546,7 +560,7 @@ svg.ring { transform: rotate(-90deg); }
     <div class="confirm-btns" id="confirm-btns"></div>
   </div>
 </div>
- 
+
 <script>
 /* ============================================================
    CONFIG
@@ -567,18 +581,35 @@ const RECUR_OPTIONS = [
 ];
 const DOW_LABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
- 
+
 /* ============================================================
-   STATE
+   OVERALL % THRESHOLDS
    ============================================================ */
+const DEFAULT_THRESHOLDS = { t1: 39, t2: 59, t3: 79, t4: 89 };
+// Colors fixed: ≤t1=red, ≤t2=orange, ≤t3=yellow, ≤t4=blue, else=green
+const THRESHOLD_COLORS = ['#f87171','#f97316','#eab308','#3b82f6','#22c55e'];
+function getThresholds() {
+  const s = ls_get('thresholds');
+  return s ? { ...DEFAULT_THRESHOLDS, ...s } : { ...DEFAULT_THRESHOLDS };
+}
+function saveThresholds(t) { ls_set('thresholds', t); }
+function overallColor(pct) {
+  const t = getThresholds();
+  if (pct <= t.t1) return THRESHOLD_COLORS[0];
+  if (pct <= t.t2) return THRESHOLD_COLORS[1];
+  if (pct <= t.t3) return THRESHOLD_COLORS[2];
+  if (pct <= t.t4) return THRESHOLD_COLORS[3];
+  return THRESHOLD_COLORS[4];
+}
 const today = new Date(); today.setHours(0,0,0,0);
 let activeDateKey = null;
 let addState = {};
- 
+
 // Flag panel state
 let flagPanelCatKey = null;
 let flagPanelCat    = null;
- 
+let flagAddState    = { recur: 'none', customDays: [] };
+
 /* ============================================================
    DATE WINDOW
    ============================================================ */
@@ -595,7 +626,7 @@ function getWindowMonths() {
     return { y: w.year + Math.floor(raw / 12), m: raw % 12 };
   });
 }
- 
+
 /* ============================================================
    PANEL SORT
    ============================================================ */
@@ -619,13 +650,13 @@ function getSortedCats(dayData) {
   });
   return cats;
 }
- 
+
 /* ============================================================
    STORAGE
    ============================================================ */
 function ls_get(key) { return JSON.parse(localStorage.getItem('lt_' + key) || 'null'); }
 function ls_set(key, val) { localStorage.setItem('lt_' + key, JSON.stringify(val)); }
- 
+
 function getSettings() {
   const s = ls_get('settings') || {};
   const deleted = s._deleted || [];
@@ -644,7 +675,7 @@ function getRoles() {
 function saveRoles(r) { ls_set('roles', r); }
 function getCustomCats() { return ls_get('custom_cats') || []; }
 function saveCustomCats(c) { ls_set('custom_cats', c); }
- 
+
 function getDefaultDay() {
   const deleted = (ls_get('settings')||{})._deleted || [];
   const d = {};
@@ -663,7 +694,7 @@ function getDay(key) {
 function setDay(key, val) { ls_set('day_' + key, val); }
 function getRecurring() { return ls_get('recur') || []; }
 function saveRecurring(r) { ls_set('recur', r); }
- 
+
 /* ============================================================
    DATE UTILITIES
    ============================================================ */
@@ -692,7 +723,7 @@ function recurLabel(r, customDays) {
   if (r === 'custom' && customDays && customDays.length) return '↻ ' + customDays.map(d => DOW_LABELS[d]).join(',');
   return '↻ ' + r.charAt(0).toUpperCase() + r.slice(1);
 }
- 
+
 /* ============================================================
    RECURRING PROPAGATION
    ============================================================ */
@@ -712,7 +743,7 @@ function propagateRecurring(key) {
   });
   if (changed) setDay(key, data);
 }
- 
+
 /* ============================================================
    DAY TOTALS
    ============================================================ */
@@ -726,7 +757,7 @@ function dayTotals(key) {
   });
   return { done, total };
 }
- 
+
 /* ============================================================
    DEFICIT MECHANIC
    ============================================================ */
@@ -765,13 +796,13 @@ function calcDeficitPct(catKey, windowDays) {
   // Today bonus = +1 per completed task (no corresponding miss)
   // Denominator = totalTasks (past) + todayDoneBonus (today's contributing tasks)
   const combinedTotal = totalTasks + todayDoneBonus;
-  if (!hasPastData || combinedTotal === 0) return { pct: 0, done: doneTasks + todayDoneBonus, total: totalTasks, hasPastData: false };
+  if (!hasPastData || combinedTotal === 0) return { pct: 0, done: doneTasks + todayDoneBonus, total: totalTasks, missed: 0, hasPastData: false };
   const missed = totalTasks - doneTasks;
   const score  = (doneTasks - missed) + todayDoneBonus;
   const pct    = Math.round((score / combinedTotal) * 100);
-  return {pct, done: doneTasks + todayDoneBonus, total: totalTasks, missed: totalTasks - doneTasks, hasPastData: true};
+  return { pct, done: doneTasks + todayDoneBonus, total: totalTasks, missed, hasPastData: true };
 }
- 
+
 /* ============================================================
    NAVIGATION
    ============================================================ */
@@ -784,7 +815,7 @@ function showPage(id, btn) {
   if (id === 'dashboard') renderDashboard();
   if (id === 'twoweek')   renderTwoWeek();
 }
- 
+
 /* ============================================================
    DASHBOARD
    ============================================================ */
@@ -792,26 +823,26 @@ function renderDashboard() {
   const settings = getSettings();
   const roles = getRoles();
   const winMonths = getWindowMonths();
- 
+
   const sm = winMonths[0], em = winMonths[2];
   document.getElementById('dash-range').textContent =
     `${MONTH_NAMES[sm.m].slice(0,3)} ${sm.y} → ${MONTH_NAMES[em.m].slice(0,3)} ${em.y}`;
- 
+
   const windowDays = [];
   winMonths.forEach(({ y, m }) => {
     const dim = new Date(y, m+1, 0).getDate();
     for (let day = 1; day <= dim; day++) windowDays.push(dateKey(y, m, day));
   });
- 
+
   windowDays.forEach(key => propagateRecurring(key));
- 
+
   const deletedCats = (getSettings()._deleted || []);
   const activeBases = BASE_CATS.filter(c => !deletedCats.includes(c.key));
   const customCats  = getCustomCats();
   let grandDonePast = 0, grandTotalPast = 0;
   let grandTodayDoneBonus = 0;
   let grandDoneAll = 0, grandTotalAll = 0, daysLogged = 0;
- 
+
   windowDays.forEach(key => {
     const raw = ls_get('day_' + key);
     if (!raw) return;
@@ -836,7 +867,7 @@ function renderDashboard() {
     });
     if (dayHas) daysLogged++;
   });
- 
+
   let overallPct = 0;
   const grandCombinedTotal = grandTotalPast + grandTodayDoneBonus;
   if (grandCombinedTotal > 0) {
@@ -844,18 +875,18 @@ function renderDashboard() {
     const score  = (grandDonePast - missed) + grandTodayDoneBonus;
     overallPct = Math.round((score / grandCombinedTotal) * 100);
   }
- 
+
   const baseGrid = document.getElementById('dash-base-grid');
   baseGrid.innerHTML = '';
   activeBases.forEach(c => {
     const r = calcDeficitPct(c.key, windowDays);
-    baseGrid.appendChild(makeStatCard(c.key, settings[c.key]||c.label, c.color, r.pct, r.done, r.total, r.hasPastData));
+    baseGrid.appendChild(makeStatCard(c.key, settings[c.key]||c.label, c.color, r.pct, r.done, r.total, r.missed, r.hasPastData));
   });
   customCats.forEach(c => {
     const r = calcDeficitPct(c.id, windowDays);
-    baseGrid.appendChild(makeStatCard(c.id, c.name, c.color, r.pct, r.done, r.total, r.hasPastData));
+    baseGrid.appendChild(makeStatCard(c.id, c.name, c.color, r.pct, r.done, r.total, r.missed, r.hasPastData));
   });
- 
+
   const rolesGrid = document.getElementById('dash-roles-grid');
   const rolesLabel = document.getElementById('roles-section-label');
   rolesGrid.innerHTML = '';
@@ -863,29 +894,31 @@ function renderDashboard() {
     rolesLabel.style.display = 'block';
     roles.forEach(ro => {
       const r = calcDeficitPct(ro.id, windowDays);
-      rolesGrid.appendChild(makeStatCard(ro.id, ro.name, ro.color, r.pct, r.done, r.total, r.hasPastData));
+      rolesGrid.appendChild(makeStatCard(ro.id, ro.name, ro.color, r.pct, r.done, r.total, r.missed, r.hasPastData));
     });
   } else {
     rolesLabel.style.display = 'none';
   }
- 
+
   const overallEl = document.getElementById('sum-overall');
-  overallEl.textContent = grandCombinedTotal > 0 ? overallPct + '%' : '0%';
+  const displayPct = grandCombinedTotal > 0 ? overallPct : 0;
+  overallEl.textContent = displayPct + '%';
   overallEl.className = 'sum-val' + (overallPct < 0 ? ' negative' : '');
+  overallEl.style.color = grandCombinedTotal > 0 ? overallColor(overallPct) : '';
   document.getElementById('sum-days-logged').textContent = daysLogged;
   document.getElementById('sum-total-tasks').textContent = grandTotalAll;
   document.getElementById('sum-completed').textContent   = grandDoneAll;
 }
- 
+
 /* ============================================================
    makeStatCard  — flag is now a clickable button
    ============================================================ */
-function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
+function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastData) {
   const circ   = 138.23;
   const fillPct = Math.max(0, Math.min(100, pct));
   const offset  = circ - (circ * fillPct / 100);
   const isNeg   = pct < 0;
- 
+
   let ringState, ringColor;
   if (!hasPastData || total === 0) {
     ringState = 'neutral'; ringColor = '#5a5a70';
@@ -896,7 +929,7 @@ function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
   } else {
     ringState = 'green';  ringColor = '#22c55e';
   }
- 
+
   const todayKey  = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
   propagateRecurring(todayKey);
   const todayData = ls_get('day_' + todayKey);
@@ -904,9 +937,9 @@ function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
   const incompleteTodayCount = todayArr.filter(t => !t.done).length;
   const hasFlag   = incompleteTodayCount > 0;
   const allDoneToday = todayArr.length > 0 && incompleteTodayCount === 0;
- 
-  const deficitNote = `<div class="stat-deficit-note">↓ ${missed} missed</div>` : '';
- 
+
+  const deficitNote = missed > 0 ? `<div class="stat-deficit-note">↓ ${missed} missed</div>` : '';
+
   const card = document.createElement('div');
   card.className = 'stat-card';
   card.style.borderTopColor = color;
@@ -936,7 +969,7 @@ function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
         ${deficitNote}
       </div>
     </div>`;
- 
+
   // Attach flag click handler
   const flagBtn = card.querySelector('.stat-flag');
   if (flagBtn) {
@@ -945,59 +978,115 @@ function makeStatCard(catKey, label, color, pct, done, total, hasPastData) {
       openFlagPanel(catKey, label, color);
     });
   }
- 
+
   return card;
 }
- 
+
 /* ============================================================
    FLAG FOCUS PANEL
    ============================================================ */
 function openFlagPanel(catKey, catLabel, catColor) {
   flagPanelCatKey = catKey;
   flagPanelCat    = { key: catKey, label: catLabel, color: catColor };
- 
+  flagAddState    = { recur: 'none', customDays: [] };
+
   document.getElementById('fp-cat-dot').style.background = catColor;
   document.getElementById('fp-title').textContent = catLabel.toUpperCase();
-  document.getElementById('fp-cat-dot').style.background = catColor;
- 
+
+  // Build recur buttons
+  const recurRow   = document.getElementById('fp-recur-row');
+  const customDays = document.getElementById('fp-custom-days');
+  recurRow.innerHTML = ''; customDays.innerHTML = '';
+  RECUR_OPTIONS.forEach(ro => {
+    const btn = document.createElement('button');
+    btn.className = 'recur-btn' + (ro.key === 'none' ? ' selected' : '');
+    btn.textContent = ro.label; btn.dataset.val = ro.key;
+    btn.onclick = () => {
+      flagAddState.recur = ro.key;
+      recurRow.querySelectorAll('.recur-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === ro.key));
+      customDays.classList.toggle('visible', ro.key === 'custom');
+    };
+    recurRow.appendChild(btn);
+  });
+  DOW_LABELS.forEach((dl, di) => {
+    const btn = document.createElement('button');
+    btn.className = 'day-pick-btn'; btn.textContent = dl;
+    btn.onclick = () => {
+      if (flagAddState.customDays.includes(di)) flagAddState.customDays = flagAddState.customDays.filter(x => x !== di);
+      else flagAddState.customDays.push(di);
+      btn.classList.toggle('on', flagAddState.customDays.includes(di));
+    };
+    customDays.appendChild(btn);
+  });
+
+  const inp = document.getElementById('fp-add-input');
+  inp.value = '';
+  inp.onkeydown = e => { if (e.key === 'Enter') addFlagTask(); };
+
   renderFlagPanel();
   document.getElementById('flag-panel-overlay').classList.add('open');
 }
- 
+
+function addFlagTask() {
+  const inp = document.getElementById('fp-add-input');
+  const text = inp.value.trim(); if (!text) return;
+  const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  const data = getDay(todayKey);
+  if (!data[flagPanelCatKey]) data[flagPanelCatKey] = [];
+  const recur = flagAddState.recur, customDays = [...flagAddState.customDays];
+  if (recur !== 'none') {
+    const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+    const templates = getRecurring();
+    templates.push({ id: templateId, catKey: flagPanelCatKey, text, recur, customDays, startKey: todayKey });
+    saveRecurring(templates);
+    data[flagPanelCatKey].push({ text, done: false, recurId: templateId, recur, customDays });
+  } else {
+    data[flagPanelCatKey].push({ text, done: false, recur: 'none', customDays: [] });
+  }
+  setDay(todayKey, data);
+  inp.value = '';
+  flagAddState = { recur: 'none', customDays: [] };
+  document.getElementById('fp-recur-row').querySelectorAll('.recur-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === 'none'));
+  document.getElementById('fp-custom-days').classList.remove('visible');
+  renderFlagPanel();
+  renderDashboard();
+  if (activeDateKey === todayKey) renderPanel();
+}
+
 function renderFlagPanel() {
   if (!flagPanelCatKey) return;
   const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
   propagateRecurring(todayKey);
   const data = getDay(todayKey);
   const tasks = data[flagPanelCatKey] || [];
- 
+
   const incomplete = tasks.filter(t => !t.done).length;
   const total      = tasks.length;
   const done       = total - incomplete;
- 
+
   document.getElementById('fp-badge').textContent = `${incomplete} pending`;
   document.getElementById('fp-progress').textContent = `${done} of ${total} complete`;
- 
+
   const body = document.getElementById('fp-body');
   body.innerHTML = '';
- 
+
   if (tasks.length === 0) {
     body.innerHTML = '<div class="flag-panel-empty">No tasks for today in this category.</div>';
     return;
   }
- 
+
   // Show all tasks (so you can see done ones too), incomplete first
   const sorted = [...tasks.map((t,i) => ({...t, _idx: i}))].sort((a,b) => {
     if (a.done === b.done) return 0;
     return a.done ? 1 : -1;
   });
- 
+
   sorted.forEach(task => {
     const idx = task._idx;
     const item = document.createElement('div');
     item.className = 'flag-task-item' + (task.done ? ' done-fade' : '');
     item.dataset.idx = idx;
- 
+
     const cb = document.createElement('div');
     cb.className = 'flag-task-cb' + (task.done ? ' checked' : '');
     if (task.done) { cb.style.background = flagPanelCat.color; cb.style.borderColor = flagPanelCat.color; }
@@ -1009,7 +1098,7 @@ function renderFlagPanel() {
       renderFlagPanel();
       renderDashboard();
     };
- 
+
     const info = document.createElement('div');
     info.className = 'flag-task-info';
     const txt = document.createElement('div');
@@ -1020,16 +1109,16 @@ function renderFlagPanel() {
       const rl = document.createElement('div'); rl.className = 'flag-task-recur';
       rl.textContent = recurLabel(task.recur, task.customDays); info.appendChild(rl);
     }
- 
+
     const del = document.createElement('button');
     del.className = 'flag-task-del'; del.textContent = '×';
     del.onclick = () => requestFlagDeleteTask(idx, task);
- 
+
     item.appendChild(cb); item.appendChild(info); item.appendChild(del);
     body.appendChild(item);
   });
 }
- 
+
 function requestFlagDeleteTask(idx, task) {
   const todayKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
   if (task.recurId) {
@@ -1047,7 +1136,7 @@ function requestFlagDeleteTask(idx, task) {
     deleteFlagTask(todayKey, flagPanelCatKey, idx, false, null);
   }
 }
- 
+
 function deleteFlagTask(key, catKey, idx, deleteFuture, recurId) {
   const data = getDay(key);
   data[catKey].splice(idx, 1);
@@ -1073,7 +1162,7 @@ function deleteFlagTask(key, catKey, idx, deleteFuture, recurId) {
   // If full-day panel is open for today, re-render it too
   if (activeDateKey === key) renderPanel();
 }
- 
+
 function closeFlagPanel(e) {
   if (e && e.target !== document.getElementById('flag-panel-overlay')) return;
   closeFlagPanelDirect();
@@ -1082,14 +1171,15 @@ function closeFlagPanelDirect() {
   document.getElementById('flag-panel-overlay').classList.remove('open');
   flagPanelCatKey = null;
   flagPanelCat    = null;
+  flagAddState    = { recur: 'none', customDays: [] };
 }
- 
+
 function openFullDayFromFlag() {
   closeFlagPanelDirect();
   const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
   openPanel(dateKey(y, m, d), y, m, d);
 }
- 
+
 /* ============================================================
    CALENDAR
    ============================================================ */
@@ -1098,7 +1188,7 @@ function buildCalendar() {
   container.innerHTML = '';
   getWindowMonths().forEach(({ y, m }) => container.appendChild(buildMonth(y, m)));
 }
- 
+
 function buildMonth(y, m) {
   const wrap = document.createElement('div');
   wrap.className = 'month-block';
@@ -1150,7 +1240,7 @@ function buildMonth(y, m) {
   wrap.appendChild(grid);
   return wrap;
 }
- 
+
 /* ============================================================
    TWO-WEEK VIEW
    ============================================================ */
@@ -1210,7 +1300,7 @@ function renderTwoWeek() {
     list.appendChild(block);
   }
 }
- 
+
 /* ============================================================
    SIDE PANEL
    ============================================================ */
@@ -1231,14 +1321,14 @@ function openPanel(key, y, m, day) {
   const sel = document.querySelector(`[data-key="${key}"]`);
   if (sel) sel.classList.add('selected');
 }
- 
+
 function closePanel() {
   document.getElementById('overlay').classList.remove('open');
   document.getElementById('side-panel').classList.remove('open');
   document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected'));
   activeDateKey = null;
 }
- 
+
 function renderPanel() {
   if (!activeDateKey) return;
   const data = getDay(activeDateKey);
@@ -1307,7 +1397,7 @@ function renderPanel() {
   refreshCalCell(activeDateKey);
   renderDashboard();
 }
- 
+
 function makeTaskEl(cat, task, idx) {
   const item = document.createElement('div');
   item.className = 'task-item' + (task.done ? ' done' : '');
@@ -1328,7 +1418,7 @@ function makeTaskEl(cat, task, idx) {
   item.appendChild(cb); item.appendChild(info); item.appendChild(del);
   return item;
 }
- 
+
 function addTask(catKey) {
   const inp = document.getElementById('inp-' + catKey);
   const text = inp.value.trim(); if (!text) return;
@@ -1349,13 +1439,13 @@ function addTask(catKey) {
   addState[catKey] = { recur: 'none', customDays: [] };
   renderPanel();
 }
- 
+
 function toggleTask(catKey, idx) {
   const data = getDay(activeDateKey);
   data[catKey][idx].done = !data[catKey][idx].done;
   setDay(activeDateKey, data); renderPanel();
 }
- 
+
 function requestDeleteTask(catKey, idx, task) {
   if (task.recurId) {
     document.getElementById('confirm-title').textContent = 'Delete Recurring Task';
@@ -1372,7 +1462,7 @@ function requestDeleteTask(catKey, idx, task) {
     deleteTask(catKey, idx, false, null);
   }
 }
- 
+
 function deleteTask(catKey, idx, deleteFuture, recurId) {
   const data = getDay(activeDateKey);
   data[catKey].splice(idx, 1); setDay(activeDateKey, data);
@@ -1394,9 +1484,9 @@ function deleteTask(catKey, idx, deleteFuture, recurId) {
   }
   renderPanel();
 }
- 
+
 function closeConfirm() { document.getElementById('confirm-modal').classList.remove('open'); }
- 
+
 function refreshCalCell(key) {
   const cell = document.querySelector(`[data-key="${key}"]`);
   if (!cell) return;
@@ -1420,7 +1510,7 @@ function refreshCalCell(key) {
     }
   }
 }
- 
+
 /* ============================================================
    SETTINGS MODAL
    ============================================================ */
@@ -1430,7 +1520,7 @@ function closeSettings() {
   renderDashboard(); buildCalendar();
 }
 function maybeCloseSettings(e) { if (e.target === document.getElementById('settings-overlay')) closeSettings(); }
- 
+
 function showInlineConfirm(parentRow, message, onConfirm) {
   document.querySelectorAll('.inline-confirm').forEach(el => el.remove());
   const bar = document.createElement('div');
@@ -1440,23 +1530,23 @@ function showInlineConfirm(parentRow, message, onConfirm) {
   bar.querySelector('.inline-confirm-cancel').onclick = () => bar.remove();
   parentRow.insertAdjacentElement('afterend', bar);
 }
- 
+
 function renderSettings() {
   const body = document.getElementById('settings-body');
   body.innerHTML = '';
   const settings = getSettings();
   const roles = getRoles();
- 
+
   const windowSection = document.createElement('div');
   windowSection.innerHTML = '<div class="settings-section-label">Dashboard Date Window</div>';
   const windowBox = document.createElement('div');
   windowBox.className = 'date-window-box';
- 
+
   const currentWindow = getDateWindow();
   const startSelect = document.createElement('select');
   startSelect.className = 'date-window-select';
   startSelect.title = 'Window start month';
- 
+
   for (let delta = -12; delta <= 12; delta++) {
     const raw = today.getMonth() + delta;
     const y   = today.getFullYear() + Math.floor(raw / 12);
@@ -1467,7 +1557,7 @@ function renderSettings() {
     if (y === currentWindow.year && m === currentWindow.month) opt.selected = true;
     startSelect.appendChild(opt);
   }
- 
+
   const endLabel = document.createElement('div');
   endLabel.className = 'date-window-end-label';
   function updateEndLabel() {
@@ -1479,7 +1569,7 @@ function renderSettings() {
   }
   updateEndLabel();
   startSelect.addEventListener('change', updateEndLabel);
- 
+
   const applyBtn = document.createElement('button');
   applyBtn.className = 'date-window-apply-btn';
   applyBtn.textContent = 'Apply';
@@ -1491,19 +1581,76 @@ function renderSettings() {
     updateEndLabel();
     renderDashboard(); buildCalendar();
   };
- 
+
   const dwRow = document.createElement('div');
   dwRow.className = 'date-window-row';
   dwRow.appendChild(startSelect); dwRow.appendChild(endLabel); dwRow.appendChild(applyBtn);
   windowBox.appendChild(dwRow);
- 
+
   const dwNote = document.createElement('div');
   dwNote.className = 'date-window-note';
   dwNote.textContent = 'Sets the 3-month window shown on Dashboard and Calendar. Persisted across sessions.';
   windowBox.appendChild(dwNote);
   windowSection.appendChild(windowBox);
   body.appendChild(windowSection);
- 
+
+  /* ── Overall % Color Thresholds ── */
+  const threshSection = document.createElement('div');
+  threshSection.innerHTML = '<div class="settings-section-label">Overall % Color Thresholds</div>';
+  const threshBox = document.createElement('div');
+  threshBox.className = 'date-window-box';
+  const currentT = getThresholds();
+  const threshDefs = [
+    { key: 't1', color: THRESHOLD_COLORS[0], label: 'Red up to' },
+    { key: 't2', color: THRESHOLD_COLORS[1], label: 'Orange up to' },
+    { key: 't3', color: THRESHOLD_COLORS[2], label: 'Yellow up to' },
+    { key: 't4', color: THRESHOLD_COLORS[3], label: 'Blue up to' },
+  ];
+  const threshInputs = {};
+  threshDefs.forEach(def => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:8px;';
+    const dot = document.createElement('div');
+    dot.style.cssText = `width:10px;height:10px;border-radius:50%;background:${def.color};flex-shrink:0;`;
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:0.75rem;color:var(--text2);width:90px;flex-shrink:0;font-family:"JetBrains Mono",monospace;';
+    lbl.textContent = def.label;
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.min = '-100'; inp.max = '100';
+    inp.className = 'settings-input';
+    inp.style.cssText = 'width:70px;flex:none;text-align:center;';
+    inp.value = currentT[def.key];
+    threshInputs[def.key] = inp;
+    const pctLbl = document.createElement('div');
+    pctLbl.style.cssText = 'font-size:0.75rem;color:var(--text3);font-family:"JetBrains Mono",monospace;';
+    pctLbl.textContent = '%';
+    row.appendChild(dot); row.appendChild(lbl); row.appendChild(inp); row.appendChild(pctLbl);
+    threshBox.appendChild(row);
+  });
+  const greenRow = document.createElement('div');
+  greenRow.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:10px;';
+  const greenDot = document.createElement('div');
+  greenDot.style.cssText = `width:10px;height:10px;border-radius:50%;background:${THRESHOLD_COLORS[4]};flex-shrink:0;`;
+  const greenLbl = document.createElement('div');
+  greenLbl.style.cssText = 'font-size:0.75rem;color:var(--text2);font-family:"JetBrains Mono",monospace;';
+  greenLbl.textContent = 'Green = everything above Blue threshold';
+  greenRow.appendChild(greenDot); greenRow.appendChild(greenLbl);
+  threshBox.appendChild(greenRow);
+  const saveThreshBtn = document.createElement('button');
+  saveThreshBtn.className = 'date-window-apply-btn';
+  saveThreshBtn.textContent = 'Save Thresholds';
+  saveThreshBtn.onclick = () => {
+    const t = {};
+    threshDefs.forEach(def => { t[def.key] = parseInt(threshInputs[def.key].value) || 0; });
+    saveThresholds(t);
+    saveThreshBtn.textContent = '✓ Saved';
+    setTimeout(() => { saveThreshBtn.textContent = 'Save Thresholds'; }, 1400);
+    renderDashboard();
+  };
+  threshBox.appendChild(saveThreshBtn);
+  threshSection.appendChild(threshBox);
+  body.appendChild(threshSection);
+
   const baseSection = document.createElement('div');
   baseSection.innerHTML = '<div class="settings-section-label">Base Categories</div>';
   BASE_CATS.forEach(c => {
@@ -1518,7 +1665,7 @@ function renderSettings() {
     baseSection.appendChild(row);
   });
   body.appendChild(baseSection);
- 
+
   const customCatsNow = getCustomCats();
   const customSection = document.createElement('div');
   customSection.innerHTML = '<div class="settings-section-label">Custom Categories</div>';
@@ -1545,7 +1692,7 @@ function renderSettings() {
   addCatRow.appendChild(addCatInp); addCatRow.appendChild(addCatBtn);
   customSection.appendChild(addCatRow);
   body.appendChild(customSection);
- 
+
   const rolesSection = document.createElement('div');
   rolesSection.innerHTML = `<div class="settings-section-label">My Roles (${roles.length}/${MAX_ROLES})</div>`;
   roles.forEach(r => {
@@ -1578,7 +1725,7 @@ function renderSettings() {
   }
   body.appendChild(rolesSection);
 }
- 
+
 function deleteBaseCat(catKey) {
   const s = getSettings(); if (!s._deleted) s._deleted = []; if (!s._deleted.includes(catKey)) s._deleted.push(catKey); saveSettings(s);
   Object.keys(localStorage).forEach(k => { if (!k.startsWith('lt_day_')) return; try { const raw = JSON.parse(localStorage.getItem(k)); if (!raw||!(catKey in raw)) return; delete raw[catKey]; localStorage.setItem(k, JSON.stringify(raw)); } catch(e){} });
@@ -1594,7 +1741,7 @@ function deleteRole(roleId) {
   Object.keys(localStorage).forEach(k => { if (!k.startsWith('lt_day_')) return; try { const raw = JSON.parse(localStorage.getItem(k)); if (!raw||!(roleId in raw)) return; delete raw[roleId]; localStorage.setItem(k, JSON.stringify(raw)); } catch(e){} });
   saveRecurring(getRecurring().filter(t => t.catKey !== roleId));
 }
- 
+
 /* ============================================================
    HELPERS
    ============================================================ */
@@ -1612,7 +1759,7 @@ function hexAlpha(hex, alpha) {
   const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
- 
+
 /* ============================================================
    INIT
    ============================================================ */
