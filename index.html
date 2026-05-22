@@ -732,7 +732,151 @@ svg.ring { transform: rotate(-90deg); }
 }
 .opacity-val-label { font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: var(--text3); width: 32px; flex-shrink: 0; }
 
-/* ── Backup & Sync settings ── */
+/* ── Inline task edit ── */
+.task-edit-inp {
+  flex: 1; background: var(--surface3); border: 1px solid var(--blue);
+  border-radius: 5px; color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem; padding: 3px 7px; outline: none;
+}
+.task-edit-inp:focus { border-color: var(--blue); box-shadow: 0 0 0 2px var(--blue-glow); }
+.task-confirm-btn {
+  background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue);
+  border-radius: 5px; font-size: 0.75rem; padding: 3px 8px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.task-confirm-btn:hover { background: var(--blue); color: #fff; }
+.task-edit-btn {
+  background: none; border: none; color: var(--text3); font-size: 0.82rem;
+  cursor: pointer; padding: 0 4px; line-height: 1; transition: color 0.15s;
+  flex-shrink: 0;
+}
+.task-edit-btn:hover { color: var(--blue); }
+
+/* ── Expanded task edit panel ── */
+.task-edit-panel {
+  background: var(--surface3); border: 1px solid var(--blue);
+  border-radius: 8px; padding: 10px 12px; margin-top: 6px;
+  display: flex; flex-direction: column; gap: 8px;
+  animation: flag-panel-in 0.15s cubic-bezier(.4,0,.2,1);
+}
+.task-edit-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.task-edit-section-lbl {
+  font-size: 0.62rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text3); font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 2px;
+}
+.task-edit-actions { display: flex; gap: 6px; margin-top: 2px; }
+.task-edit-save {
+  flex: 1; padding: 7px; border-radius: 6px;
+  border: 1px solid var(--blue); background: var(--blue-dim); color: var(--blue);
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.task-edit-save:hover { background: var(--blue); color: #fff; }
+.task-edit-cancel {
+  padding: 7px 12px; border-radius: 6px; border: 1px solid var(--border);
+  background: transparent; color: var(--text3);
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem; cursor: pointer;
+}
+
+/* ── Move category button ── */
+.settings-move-btn {
+  background: transparent; border: 1px solid var(--border2); color: var(--text3);
+  border-radius: 5px; font-size: 0.65rem; padding: 3px 7px; cursor: pointer;
+  font-family: 'JetBrains Mono', monospace; white-space: nowrap; transition: all 0.15s;
+  flex-shrink: 0;
+}
+.settings-move-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Scheduled commitments ── */
+.sched-item {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.sched-item-info { flex: 1; }
+.sched-item-name { font-size: 0.82rem; color: var(--text); }
+.sched-item-date { font-size: 0.66rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.sched-item-badge {
+  font-size: 0.6rem; padding: 2px 6px; border-radius: 8px;
+  background: var(--gold-dim); color: var(--gold);
+  border: 1px solid rgba(245,158,11,0.3); font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+.sched-item-badge.in-window { background: var(--green-dim); color: var(--green); border-color: rgba(34,197,94,0.3); }
+
+/* ── Commitment prompt modal ── */
+.commit-prompt-overlay {
+  display: none; position: fixed; inset: 0; z-index: 600;
+  background: rgba(0,0,0,0.82); align-items: flex-start; justify-content: center; padding: 20px;
+}
+.commit-prompt-overlay.open { display: flex; }
+.commit-prompt-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-top: 3px solid var(--gold); border-radius: var(--radius);
+  width: 100%; max-width: 420px; margin-top: 60px;
+  padding: 20px 22px; display: flex; flex-direction: column; gap: 12px;
+  animation: flag-panel-in 0.22s cubic-bezier(.4,0,.2,1);
+  max-height: 88vh; overflow-y: auto;
+}
+.commit-prompt-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+  letter-spacing: 0.07em; color: var(--gold);
+}
+.commit-prompt-name { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+.commit-prompt-label {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text3); font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 4px;
+}
+.commit-prompt-actions { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+.commit-save-btn {
+  flex: 1; padding: 9px; border-radius: 7px;
+  border: 1px solid var(--gold); background: var(--gold-dim); color: var(--gold);
+  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.commit-save-btn:hover { background: var(--gold); color: #000; }
+.commit-dismiss-btn {
+  padding: 9px 14px; border-radius: 7px; border: 1px solid var(--border);
+  background: transparent; color: var(--text3);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer;
+}
+.commit-dismiss-btn:hover { color: var(--text2); }
+
+/* ── Scheduled page ── */
+.sched-page-add-box {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sched-page-add-title {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+}
+.sched-page-list { display: flex; flex-direction: column; gap: 8px; }
+.sched-page-empty {
+  text-align: center; color: var(--text3); font-size: 0.84rem;
+  font-style: italic; padding: 40px 0;
+}
+.sched-section-label {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--text3); margin: 16px 0 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.sched-item-del {
+  background: none; border: none; color: var(--text3); font-size: 1rem;
+  cursor: pointer; padding: 0 4px; transition: color 0.15s; flex-shrink: 0;
+}
+.sched-item-del:hover { color: #f87171; }
+.sched-assign-btn {
+  background: var(--gold-dim); border: 1px solid var(--gold); color: var(--gold);
+  border-radius: 6px; font-size: 0.7rem; padding: 4px 10px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-weight: 500; white-space: nowrap;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.sched-assign-btn:hover { background: var(--gold); color: #000; }
 .backup-box {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; padding: 14px 16px;
@@ -817,6 +961,7 @@ svg.ring { transform: rotate(-90deg); }
     <button class="nav-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
     <button class="nav-tab" onclick="showPage('calendar',this)">Calendar</button>
     <button class="nav-tab" onclick="showPage('twoweek',this)">Next 2 Weeks</button>
+    <button class="nav-tab" onclick="showPage('scheduled',this)">Future Plans</button>
   </div>
   <button class="nav-settings-btn" onclick="openSettings()" title="Settings">⚙</button>
 </nav>
@@ -852,6 +997,14 @@ svg.ring { transform: rotate(-90deg); }
     <div class="twoweek-sub" id="twoweek-range">—</div>
   </div>
   <div class="twoweek-list" id="twoweek-list"></div>
+</div>
+
+<div id="page-scheduled" class="page">
+  <div class="twoweek-header">
+    <div class="twoweek-title">FUTURE PLANS</div>
+    <div class="twoweek-sub">Commitments planned beyond your dashboard window</div>
+  </div>
+  <div id="scheduled-body" style="padding: 0 16px 32px;"></div>
 </div>
 
 <!-- Full-day side panel -->
@@ -908,6 +1061,11 @@ svg.ring { transform: rotate(-90deg); }
       <button class="flag-panel-full-btn" onclick="openFullDayFromFlag()">Open Full Day →</button>
     </div>
   </div>
+</div>
+
+<!-- Commitment prompt modal -->
+<div class="commit-prompt-overlay" id="commit-prompt-overlay">
+  <div class="commit-prompt-box" id="commit-prompt-box"></div>
 </div>
 
 <!-- Punctuality detail modal -->
@@ -1273,6 +1431,7 @@ function showPage(id, btn) {
   if (id === 'calendar')  buildCalendar();
   if (id === 'dashboard') renderDashboard();
   if (id === 'twoweek')   renderTwoWeek();
+  if (id === 'scheduled') renderScheduledPage();
 }
 
 /* ============================================================
@@ -2203,10 +2362,152 @@ function makeTaskEl(cat, task, idx) {
     const rl = document.createElement('div'); rl.className = 'task-recur-label';
     rl.textContent = recurLabel(task.recur, task.customDays); info.appendChild(rl);
   }
+  // Edit button
+  const editBtn = document.createElement('button');
+  editBtn.className = 'task-edit-btn'; editBtn.title = 'Edit task'; editBtn.textContent = '✎';
+  editBtn.onclick = () => startEditTask(item, cat, task, idx, txt, editBtn);
   const del = document.createElement('button');
   del.className = 'task-del'; del.textContent = '×'; del.onclick = () => requestDeleteTask(cat.key, idx, task);
-  item.appendChild(cb); item.appendChild(info); item.appendChild(del);
+  item.appendChild(cb); item.appendChild(info); item.appendChild(editBtn); item.appendChild(del);
   return item;
+}
+
+function startEditTask(item, cat, task, idx, txtEl, editBtn) {
+  if (item.dataset.editing === '1') return;
+  item.dataset.editing = '1';
+  editBtn.style.display = 'none';
+
+  // Build expanded edit panel below the task item
+  const panel = document.createElement('div');
+  panel.className = 'task-edit-panel';
+
+  // ── Task text ──
+  const textLbl = document.createElement('div'); textLbl.className = 'task-edit-section-lbl'; textLbl.textContent = 'Task Name';
+  const textRow = document.createElement('div'); textRow.className = 'task-edit-row';
+  const inp = document.createElement('input');
+  inp.className = 'task-edit-inp'; inp.value = task.text; inp.style.flex = '1';
+  textRow.appendChild(inp);
+  panel.appendChild(textLbl); panel.appendChild(textRow);
+
+  // ── Track timing toggle ──
+  let trackOn = !!(task.trackTiming);
+  const trackLbl = document.createElement('div'); trackLbl.className = 'task-edit-section-lbl'; trackLbl.textContent = 'Track Timing / Prep';
+  const trackRow = document.createElement('div'); trackRow.className = 'track-timing-row'; trackRow.style.marginTop = '0';
+  const tCb = document.createElement('div');
+  tCb.className = 'track-timing-cb' + (trackOn ? ' on' : '');
+  tCb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const tLbl = document.createElement('span');
+  tLbl.className = 'track-timing-label' + (trackOn ? ' on' : '');
+  tLbl.textContent = 'Track timing/prep for this task';
+  tCb.onclick = tLbl.onclick = () => {
+    trackOn = !trackOn;
+    tCb.className = 'track-timing-cb' + (trackOn ? ' on' : '');
+    tLbl.className = 'track-timing-label' + (trackOn ? ' on' : '');
+  };
+  trackRow.appendChild(tCb); trackRow.appendChild(tLbl);
+  panel.appendChild(trackLbl); panel.appendChild(trackRow);
+
+  // ── Recurrence ──
+  let editRecur = task.recur || 'none';
+  let editCustomDays = [...(task.customDays || [])];
+  const recurLbl = document.createElement('div'); recurLbl.className = 'task-edit-section-lbl'; recurLbl.textContent = 'Recurrence';
+  const recurRow = document.createElement('div'); recurRow.className = 'recur-row'; recurRow.style.flexWrap = 'wrap';
+  const customRow = document.createElement('div'); customRow.className = 'custom-days-row';
+  if (editRecur === 'custom') customRow.classList.add('visible');
+
+  RECUR_OPTIONS.forEach(ro => {
+    const btn = document.createElement('button');
+    btn.className = 'recur-btn' + (editRecur === ro.key ? ' selected' : '');
+    btn.textContent = ro.label; btn.dataset.val = ro.key;
+    btn.onclick = () => {
+      editRecur = ro.key;
+      recurRow.querySelectorAll('.recur-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === ro.key));
+      customRow.classList.toggle('visible', ro.key === 'custom');
+    };
+    recurRow.appendChild(btn);
+  });
+  DOW_LABELS.forEach((dl, di) => {
+    const btn = document.createElement('button');
+    btn.className = 'day-pick-btn' + (editCustomDays.includes(di) ? ' on' : '');
+    btn.textContent = dl;
+    btn.onclick = () => {
+      if (editCustomDays.includes(di)) editCustomDays = editCustomDays.filter(x => x !== di);
+      else editCustomDays.push(di);
+      btn.classList.toggle('on', editCustomDays.includes(di));
+    };
+    customRow.appendChild(btn);
+  });
+  panel.appendChild(recurLbl); panel.appendChild(recurRow); panel.appendChild(customRow);
+
+  // ── Actions ──
+  const actions = document.createElement('div'); actions.className = 'task-edit-actions';
+  const saveBtn   = document.createElement('button'); saveBtn.className = 'task-edit-save'; saveBtn.textContent = 'Save Changes';
+  const cancelBtn = document.createElement('button'); cancelBtn.className = 'task-edit-cancel'; cancelBtn.textContent = 'Cancel';
+
+  const closeEdit = () => {
+    item.dataset.editing = '';
+    panel.remove();
+    editBtn.style.display = '';
+  };
+
+  saveBtn.onclick = () => {
+    const newText = inp.value.trim();
+    if (!newText) return;
+    const data = getDay(activeDateKey);
+    const t = data[cat.key][idx];
+    t.text = newText;
+    t.trackTiming = trackOn;
+
+    // Handle recurrence change
+    const recurChanged = editRecur !== (t.recur || 'none');
+    const customChanged = JSON.stringify(editCustomDays.sort()) !== JSON.stringify((t.customDays||[]).slice().sort());
+
+    if (recurChanged || customChanged) {
+      // Remove old recurring template if existed
+      if (t.recurId) {
+        let templates = getRecurring();
+        templates = templates.filter(x => x.id !== t.recurId);
+        saveRecurring(templates);
+        // Clean future days of old recurrence
+        for (let i = 1; i <= 90; i++) {
+          const dt2 = new Date(today); dt2.setDate(today.getDate() + i);
+          const fkey = dateKey(dt2.getFullYear(), dt2.getMonth(), dt2.getDate());
+          const fdata = ls_get('day_' + fkey); if (!fdata) continue;
+          let changed = false;
+          Object.keys(fdata).forEach(k => {
+            const before = fdata[k].length;
+            fdata[k] = fdata[k].filter(x => x.recurId !== t.recurId);
+            if (fdata[k].length !== before) changed = true;
+          });
+          if (changed) ls_set('day_' + fkey, fdata);
+        }
+        t.recurId = undefined;
+      }
+      // Create new recurring template if needed
+      if (editRecur !== 'none') {
+        const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+        const templates = getRecurring();
+        templates.push({ id: templateId, catKey: cat.key, text: newText, recur: editRecur, customDays: editCustomDays, startKey: activeDateKey });
+        saveRecurring(templates);
+        t.recurId    = templateId;
+      }
+      t.recur      = editRecur;
+      t.customDays = editCustomDays;
+    }
+
+    setDay(activeDateKey, data);
+    closeEdit();
+    renderPanel();
+  };
+
+  cancelBtn.onclick = closeEdit;
+  inp.addEventListener('keydown', e => { if (e.key === 'Escape') closeEdit(); });
+  actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+  panel.appendChild(actions);
+
+  // Insert the panel after the task item
+  item.parentNode.insertBefore(panel, item.nextSibling);
+  inp.focus(); inp.select();
 }
 
 function addTask(catKey) {
@@ -2455,16 +2756,23 @@ function renderSettings() {
   body.appendChild(threshSection);
 
   const baseSection = document.createElement('div');
+  const deleted = settings._deleted || [];
   baseSection.innerHTML = '<div class="settings-section-label">Base Categories</div>';
   BASE_CATS.forEach(c => {
+    if (deleted.includes(c.key)) return;
+    // Check if this base cat has been moved to roles
+    const movedRoles = getRoles();
+    const movedAsRole = movedRoles.find(r => r._movedFromBase === c.key);
     const row = document.createElement('div'); row.className = 'settings-row';
     const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = c.color;
     const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = settings[c.key]||c.label; inp.placeholder = c.label;
     const saveBtn = document.createElement('button'); saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
     saveBtn.onclick = () => { const s = getSettings(); s[c.key] = inp.value.trim()||c.label; saveSettings(s); saveBtn.textContent = '✓'; setTimeout(() => { saveBtn.textContent = 'Save'; }, 1200); };
+    const moveBtn = document.createElement('button'); moveBtn.className = 'settings-move-btn'; moveBtn.textContent = '→ Role';
+    moveBtn.title = 'Move to My Roles'; moveBtn.onclick = () => moveBaseCatToRole(c.key, inp.value.trim()||c.label, c.color);
     const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
     delBtn.onclick = () => showInlineConfirm(row, `Delete "${inp.value||c.label}"? Removes all its tasks.`, () => { deleteBaseCat(c.key); renderSettings(); });
-    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
+    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(moveBtn); row.appendChild(delBtn);
     baseSection.appendChild(row);
   });
   body.appendChild(baseSection);
@@ -2478,9 +2786,11 @@ function renderSettings() {
     const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = c.name; inp.placeholder = 'Category name';
     const saveBtn = document.createElement('button'); saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
     saveBtn.onclick = () => { const cs = getCustomCats(); const t = cs.find(x => x.id===c.id); if(t){t.name=inp.value.trim()||c.name; saveCustomCats(cs);} saveBtn.textContent='✓'; setTimeout(()=>{saveBtn.textContent='Save';},1200); };
+    const moveBtn = document.createElement('button'); moveBtn.className = 'settings-move-btn'; moveBtn.textContent = '→ Role';
+    moveBtn.title = 'Move to My Roles'; moveBtn.onclick = () => moveCustomCatToRole(c.id, inp.value.trim()||c.name, c.color);
     const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
     delBtn.onclick = () => showInlineConfirm(row, `Delete "${inp.value||c.name}"? Removes all its tasks.`, () => { deleteCustomCat(c.id); renderSettings(); });
-    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
+    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(moveBtn); row.appendChild(delBtn);
     customSection.appendChild(row);
   });
   const addCatRow = document.createElement('div'); addCatRow.className = 'add-role-row';
@@ -2504,9 +2814,11 @@ function renderSettings() {
     const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = r.name; inp.placeholder = 'Role name';
     const saveBtn = document.createElement('button'); saveBtn.className = 'settings-save-btn'; saveBtn.textContent = 'Save';
     saveBtn.onclick = () => { const rs=getRoles(); const t=rs.find(x=>x.id===r.id); if(t){t.name=inp.value.trim()||r.name; saveRoles(rs);} saveBtn.textContent='✓'; setTimeout(()=>{saveBtn.textContent='Save';},1200); };
+    const moveBtn = document.createElement('button'); moveBtn.className = 'settings-move-btn'; moveBtn.textContent = '→ Cat';
+    moveBtn.title = 'Move to Custom Categories'; moveBtn.onclick = () => moveRoleToCustomCat(r.id, inp.value.trim()||r.name, r.color);
     const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
     delBtn.onclick = () => showInlineConfirm(row, `Delete role "${r.name}"? Removes all its tasks.`, () => { deleteRole(r.id); renderSettings(); });
-    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(delBtn);
+    row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(moveBtn); row.appendChild(delBtn);
     rolesSection.appendChild(row);
   });
   if (roles.length < MAX_ROLES) {
@@ -3255,19 +3567,42 @@ function renderBackupSection(body) {
     });
 
     const saveRow = document.createElement('div'); saveRow.className = 'backup-btn-row'; saveRow.style.marginTop = '10px';
-    const saveBtn = document.createElement('button'); saveBtn.className = 'backup-btn green'; saveBtn.textContent = 'Save Firebase Config';
-    saveBtn.onclick = () => {
+    const saveBtn = document.createElement('button'); saveBtn.className = 'backup-btn green'; saveBtn.textContent = 'Save & Verify Config';
+    saveBtn.onclick = async () => {
       const newCfg = {};
       let valid = true;
       fields.forEach(f => {
         const v = inputMap[f.key].value.trim();
-        if (!v) { valid = false; }
+        if (!v) valid = false;
         newCfg[f.key] = v;
       });
       if (!valid) { setBackupStatus('firebase-status', '✗ Please fill in all fields', 'err'); return; }
-      saveFirebaseConfig(newCfg);
-      setBackupStatus('firebase-status', '✓ Config saved — you can now sign in', 'ok');
-      renderSettings(); // re-render to show sign-in state
+      saveBtn.textContent = 'Verifying…'; saveBtn.disabled = true;
+      // Attempt to init Firebase with new config — don't commit until verified
+      const ok = await loadFirebaseSDK();
+      if (!ok) {
+        setBackupStatus('firebase-status', '✗ Failed to load Firebase SDK — check internet connection', 'err');
+        saveBtn.textContent = 'Save & Verify Config'; saveBtn.disabled = false; return;
+      }
+      try {
+        // Clean up any existing app first
+        if (firebase.apps.length) { await firebase.app().delete().catch(()=>{}); }
+        window._firebaseApp = firebase.initializeApp(newCfg);
+        // Quick test — try getting auth instance
+        const auth = firebase.auth();
+        if (!auth) throw new Error('Auth init failed');
+        // Commit only on success
+        saveFirebaseConfig(newCfg);
+        setBackupStatus('firebase-status', '✓ Config verified and saved — sign in below', 'ok');
+        saveBtn.textContent = 'Save & Verify Config'; saveBtn.disabled = false;
+        renderSettings();
+      } catch(err) {
+        // Do NOT wipe form — just show error and keep fields populated
+        setBackupStatus('firebase-status', '✗ Config error: ' + err.message + ' — please check your values and retry', 'err');
+        saveBtn.textContent = 'Retry Verify'; saveBtn.disabled = false;
+        // Restore field values so user can correct just the bad one
+        fields.forEach(f => { inputMap[f.key].value = newCfg[f.key] || ''; });
+      }
     };
     saveRow.appendChild(saveBtn);
     fbBox.appendChild(saveRow);
@@ -3299,6 +3634,295 @@ function renderBackupSection(body) {
 }
 
 /* ============================================================
+   MOVE CATEGORY ↔ ROLES
+   ============================================================ */
+function moveBaseCatToRole(catKey, name, color) {
+  const rs = getRoles();
+  if (rs.length >= MAX_ROLES) { alert(`Maximum of ${MAX_ROLES} roles reached — remove a role first.`); return; }
+  // Add as a role, tagging origin so data keys stay intact
+  rs.push({ id: catKey, name, color, _movedFromBase: catKey });
+  saveRoles(rs);
+  // Hide from base by "deleting" it in settings
+  const s = getSettings();
+  s._deleted = s._deleted || [];
+  if (!s._deleted.includes(catKey)) s._deleted.push(catKey);
+  saveSettings(s);
+  renderSettings(); renderDashboard();
+}
+
+function moveCustomCatToRole(catId, name, color) {
+  const rs = getRoles();
+  if (rs.length >= MAX_ROLES) { alert(`Maximum of ${MAX_ROLES} roles reached — remove a role first.`); return; }
+  rs.push({ id: catId, name, color, _movedFromCustom: catId });
+  saveRoles(rs);
+  // Remove from custom cats
+  const cs = getCustomCats().filter(c => c.id !== catId);
+  saveCustomCats(cs);
+  renderSettings(); renderDashboard();
+}
+
+function moveRoleToCustomCat(roleId, name, color) {
+  const rs = getRoles().filter(r => r.id !== roleId);
+  saveRoles(rs);
+  // If it was originally a base cat, un-delete it
+  const s = getSettings();
+  s._deleted = (s._deleted||[]).filter(k => k !== roleId);
+  saveSettings(s);
+  // If it was a custom cat originally (has _movedFromCustom) no extra step needed
+  // If it was a base cat it's now restored; if truly new, add to custom cats
+  const isBase = BASE_CATS.some(c => c.key === roleId);
+  if (!isBase) {
+    const cs = getCustomCats();
+    if (!cs.find(c => c.id === roleId)) {
+      cs.push({ id: roleId, name, color });
+      saveCustomCats(cs);
+    }
+  }
+  renderSettings(); renderDashboard();
+}
+
+/* ============================================================
+   SCHEDULED COMMITMENTS
+   ============================================================ */
+function getScheduledCommitments() { return ls_get('scheduled_commitments') || []; }
+function saveScheduledCommitments(arr) { ls_set('scheduled_commitments', arr); }
+
+/* ============================================================
+   SCHEDULED COMMITMENTS PAGE
+   ============================================================ */
+function renderScheduledPage() {
+  const body = document.getElementById('scheduled-body');
+  body.innerHTML = '';
+  const windowEnd = getWindowEndDate();
+  const allCats   = getAllCats();
+  const items     = getScheduledCommitments().slice().sort((a,b) => a.date.localeCompare(b.date));
+
+  // ── Add new commitment ──
+  const addBox = document.createElement('div');
+  addBox.className = 'sched-page-add-box';
+  const addTitle = document.createElement('div');
+  addTitle.className = 'sched-page-add-title';
+  addTitle.textContent = '+ New Scheduled Commitment';
+  addBox.appendChild(addTitle);
+
+  const nameInp = document.createElement('input');
+  nameInp.className = 'settings-input'; nameInp.placeholder = 'Commitment name (e.g. HR Meeting)…';
+  const dateInp = document.createElement('input');
+  dateInp.type = 'date'; dateInp.className = 'settings-input';
+  const tmr = new Date(today); tmr.setDate(tmr.getDate() + 1);
+  dateInp.value = tmr.toISOString().slice(0, 10);
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'backup-btn primary'; addBtn.textContent = '+ Add Commitment';
+  addBtn.onclick = () => {
+    const name = nameInp.value.trim(); const dt = dateInp.value;
+    if (!name || !dt) return;
+    const arr = getScheduledCommitments();
+    arr.push({ id: 'sc_' + Date.now(), name, date: dt, added: new Date().toISOString() });
+    saveScheduledCommitments(arr);
+    nameInp.value = '';
+    renderScheduledPage();
+  };
+  nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') addBtn.click(); });
+  addBox.appendChild(nameInp); addBox.appendChild(dateInp); addBox.appendChild(addBtn);
+  body.appendChild(addBox);
+
+  if (items.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'sched-page-empty';
+    empty.textContent = 'No scheduled commitments yet. Add one above.';
+    body.appendChild(empty);
+    return;
+  }
+
+  // Split into: in-window (needs assigning) and future
+  const inWindow = items.filter(item => {
+    const dt = new Date(item.date + 'T00:00:00');
+    return dt >= today && dt <= windowEnd;
+  });
+  const future = items.filter(item => {
+    const dt = new Date(item.date + 'T00:00:00');
+    return dt > windowEnd;
+  });
+  const past = items.filter(item => {
+    const dt = new Date(item.date + 'T00:00:00');
+    return dt < today;
+  });
+
+  function makeItem(item, showAssign) {
+    const itemDt = new Date(item.date + 'T00:00:00');
+    const row = document.createElement('div'); row.className = 'sched-item';
+    const info = document.createElement('div'); info.className = 'sched-item-info';
+    const nm   = document.createElement('div'); nm.className = 'sched-item-name'; nm.textContent = item.name;
+    const dtEl = document.createElement('div'); dtEl.className = 'sched-item-date';
+    dtEl.textContent = itemDt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    info.appendChild(nm); info.appendChild(dtEl);
+
+    const badge = document.createElement('div');
+    badge.className = 'sched-item-badge' + (showAssign ? ' in-window' : '');
+    badge.textContent = showAssign ? 'Ready to Assign' : (itemDt < today ? 'Past' : 'Future');
+    row.appendChild(info); row.appendChild(badge);
+
+    if (showAssign) {
+      const assignBtn = document.createElement('button');
+      assignBtn.className = 'sched-assign-btn'; assignBtn.textContent = 'Assign →';
+      assignBtn.onclick = () => openCommitmentPrompt(item);
+      row.appendChild(assignBtn);
+    }
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'sched-item-del'; delBtn.textContent = '🗑'; delBtn.title = 'Remove';
+    delBtn.onclick = () => {
+      saveScheduledCommitments(getScheduledCommitments().filter(x => x.id !== item.id));
+      renderScheduledPage();
+    };
+    row.appendChild(delBtn);
+    return row;
+  }
+
+  if (inWindow.length > 0) {
+    const lbl = document.createElement('div'); lbl.className = 'sched-section-label';
+    lbl.textContent = `⚡ Ready to Assign (${inWindow.length})`;
+    body.appendChild(lbl);
+    const list = document.createElement('div'); list.className = 'sched-page-list';
+    inWindow.forEach(item => list.appendChild(makeItem(item, true)));
+    body.appendChild(list);
+  }
+
+  if (future.length > 0) {
+    const lbl = document.createElement('div'); lbl.className = 'sched-section-label';
+    lbl.textContent = `📅 Upcoming (${future.length})`;
+    body.appendChild(lbl);
+    const list = document.createElement('div'); list.className = 'sched-page-list';
+    future.forEach(item => list.appendChild(makeItem(item, false)));
+    body.appendChild(list);
+  }
+
+  if (past.length > 0) {
+    const lbl = document.createElement('div'); lbl.className = 'sched-section-label';
+    lbl.textContent = `📁 Past (${past.length})`;
+    body.appendChild(lbl);
+    const list = document.createElement('div'); list.className = 'sched-page-list';
+    past.forEach(item => list.appendChild(makeItem(item, false)));
+    body.appendChild(list);
+  }
+}
+
+function getWindowEndDate() {
+  const s = getSettings();
+  const days = parseInt(s._windowDays||30);
+  const end = new Date(today); end.setDate(today.getDate() + days);
+  return end;
+}
+
+/* ── Commitment prompt (assign to category as task) ── */
+let pendingCommitment = null;
+
+function checkAndPromptCommitments() {
+  const items = getScheduledCommitments();
+  const windowEnd = getWindowEndDate();
+  const due = items.filter(item => {
+    const dt = new Date(item.date + 'T00:00:00');
+    return dt >= today && dt <= windowEnd && !item._prompted;
+  });
+  if (due.length > 0) openCommitmentPrompt(due[0]);
+}
+
+function openCommitmentPrompt(item) {
+  pendingCommitment = item;
+  const box = document.getElementById('commit-prompt-box');
+  box.innerHTML = '';
+
+  const title = document.createElement('div'); title.className = 'commit-prompt-title'; title.textContent = '📅 SCHEDULED COMMITMENT';
+  const name  = document.createElement('div'); name.className = 'commit-prompt-name'; name.textContent = item.name;
+
+  // Date picker
+  const dateLbl = document.createElement('div'); dateLbl.className = 'commit-prompt-label'; dateLbl.textContent = 'Date';
+  const dateInp = document.createElement('input'); dateInp.type = 'date'; dateInp.className = 'settings-input'; dateInp.value = item.date;
+
+  // Category picker
+  const catLbl = document.createElement('div'); catLbl.className = 'commit-prompt-label'; catLbl.textContent = 'Category';
+  const catSel = document.createElement('select'); catSel.className = 'date-window-select';
+  getAllCats().forEach(c => {
+    const opt = document.createElement('option'); opt.value = c.key; opt.textContent = c.label; catSel.appendChild(opt);
+  });
+
+  // Recurrence
+  const recurLbl = document.createElement('div'); recurLbl.className = 'commit-prompt-label'; recurLbl.textContent = 'Repeat';
+  const recurSel = document.createElement('select'); recurSel.className = 'date-window-select';
+  RECUR_OPTIONS.forEach(ro => { const opt = document.createElement('option'); opt.value = ro.key; opt.textContent = ro.label; recurSel.appendChild(opt); });
+
+  // Track timing
+  const trackRow = document.createElement('div'); trackRow.className = 'track-timing-row';
+  let trackOn = false;
+  const tCb = document.createElement('div'); tCb.className = 'track-timing-cb';
+  tCb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const tLbl = document.createElement('span'); tLbl.className = 'track-timing-label'; tLbl.textContent = 'Track timing/prep';
+  tCb.onclick = tLbl.onclick = () => {
+    trackOn = !trackOn;
+    tCb.className = 'track-timing-cb' + (trackOn ? ' on' : '');
+    tLbl.className = 'track-timing-label' + (trackOn ? ' on' : '');
+  };
+  trackRow.appendChild(tCb); trackRow.appendChild(tLbl);
+
+  // Actions
+  const actions = document.createElement('div'); actions.className = 'commit-prompt-actions';
+  const addBtn = document.createElement('button'); addBtn.className = 'commit-save-btn'; addBtn.textContent = 'Add as Task';
+  addBtn.onclick = () => {
+    const selDateKey = dateInp.value.replace(/-/g, '_').replace(/(\d{4})_(\d{2})_(\d{2})/, (_,y,m,d) => dateKey(parseInt(y), parseInt(m)-1, parseInt(d)));
+    const catKey = catSel.value;
+    const recur  = recurSel.value;
+    const data   = getDay(selDateKey);
+    if (!data[catKey]) data[catKey] = [];
+    if (recur !== 'none') {
+      const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+      const templates = getRecurring();
+      templates.push({ id: templateId, catKey, text: item.name, recur, customDays: [], startKey: selDateKey });
+      saveRecurring(templates);
+      data[catKey].push({ text: item.name, done: false, recurId: templateId, recur, customDays: [], trackTiming: trackOn });
+    } else {
+      data[catKey].push({ text: item.name, done: false, recur: 'none', customDays: [], trackTiming: trackOn });
+    }
+    setDay(selDateKey, data);
+    // Remove from scheduled commitments
+    saveScheduledCommitments(getScheduledCommitments().filter(x => x.id !== item.id));
+    closeCommitmentPrompt();
+    renderDashboard(); buildCalendar();
+    // Refresh scheduled page if it's active
+    if (document.getElementById('page-scheduled').classList.contains('active')) renderScheduledPage();
+  };
+  const laterBtn = document.createElement('button'); laterBtn.className = 'commit-dismiss-btn'; laterBtn.textContent = 'Remind Me Later';
+  laterBtn.onclick = () => {
+    // Mark as prompted so it doesn't auto-pop again this session
+    const arr = getScheduledCommitments();
+    const found = arr.find(x => x.id === item.id);
+    if (found) { found._prompted = true; saveScheduledCommitments(arr); }
+    closeCommitmentPrompt();
+  };
+  const removeBtn = document.createElement('button'); removeBtn.className = 'commit-dismiss-btn'; removeBtn.style.color = '#f87171'; removeBtn.textContent = 'Remove';
+  removeBtn.onclick = () => {
+    saveScheduledCommitments(getScheduledCommitments().filter(x => x.id !== item.id));
+    closeCommitmentPrompt();
+  };
+  actions.appendChild(addBtn); actions.appendChild(laterBtn); actions.appendChild(removeBtn);
+
+  box.appendChild(title); box.appendChild(name);
+  box.appendChild(dateLbl); box.appendChild(dateInp);
+  box.appendChild(catLbl); box.appendChild(catSel);
+  box.appendChild(recurLbl); box.appendChild(recurSel);
+  box.appendChild(trackRow); box.appendChild(actions);
+
+  // Close settings if open
+  document.getElementById('settings-overlay').classList.remove('open');
+  document.getElementById('commit-prompt-overlay').classList.add('open');
+}
+
+function closeCommitmentPrompt() {
+  document.getElementById('commit-prompt-overlay').classList.remove('open');
+  pendingCommitment = null;
+}
+
+/* ============================================================
    HELPERS
    ============================================================ */
 function getAllCats() {
@@ -3320,6 +3944,8 @@ function hexAlpha(hex, alpha) {
    INIT
    ============================================================ */
 renderDashboard();
+// Check for scheduled commitments that have entered the window
+setTimeout(checkAndPromptCommitments, 800);
 </script>
 </body>
 </html>
