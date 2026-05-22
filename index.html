@@ -1465,7 +1465,7 @@ function propagateRecurring(key) {
     const arr = data[t.catKey] || [];
     if (!arr.some(task => task.recurId === t.id)) {
       if (!data[t.catKey]) data[t.catKey] = [];
-      data[t.catKey].push({ text: t.text, done: false, recurId: t.id, recur: t.recur, customDays: t.customDays||[] });
+      data[t.catKey].push({ text: t.text, done: false, recurId: t.id, recur: t.recur, customDays: t.customDays||[], trackTiming: !!(t.trackTiming), trackProgress: !!(t.trackProgress) });
       changed = true;
     }
   });
@@ -2717,9 +2717,9 @@ function startEditTask(item, cat, task, idx, txtEl, editBtn) {
       if (editRecur !== 'none') {
         const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
         const templates = getRecurring();
-        templates.push({ id: templateId, catKey: cat.key, text: newText, recur: editRecur, customDays: editCustomDays, startKey: activeDateKey });
+        templates.push({ id: templateId, catKey: cat.key, text: newText, recur: editRecur, customDays: editCustomDays, startKey: activeDateKey, trackTiming: !!(t.trackTiming), trackProgress: !!(t.trackProgress) });
         saveRecurring(templates);
-        t.recurId    = templateId;
+        t.recurId = templateId;
       }
       t.recur      = editRecur;
       t.customDays = editCustomDays;
@@ -2752,7 +2752,7 @@ function addTask(catKey) {
   if (recur !== 'none') {
     const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
     const templates = getRecurring();
-    templates.push({ id: templateId, catKey, text, recur, customDays, startKey: activeDateKey });
+    templates.push({ id: templateId, catKey, text, recur, customDays, startKey: activeDateKey, trackTiming, trackProgress });
     saveRecurring(templates);
     data[catKey].push({ text, done: false, recurId: templateId, recur, customDays, trackTiming, trackProgress });
   } else {
@@ -3823,29 +3823,43 @@ function renderBackupSection(body) {
       });
       if (!valid) { setBackupStatus('firebase-status', '✗ Please fill in all fields', 'err'); return; }
       saveBtn.textContent = 'Verifying…'; saveBtn.disabled = true;
-      // Attempt to init Firebase with new config — don't commit until verified
+
       const ok = await loadFirebaseSDK();
       if (!ok) {
         setBackupStatus('firebase-status', '✗ Failed to load Firebase SDK — check internet connection', 'err');
-        saveBtn.textContent = 'Save & Verify Config'; saveBtn.disabled = false; return;
+        saveBtn.textContent = 'Save & Verify Config'; saveBtn.disabled = false;
+        // Restore fields — do NOT touch saved config
+        fields.forEach(f => { inputMap[f.key].value = newCfg[f.key] || ''; });
+        return;
       }
+      // Use a uniquely named temp app so we never touch the real app instance
+      const tempAppName = '__equilib_verify_' + Date.now();
+      let tempApp = null;
       try {
-        // Clean up any existing app first
-        if (firebase.apps.length) { await firebase.app().delete().catch(()=>{}); }
-        window._firebaseApp = firebase.initializeApp(newCfg);
-        // Quick test — try getting auth instance
-        const auth = firebase.auth();
+        tempApp = firebase.initializeApp(newCfg, tempAppName);
+        const auth = firebase.auth(tempApp);
         if (!auth) throw new Error('Auth init failed');
-        // Commit only on success
+        // Verification passed — now commit config and clean up
+        await tempApp.delete().catch(() => {});
+        // Replace main app with new config
+        if (firebase.apps.length) {
+          const main = firebase.apps.find(a => a.name === '[DEFAULT]');
+          if (main) await main.delete().catch(() => {});
+        }
+        window._firebaseApp  = firebase.initializeApp(newCfg);
+        window._firebaseAuth = firebase.auth();
+        window._firebaseDB   = firebase.firestore();
         saveFirebaseConfig(newCfg);
         setBackupStatus('firebase-status', '✓ Config verified and saved — sign in below', 'ok');
         saveBtn.textContent = 'Save & Verify Config'; saveBtn.disabled = false;
         renderSettings();
       } catch(err) {
-        // Do NOT wipe form — just show error and keep fields populated
-        setBackupStatus('firebase-status', '✗ Config error: ' + err.message + ' — please check your values and retry', 'err');
+        // Clean up temp app if it was created
+        if (tempApp) await tempApp.delete().catch(() => {});
+        // NEVER touch saved config or clear fields on failure
+        setBackupStatus('firebase-status', '✗ ' + err.message + ' — check your values and retry', 'err');
         saveBtn.textContent = 'Retry Verify'; saveBtn.disabled = false;
-        // Restore field values so user can correct just the bad one
+        // Keep fields populated with what was typed
         fields.forEach(f => { inputMap[f.key].value = newCfg[f.key] || ''; });
       }
     };
