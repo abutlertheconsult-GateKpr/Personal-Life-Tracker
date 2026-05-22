@@ -877,6 +877,21 @@ svg.ring { transform: rotate(-90deg); }
   transition: all 0.15s; flex-shrink: 0;
 }
 .sched-assign-btn:hover { background: var(--gold); color: #000; }
+
+/* ── Window delta on stat cards ── */
+.stat-delta { font-size: 0.6rem; font-family: 'JetBrains Mono', monospace; margin-top: 3px; letter-spacing: 0.04em; }
+.stat-delta.better { color: #22c55e; }
+.stat-delta.worse  { color: #f87171; }
+.stat-delta.same   { color: var(--text3); }
+
+/* ── Progress tracking box in cat detail stats ── */
+.progress-track-block { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: 8px; padding: 12px 14px; }
+.progress-track-task-row { margin-bottom: 10px; }
+.progress-track-task-row:last-child { margin-bottom: 0; }
+.progress-track-name { font-size: 0.78rem; color: var(--text); font-weight: 500; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.progress-track-pct-val { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 0.04em; }
+.progress-track-sub { font-size: 0.62rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
 .backup-box {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; padding: 14px 16px;
@@ -1184,58 +1199,6 @@ let trackTimingState = {};
 let trackProgressState = {};
 
 /* ============================================================
-   WINDOW SNAPSHOT STORAGE
-   ============================================================ */
-function getWindowSnapshots() { return ls_get('window_snapshots') || []; }
-function saveWindowSnapshots(arr) { ls_set('window_snapshots', arr); }
-
-function getCurrentWindowKey() {
-  const w = getDateWindow();
-  return `${w.year}_${w.month}`;
-}
-
-function saveWindowSnapshot() {
-  const key = getCurrentWindowKey();
-  const snapshots = getWindowSnapshots();
-  // Don't duplicate same window
-  if (snapshots.find(s => s.windowKey === key)) return;
-  const allCats = getAllCats();
-  const winMonths = getWindowMonths();
-  const windowDays = [];
-  winMonths.forEach(({ y, m }) => {
-    const dim = new Date(y, m + 1, 0).getDate();
-    for (let d = 1; d <= dim; d++) windowDays.push(dateKey(y, m, d));
-  });
-  const catPcts = {};
-  allCats.forEach(c => {
-    const r = calcDeficitPct(c.key, windowDays);
-    catPcts[c.key] = { pct: r.pct, done: r.done, total: r.total, label: c.label };
-  });
-  snapshots.push({ windowKey: key, savedAt: new Date().toISOString(), catPcts });
-  // Keep last 12 snapshots
-  if (snapshots.length > 12) snapshots.splice(0, snapshots.length - 12);
-  saveWindowSnapshots(snapshots);
-}
-
-function getLastSnapshot() {
-  const snapshots = getWindowSnapshots();
-  const key = getCurrentWindowKey();
-  // Return the most recent snapshot that is NOT the current window
-  const prev = snapshots.filter(s => s.windowKey !== key);
-  return prev.length > 0 ? prev[prev.length - 1] : null;
-}
-
-function checkAndSaveWindowSnapshot() {
-  // Save snapshot when window has changed since last save
-  const key = getCurrentWindowKey();
-  const snapshots = getWindowSnapshots();
-  // If we don't have the current window saved yet, save it
-  if (!snapshots.find(s => s.windowKey === key)) {
-    saveWindowSnapshot();
-  }
-}
-
-/* ============================================================
    PUNCTUALITY / PREP TRACKER CONFIG & STORAGE
    ============================================================ */
 function getPunctSettings() {
@@ -1296,6 +1259,51 @@ function getWindowMonths() {
     const raw = w.month + delta;
     return { y: w.year + Math.floor(raw / 12), m: raw % 12 };
   });
+}
+
+/* ============================================================
+   WINDOW SNAPSHOT STORAGE
+   ============================================================ */
+function getWindowSnapshots() { return ls_get('window_snapshots') || []; }
+function saveWindowSnapshots(arr) { ls_set('window_snapshots', arr); }
+
+function getCurrentWindowKey() {
+  const w = getDateWindow();
+  return `${w.year}_${w.month}`;
+}
+
+function saveWindowSnapshot() {
+  const key = getCurrentWindowKey();
+  const snapshots = getWindowSnapshots();
+  if (snapshots.find(s => s.windowKey === key)) return;
+  const allCats = getAllCats();
+  const winMonths = getWindowMonths();
+  const windowDays = [];
+  winMonths.forEach(({ y, m }) => {
+    const dim = new Date(y, m + 1, 0).getDate();
+    for (let d = 1; d <= dim; d++) windowDays.push(dateKey(y, m, d));
+  });
+  const catPcts = {};
+  allCats.forEach(c => {
+    const r = calcDeficitPct(c.key, windowDays);
+    catPcts[c.key] = { pct: r.pct, done: r.done, total: r.total, label: c.label };
+  });
+  snapshots.push({ windowKey: key, savedAt: new Date().toISOString(), catPcts });
+  if (snapshots.length > 12) snapshots.splice(0, snapshots.length - 12);
+  saveWindowSnapshots(snapshots);
+}
+
+function getLastSnapshot() {
+  const snapshots = getWindowSnapshots();
+  const key = getCurrentWindowKey();
+  const prev = snapshots.filter(s => s.windowKey !== key);
+  return prev.length > 0 ? prev[prev.length - 1] : null;
+}
+
+function checkAndSaveWindowSnapshot() {
+  const key = getCurrentWindowKey();
+  const snapshots = getWindowSnapshots();
+  if (!snapshots.find(s => s.windowKey === key)) saveWindowSnapshot();
 }
 
 /* ============================================================
@@ -1595,6 +1603,8 @@ function renderDashboard() {
 
   // Punctuality tracker card
   renderPunctCard();
+  // Save window snapshot for comparison
+  checkAndSaveWindowSnapshot();
 }
 
 /* ============================================================
@@ -1627,6 +1637,17 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
 
   const deficitNote = missed > 0 ? `<div class="stat-deficit-note">↓ ${missed} missed</div>` : '';
 
+  // Window delta vs last snapshot
+  const lastSnap = getLastSnapshot();
+  let deltaHTML = '';
+  if (lastSnap && lastSnap.catPcts && lastSnap.catPcts[catKey] !== undefined) {
+    const prevPct = lastSnap.catPcts[catKey].pct;
+    const diff = pct - prevPct;
+    if (diff > 0)      deltaHTML = `<div class="stat-delta better">▲ ${diff}% vs last window</div>`;
+    else if (diff < 0) deltaHTML = `<div class="stat-delta worse">▼ ${Math.abs(diff)}% vs last window</div>`;
+    else               deltaHTML = `<div class="stat-delta same">— same as last window</div>`;
+  }
+
   const card = document.createElement('div');
   card.className = 'stat-card';
   card.style.borderTopColor = color;
@@ -1654,6 +1675,7 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
         <div class="stat-pct state-${ringState}${isNeg?' negative':''}">${pct}%</div>
         <div class="stat-detail">${done} / ${total} past</div>
         ${deficitNote}
+        ${deltaHTML}
       </div>
     </div>`;
 
@@ -1752,9 +1774,17 @@ function openCatDetail(catKey, label, color) {
   document.getElementById('cd-dot').style.background = color;
   document.getElementById('cd-title').textContent = label.toUpperCase();
 
-  // Check if any tasks in this cat have punct log entries
+  // Check if any tasks have punct log entries OR progress tracking in window
   const log = getPunctLog();
   const hasPunctData = log.some(e => e.catKey === catKey);
+  let hasProgData = false;
+  getWindowDayKeys().forEach(key => {
+    const dt = parseKey(key); if (dt > today) return;
+    propagateRecurring(key);
+    const raw = ls_get('day_' + key); if (!raw) return;
+    (raw[catKey]||[]).forEach(t => { if (t.trackProgress) hasProgData = true; });
+  });
+  const hasStatsData = hasPunctData || hasProgData;
 
   // Build / update header buttons
   let hdrRight = document.getElementById('cd-header-right');
@@ -1763,13 +1793,12 @@ function openCatDetail(catKey, label, color) {
     hdrRight.id = 'cd-header-right';
     hdrRight.style.cssText = 'display:flex;align-items:center;gap:8px;';
     const hdr = document.querySelector('.cat-detail-header');
-    // insert before close button
     const closeBtn = hdr.querySelector('.panel-close');
     hdr.insertBefore(hdrRight, closeBtn);
   }
   hdrRight.innerHTML = '';
 
-  if (hasPunctData) {
+  if (hasStatsData) {
     const statsBtn = document.createElement('button');
     statsBtn.className = 'cat-detail-view-btn';
     statsBtn.id = 'cd-stats-btn';
@@ -1840,101 +1869,139 @@ function renderCatDetailBody() {
 function renderCatDetailStats(body, catKey, color) {
   const log = getPunctLog().filter(e => e.catKey === catKey);
 
-  if (log.length === 0) {
-    body.innerHTML = '<div class="cat-detail-empty">No timing/prep entries logged for this category yet.</div>';
+  // Check if any tasks in this category are flagged for progress tracking in the window
+  const windowKeys = getWindowDayKeys();
+  let hasProgressTasks = false;
+  windowKeys.forEach(key => {
+    const dt = parseKey(key); if (dt > today) return;
+    propagateRecurring(key);
+    const raw = ls_get('day_' + key); if (!raw) return;
+    (raw[catKey] || []).forEach(t => { if (t.trackProgress) hasProgressTasks = true; });
+  });
+
+  if (log.length === 0 && !hasProgressTasks) {
+    body.innerHTML = '<div class="cat-detail-empty">No timing/prep or progress tracking entries for this category yet.</div>';
     return;
   }
 
-  // Group by task name (normalized lowercase for matching, display original)
-  const taskMap = {};
-  log.forEach(e => {
-    const key = e.task.trim().toLowerCase();
-    if (!taskMap[key]) taskMap[key] = { name: e.task, timing: [], prep: [] };
-    if (e.timing) taskMap[key].timing.push(e.timing);
-    if (e.prep)   taskMap[key].prep.push(e.prep);
+  // ── Punctuality & Prep box ──
+  if (log.length > 0) {
+    renderCatDetailPunctBox(body, log);
+  }
+
+  // ── Progress % box ──
+  if (hasProgressTasks) {
+    renderCatDetailProgressBox(body, catKey);
+  }
+}
+
+function getWindowDayKeys() {
+  const winMonths = getWindowMonths();
+  const keys = [];
+  winMonths.forEach(({ y, m }) => {
+    const dim = new Date(y, m + 1, 0).getDate();
+    for (let d = 1; d <= dim; d++) keys.push(dateKey(y, m, d));
   });
+  return keys;
+}
 
-  // Also show overall rollup at top
-  const allTiming = log.filter(e => e.timing).map(e => e.timing);
-  const allPrep   = log.filter(e => e.prep).map(e => e.prep);
+function renderCatDetailPunctBox(body, log) {
+  const tC = {
+    onTime: log.filter(e => e.timing === 'On Time').length,
+    early:  log.filter(e => e.timing === 'Early').length,
+    late:   log.filter(e => e.timing === 'Late').length,
+    total:  log.filter(e => e.timing).length,
+  };
+  const pC = {
+    prepared:   log.filter(e => e.prep === 'Prepared').length,
+    lastMinute: log.filter(e => e.prep === 'Last Minute').length,
+    unprepared: log.filter(e => e.prep === 'Unprepared').length,
+    total:  log.filter(e => e.prep).length,
+  };
 
-  function makeBarRows(entries, defs) {
+  const timingDefs = [{ lbl: 'On Time', color: '#f59e0b' }, { lbl: 'Early', color: '#22c55e' }, { lbl: 'Late', color: '#f87171' }];
+  const prepDefs   = [{ lbl: 'Prepared', color: '#22c55e' }, { lbl: 'Last Minute', color: '#f59e0b' }, { lbl: 'Unprepared', color: '#f87171' }];
+
+  function makeBarRows(entries, total2, defs) {
     const frag = document.createDocumentFragment();
-    const total = entries.length;
     defs.forEach(({ lbl, color: c }) => {
-      const count = entries.filter(x => x === lbl).length;
-      const pct = total > 0 ? Math.round(count / total * 100) : 0;
-      const row = document.createElement('div'); row.className = 'punct-detail-bar-row';
-      row.innerHTML = `
-        <div class="punct-detail-bar-lbl" style="width:80px;font-size:0.72rem">${lbl}</div>
-        <div class="punct-detail-bar-wrap"><div class="punct-detail-bar-fill" style="width:${pct}%;background:${c}"></div></div>
-        <div class="punct-detail-bar-pct">${pct}%</div>`;
-      frag.appendChild(row);
+      const count = entries[lbl.toLowerCase().replace(' ','') ] ||
+        (lbl==='On Time' ? entries.onTime : lbl==='Last Minute' ? entries.lastMinute : lbl==='Unprepared' ? entries.unprepared : lbl==='Prepared' ? entries.prepared : lbl==='Early' ? entries.early : entries.late) || 0;
+      const pct2 = total2 > 0 ? Math.round(count / total2 * 100) : 0;
+      const row2 = document.createElement('div'); row2.className = 'punct-detail-bar-row';
+      row2.innerHTML = `<div class="punct-detail-bar-lbl" style="width:90px;font-size:0.72rem">${lbl}</div>
+        <div class="punct-detail-bar-wrap"><div class="punct-detail-bar-fill" style="width:${pct2}%;background:${c}"></div></div>
+        <div class="punct-detail-bar-pct">${pct2}%</div>`;
+      frag.appendChild(row2);
     });
     return frag;
   }
 
-  const timingDefs = [
-    { lbl: 'On Time', color: '#f59e0b' },
-    { lbl: 'Early',   color: '#22c55e' },
-    { lbl: 'Late',    color: '#f87171' },
-  ];
-  const prepDefs = [
-    { lbl: 'Prepared',    color: '#22c55e' },
-    { lbl: 'Last Minute', color: '#f59e0b' },
-    { lbl: 'Unprepared',  color: '#f87171' },
-  ];
-
-  // Overall rollup block
-  const overallBlock = document.createElement('div');
-  overallBlock.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:14px;';
-  const overallLbl = document.createElement('div');
-  overallLbl.className = 'punct-detail-section-label';
-  overallLbl.textContent = `Overall — ${log.length} entries`;
-  overallBlock.appendChild(overallLbl);
-  if (allTiming.length > 0) {
-    const tl = document.createElement('div'); tl.className = 'punct-detail-section-label'; tl.style.cssText='font-size:0.6rem;color:var(--text3);margin-bottom:5px;';
-    tl.textContent = 'Timing'; overallBlock.appendChild(tl);
-    overallBlock.appendChild(makeBarRows(allTiming, timingDefs));
+  const box = document.createElement('div');
+  box.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:8px;padding:12px 14px;margin-bottom:12px;';
+  const ps = getPunctSettings();
+  const lbl = document.createElement('div'); lbl.className = 'punct-detail-section-label';
+  lbl.textContent = `⏱ ${ps.name} — ${log.length} entries`;
+  box.appendChild(lbl);
+  if (tC.total > 0) {
+    const tl = document.createElement('div'); tl.style.cssText = 'font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;font-family:"JetBrains Mono",monospace;margin-top:6px;';
+    tl.textContent = 'Timing'; box.appendChild(tl);
+    box.appendChild(makeBarRows(tC, tC.total, timingDefs));
   }
-  if (allPrep.length > 0) {
-    const pl = document.createElement('div'); pl.className = 'punct-detail-section-label'; pl.style.cssText='font-size:0.6rem;color:var(--text3);margin-bottom:5px;margin-top:8px;';
-    pl.textContent = 'Prep'; overallBlock.appendChild(pl);
-    overallBlock.appendChild(makeBarRows(allPrep, prepDefs));
+  if (pC.total > 0) {
+    const pl = document.createElement('div'); pl.style.cssText = 'font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;font-family:"JetBrains Mono",monospace;margin-top:8px;';
+    pl.textContent = 'Prep'; box.appendChild(pl);
+    box.appendChild(makeBarRows(pC, pC.total, prepDefs));
   }
-  body.appendChild(overallBlock);
-
-  // Per-task breakdown
-  if (Object.keys(taskMap).length > 1) {
-    const perTaskLbl = document.createElement('div');
-    perTaskLbl.className = 'punct-detail-section-label';
-    perTaskLbl.style.marginBottom = '8px';
-    perTaskLbl.textContent = 'Per Task';
-    body.appendChild(perTaskLbl);
-
-    Object.values(taskMap).forEach(({ name, timing, prep }) => {
-      const block = document.createElement('div'); block.className = 'cat-stats-task-block';
-      block.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;';
-      const nameLbl = document.createElement('div'); nameLbl.className = 'cat-stats-task-name';
-      nameLbl.textContent = name;
-      const badge = document.createElement('span'); badge.className = 'cat-stats-tracked-badge';
-      badge.textContent = `${timing.length + prep.length} entries`;
-      nameLbl.appendChild(badge);
-      block.appendChild(nameLbl);
-      if (timing.length > 0) {
-        const tl = document.createElement('div'); tl.style.cssText='font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;font-family:"JetBrains Mono",monospace;';
-        tl.textContent = 'Timing'; block.appendChild(tl);
-        block.appendChild(makeBarRows(timing, timingDefs));
-      }
-      if (prep.length > 0) {
-        const pl = document.createElement('div'); pl.style.cssText='font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;margin-top:6px;font-family:"JetBrains Mono",monospace;';
-        pl.textContent = 'Prep'; block.appendChild(pl);
-        block.appendChild(makeBarRows(prep, prepDefs));
-      }
-      body.appendChild(block);
-    });
-  }
+  body.appendChild(box);
 }
+
+function renderCatDetailProgressBox(body, catKey) {
+  const windowKeys = getWindowDayKeys();
+  // Gather all tasks flagged for progress tracking in this category within the window
+  const taskStats = {}; // { taskNameLower: { name, done, total } }
+
+  windowKeys.forEach(key => {
+    const dt = parseKey(key);
+    if (dt > today) return; // only count past + today
+    propagateRecurring(key);
+    const raw = ls_get('day_' + key); if (!raw) return;
+    const tasks = raw[catKey] || [];
+    tasks.forEach(t => {
+      if (!t.trackProgress) return;
+      const k = t.text.trim().toLowerCase();
+      if (!taskStats[k]) taskStats[k] = { name: t.text, done: 0, total: 0 };
+      taskStats[k].total++;
+      if (t.done) taskStats[k].done++;
+    });
+  });
+
+  const entries = Object.values(taskStats);
+  if (entries.length === 0) return;
+
+  const box = document.createElement('div'); box.className = 'progress-track-block';
+  const lbl = document.createElement('div'); lbl.className = 'punct-detail-section-label';
+  lbl.textContent = `📊 Progress Tracking — current window`;
+  box.appendChild(lbl);
+
+  entries.sort((a,b) => b.total - a.total).forEach(({ name, done, total }) => {
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    const color = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#f87171';
+    const row = document.createElement('div'); row.className = 'progress-track-task-row';
+    const nameRow = document.createElement('div'); nameRow.className = 'progress-track-name';
+    const nameTxt = document.createElement('span'); nameTxt.textContent = name;
+    const pctVal  = document.createElement('span'); pctVal.className = 'progress-track-pct-val'; pctVal.style.color = color; pctVal.textContent = pct + '%';
+    nameRow.appendChild(nameTxt); nameRow.appendChild(pctVal);
+    const barWrap = document.createElement('div'); barWrap.className = 'punct-detail-bar-wrap';
+    const barFill = document.createElement('div'); barFill.className = 'punct-detail-bar-fill'; barFill.style.cssText = `width:${pct}%;background:${color}`;
+    barWrap.appendChild(barFill);
+    const sub = document.createElement('div'); sub.className = 'progress-track-sub'; sub.textContent = `${done} of ${total} occurrences completed`;
+    row.appendChild(nameRow); row.appendChild(barWrap); row.appendChild(sub);
+    box.appendChild(row);
+  });
+  body.appendChild(box);
+}
+
 
 function closeCatDetail() {
   document.getElementById('cat-detail-overlay').classList.remove('open');
@@ -2366,7 +2433,27 @@ function renderPanel() {
     trackRow.appendChild(tCb); trackRow.appendChild(tLbl);
     addArea.appendChild(trackRow);
 
-    const recurRow = document.createElement('div');
+    // Track progress % toggle
+    if (!trackProgressState[cat.key]) trackProgressState[cat.key] = false;
+    const progRow = document.createElement('div');
+    progRow.className = 'track-timing-row';
+    const pCb = document.createElement('div');
+    pCb.className = 'track-timing-cb' + (trackProgressState[cat.key] ? ' on' : '');
+    pCb.style.cssText = trackProgressState[cat.key] ? 'background:var(--green);border-color:var(--green)' : '';
+    pCb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+    const pLbl = document.createElement('span');
+    pLbl.className = 'track-timing-label' + (trackProgressState[cat.key] ? ' on' : '');
+    pLbl.style.color = trackProgressState[cat.key] ? 'var(--green)' : '';
+    pLbl.textContent = 'Track progress % for this task';
+    pCb.onclick = pLbl.onclick = () => {
+      trackProgressState[cat.key] = !trackProgressState[cat.key];
+      pCb.className = 'track-timing-cb' + (trackProgressState[cat.key] ? ' on' : '');
+      pCb.style.cssText = trackProgressState[cat.key] ? 'background:var(--green);border-color:var(--green)' : '';
+      pLbl.className = 'track-timing-label' + (trackProgressState[cat.key] ? ' on' : '');
+      pLbl.style.color = trackProgressState[cat.key] ? 'var(--green)' : '';
+    };
+    progRow.appendChild(pCb); progRow.appendChild(pLbl);
+    addArea.appendChild(progRow);
     recurRow.className = 'recur-row';
     const customRow = document.createElement('div');
     customRow.className = 'custom-days-row';
@@ -2461,6 +2548,28 @@ function startEditTask(item, cat, task, idx, txtEl, editBtn) {
   trackRow.appendChild(tCb); trackRow.appendChild(tLbl);
   panel.appendChild(trackLbl); panel.appendChild(trackRow);
 
+  // ── Track progress % toggle ──
+  let progressOn = !!(task.trackProgress);
+  const progEditLbl = document.createElement('div'); progEditLbl.className = 'task-edit-section-lbl'; progEditLbl.textContent = 'Track Progress %';
+  const progEditRow = document.createElement('div'); progEditRow.className = 'track-timing-row'; progEditRow.style.marginTop = '0';
+  const pCbE = document.createElement('div');
+  pCbE.className = 'track-timing-cb' + (progressOn ? ' on' : '');
+  pCbE.style.cssText = progressOn ? 'background:var(--green);border-color:var(--green)' : '';
+  pCbE.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const pLblE = document.createElement('span');
+  pLblE.className = 'track-timing-label' + (progressOn ? ' on' : '');
+  pLblE.style.color = progressOn ? 'var(--green)' : '';
+  pLblE.textContent = 'Track progress % for this task';
+  pCbE.onclick = pLblE.onclick = () => {
+    progressOn = !progressOn;
+    pCbE.className = 'track-timing-cb' + (progressOn ? ' on' : '');
+    pCbE.style.cssText = progressOn ? 'background:var(--green);border-color:var(--green)' : '';
+    pLblE.className = 'track-timing-label' + (progressOn ? ' on' : '');
+    pLblE.style.color = progressOn ? 'var(--green)' : '';
+  };
+  progEditRow.appendChild(pCbE); progEditRow.appendChild(pLblE);
+  panel.appendChild(progEditLbl); panel.appendChild(progEditRow);
+
   // ── Recurrence ──
   let editRecur = task.recur || 'none';
   let editCustomDays = [...(task.customDays || [])];
@@ -2510,7 +2619,8 @@ function startEditTask(item, cat, task, idx, txtEl, editBtn) {
     const data = getDay(activeDateKey);
     const t = data[cat.key][idx];
     t.text = newText;
-    t.trackTiming = trackOn;
+    t.trackTiming   = trackOn;
+    t.trackProgress = progressOn;
 
     // Handle recurrence change
     const recurChanged = editRecur !== (t.recur || 'none');
@@ -2569,7 +2679,8 @@ function addTask(catKey) {
   const text = inp.value.trim(); if (!text) return;
   const st = addState[catKey];
   const recur = st.recur, customDays = [...st.customDays];
-  const trackTiming = !!(trackTimingState[catKey]);
+  const trackTiming   = !!(trackTimingState[catKey]);
+  const trackProgress = !!(trackProgressState[catKey]);
   const data = getDay(activeDateKey);
   if (!data[catKey]) data[catKey] = [];
   if (recur !== 'none') {
@@ -2577,13 +2688,14 @@ function addTask(catKey) {
     const templates = getRecurring();
     templates.push({ id: templateId, catKey, text, recur, customDays, startKey: activeDateKey });
     saveRecurring(templates);
-    data[catKey].push({ text, done: false, recurId: templateId, recur, customDays, trackTiming });
+    data[catKey].push({ text, done: false, recurId: templateId, recur, customDays, trackTiming, trackProgress });
   } else {
-    data[catKey].push({ text, done: false, recur: 'none', customDays: [], trackTiming });
+    data[catKey].push({ text, done: false, recur: 'none', customDays: [], trackTiming, trackProgress });
   }
   setDay(activeDateKey, data); inp.value = '';
   addState[catKey] = { recur: 'none', customDays: [] };
-  trackTimingState[catKey] = false;
+  trackTimingState[catKey]   = false;
+  trackProgressState[catKey] = false;
   renderPanel();
 }
 
