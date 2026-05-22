@@ -1180,6 +1180,60 @@ let activeDateKey = null;
 let addState = {};
 // Per-cat track-timing flags for current open panel { catKey: bool }
 let trackTimingState = {};
+// Per-cat track-progress flags for current open panel { catKey: bool }
+let trackProgressState = {};
+
+/* ============================================================
+   WINDOW SNAPSHOT STORAGE
+   ============================================================ */
+function getWindowSnapshots() { return ls_get('window_snapshots') || []; }
+function saveWindowSnapshots(arr) { ls_set('window_snapshots', arr); }
+
+function getCurrentWindowKey() {
+  const w = getDateWindow();
+  return `${w.year}_${w.month}`;
+}
+
+function saveWindowSnapshot() {
+  const key = getCurrentWindowKey();
+  const snapshots = getWindowSnapshots();
+  // Don't duplicate same window
+  if (snapshots.find(s => s.windowKey === key)) return;
+  const allCats = getAllCats();
+  const winMonths = getWindowMonths();
+  const windowDays = [];
+  winMonths.forEach(({ y, m }) => {
+    const dim = new Date(y, m + 1, 0).getDate();
+    for (let d = 1; d <= dim; d++) windowDays.push(dateKey(y, m, d));
+  });
+  const catPcts = {};
+  allCats.forEach(c => {
+    const r = calcDeficitPct(c.key, windowDays);
+    catPcts[c.key] = { pct: r.pct, done: r.done, total: r.total, label: c.label };
+  });
+  snapshots.push({ windowKey: key, savedAt: new Date().toISOString(), catPcts });
+  // Keep last 12 snapshots
+  if (snapshots.length > 12) snapshots.splice(0, snapshots.length - 12);
+  saveWindowSnapshots(snapshots);
+}
+
+function getLastSnapshot() {
+  const snapshots = getWindowSnapshots();
+  const key = getCurrentWindowKey();
+  // Return the most recent snapshot that is NOT the current window
+  const prev = snapshots.filter(s => s.windowKey !== key);
+  return prev.length > 0 ? prev[prev.length - 1] : null;
+}
+
+function checkAndSaveWindowSnapshot() {
+  // Save snapshot when window has changed since last save
+  const key = getCurrentWindowKey();
+  const snapshots = getWindowSnapshots();
+  // If we don't have the current window saved yet, save it
+  if (!snapshots.find(s => s.windowKey === key)) {
+    saveWindowSnapshot();
+  }
+}
 
 /* ============================================================
    PUNCTUALITY / PREP TRACKER CONFIG & STORAGE
