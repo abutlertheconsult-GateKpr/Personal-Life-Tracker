@@ -1410,9 +1410,11 @@ function propagateRecurring(key) {
   const dt = parseKey(key);
   const templates = getRecurring();
   const data = getDay(key);
+  const excluded = data._excluded || [];
   let changed = false;
   templates.forEach(t => {
     if (!recurFires(t, dt)) return;
+    if (excluded.includes(t.id)) return; // explicitly deleted for this day
     const arr = data[t.catKey] || [];
     if (!arr.some(task => task.recurId === t.id)) {
       if (!data[t.catKey]) data[t.catKey] = [];
@@ -2169,6 +2171,10 @@ function requestFlagDeleteTask(idx, task) {
 function deleteFlagTask(key, catKey, idx, deleteFuture, recurId) {
   const data = getDay(key);
   data[catKey].splice(idx, 1);
+  if (recurId && !deleteFuture) {
+    if (!data._excluded) data._excluded = [];
+    if (!data._excluded.includes(recurId)) data._excluded.push(recurId);
+  }
   setDay(key, data);
   if (deleteFuture && recurId) {
     let templates = getRecurring();
@@ -2179,6 +2185,7 @@ function deleteFlagTask(key, catKey, idx, deleteFuture, recurId) {
       const fdata = ls_get('day_' + fkey); if (!fdata) continue;
       let changed = false;
       Object.keys(fdata).forEach(k => {
+        if (k === '_excluded') return;
         const before = fdata[k].length;
         fdata[k] = fdata[k].filter(t => t.recurId !== recurId);
         if (fdata[k].length !== before) changed = true;
@@ -2737,16 +2744,29 @@ function requestDeleteTask(catKey, idx, task) {
 
 function deleteTask(catKey, idx, deleteFuture, recurId) {
   const data = getDay(activeDateKey);
-  data[catKey].splice(idx, 1); setDay(activeDateKey, data);
+  const task = data[catKey][idx];
+  data[catKey].splice(idx, 1);
+
+  if (recurId && !deleteFuture) {
+    // Mark this day as explicitly excluding this recurring task
+    if (!data._excluded) data._excluded = [];
+    if (!data._excluded.includes(recurId)) data._excluded.push(recurId);
+  }
+
+  setDay(activeDateKey, data);
+
   if (deleteFuture && recurId) {
+    // Remove the template so it stops generating
     let templates = getRecurring();
     templates = templates.filter(t => t.id !== recurId); saveRecurring(templates);
+    // Wipe future days
     for (let i = 1; i <= 90; i++) {
       const dt = new Date(today); dt.setDate(today.getDate() + i);
       const fkey = dateKey(dt.getFullYear(), dt.getMonth(), dt.getDate());
       const fdata = ls_get('day_' + fkey); if (!fdata) continue;
       let changed = false;
       Object.keys(fdata).forEach(k => {
+        if (k === '_excluded') return;
         const before = fdata[k].length;
         fdata[k] = fdata[k].filter(t => t.recurId !== recurId);
         if (fdata[k].length !== before) changed = true;
