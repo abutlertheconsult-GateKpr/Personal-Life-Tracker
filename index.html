@@ -3,36 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIFE.TRACK</title>
+<title>EQUILIB</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #0a0a0c;
-  --surface:  #111115;
-  --surface2: #18181f;
-  --surface3: #1f1f28;
-  --border:  #2a2a35;
-  --border2: #35353f;
-  --text:  #e8e8f0;
-  --text2: #9090a8;
-  --text3: #5a5a70;
-  --blue:       #3b82f6;
-  --blue-dim:   #1e3a5f;
-  --blue-glow:  rgba(59,130,246,0.15);
+  --bg:       #09090e;
+  --surface:  #10101a;
+  --surface2: #17172200;
+  --surface2: #171722;
+  --surface3: #1e1e2c;
+  --border:  #28283a;
+  --border2: #323248;
+  --text:  #ebebf5;
+  --text2: #8888a8;
+  --text3: #55556e;
+  --blue:       #6366f1;
+  --blue-dim:   #1e1e4a;
+  --blue-glow:  rgba(99,102,241,0.15);
   --gold:       #f59e0b;
-  --gold-dim:   #4a3010;
+  --gold-dim:   #3a2808;
   --gold-glow:  rgba(245,158,11,0.15);
   --slate:      #64748b;
   --slate-dim:  #1e2530;
   --slate-glow: rgba(100,116,139,0.15);
   --green:      #22c55e;
-  --green-dim:  #0f3020;
+  --green-dim:  #0a2818;
   --green-glow: rgba(34,197,94,0.15);
   --purple:     #a855f7;
-  --purple-dim: #2d1a4a;
+  --purple-dim: #2a1548;
   --purple-glow:rgba(168,85,247,0.15);
+  --teal:       #14b8a6;
   --panel-w: 400px;
-  --radius:  10px;
+  --radius:  12px;
   --ring-circ: 138.23;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -878,7 +880,51 @@ svg.ring { transform: rotate(-90deg); }
 }
 .sched-assign-btn:hover { background: var(--gold); color: #000; }
 
-/* ── Window delta on stat cards ── */
+/* ── Needs attention nudge ── */
+.stat-attention {
+  font-size: 0.58rem; font-family: 'JetBrains Mono', monospace;
+  color: #f87171; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-top: 3px; opacity: 0.85;
+}
+
+/* ── Balance radar ── */
+.balance-radar-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.balance-radar-title {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+}
+.balance-radar-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.balance-radar-svg-wrap {
+  flex-shrink: 0;
+}
+.balance-radar-legend {
+  display: flex; flex-direction: column; gap: 5px; flex: 1;
+}
+.balance-legend-item {
+  display: flex; align-items: center; gap: 7px;
+}
+.balance-legend-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.balance-legend-name {
+  font-size: 0.7rem; color: var(--text2); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.balance-legend-pct {
+  font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--text3); flex-shrink: 0;
+}
+.balance-empty-note {
+  font-size: 0.74rem; color: var(--text3); font-style: italic;
+  text-align: center; padding: 8px 0;
+}
 .stat-delta { font-size: 0.6rem; font-family: 'JetBrains Mono', monospace; margin-top: 3px; letter-spacing: 0.04em; }
 .stat-delta.better { color: #22c55e; }
 .stat-delta.worse  { color: #f87171; }
@@ -971,11 +1017,11 @@ svg.ring { transform: rotate(-90deg); }
 <body>
 
 <nav>
-  <div class="nav-brand">LIFE<span>.</span>TRACK</div>
+  <div class="nav-brand">EQUILIB<span>.</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button class="nav-tab active" onclick="showPage('dashboard',this)">Balance</button>
     <button class="nav-tab" onclick="showPage('calendar',this)">Calendar</button>
-    <button class="nav-tab" onclick="showPage('twoweek',this)">Next 2 Weeks</button>
+    <button class="nav-tab" onclick="showPage('twoweek',this)">Horizon</button>
     <button class="nav-tab" onclick="showPage('scheduled',this)">Future Plans</button>
   </div>
   <button class="nav-settings-btn" onclick="openSettings()" title="Settings">⚙</button>
@@ -983,22 +1029,23 @@ svg.ring { transform: rotate(-90deg); }
 
 <div id="page-dashboard" class="page active">
   <div class="dash-header">
-    <div class="dash-title">YOUR PROGRESS</div>
+    <div class="dash-title">YOUR BALANCE</div>
     <div class="dash-subtitle" id="dash-range">Loading…</div>
   </div>
   <div id="punct-card-wrap" style="padding: 0 16px 8px;"></div>
-  <div class="dash-section-label">Core Categories</div>
+  <div id="balance-radar-wrap" style="padding: 0 16px 8px;"></div>
+  <div class="dash-section-label">Life Areas</div>
   <div class="dash-grid" id="dash-base-grid"></div>
-  <div class="dash-section-label" id="roles-section-label" style="display:none">My Roles</div>
+  <div class="dash-section-label" id="roles-section-label" style="display:none">Who I Am</div>
   <div class="dash-grid" id="dash-roles-grid"></div>
   <div class="dash-summary">
-    <div class="sum-item"><div class="sum-val" id="sum-days-logged">0</div><div class="sum-lbl">Days Logged</div></div>
+    <div class="sum-item"><div class="sum-val" id="sum-days-logged">0</div><div class="sum-lbl">Days Shown Up</div></div>
     <div class="sum-divider"></div>
-    <div class="sum-item"><div class="sum-val" id="sum-total-tasks">0</div><div class="sum-lbl">Total Tasks</div></div>
+    <div class="sum-item"><div class="sum-val" id="sum-total-tasks">0</div><div class="sum-lbl">Commitments Made</div></div>
     <div class="sum-divider"></div>
-    <div class="sum-item"><div class="sum-val" id="sum-completed">0</div><div class="sum-lbl">Completed</div></div>
+    <div class="sum-item"><div class="sum-val" id="sum-completed">0</div><div class="sum-lbl">Commitments Kept</div></div>
     <div class="sum-divider"></div>
-    <div class="sum-item"><div class="sum-val" id="sum-overall">0%</div><div class="sum-lbl">Overall</div></div>
+    <div class="sum-item"><div class="sum-val" id="sum-overall">0%</div><div class="sum-lbl">Balance Score</div></div>
   </div>
 </div>
 
@@ -1008,7 +1055,7 @@ svg.ring { transform: rotate(-90deg); }
 
 <div id="page-twoweek" class="page">
   <div class="twoweek-header">
-    <div class="twoweek-title">NEXT 2 WEEKS</div>
+    <div class="twoweek-title">HORIZON</div>
     <div class="twoweek-sub" id="twoweek-range">—</div>
   </div>
   <div class="twoweek-list" id="twoweek-list"></div>
@@ -1102,7 +1149,7 @@ svg.ring { transform: rotate(-90deg); }
         <div class="cat-detail-dot" id="cd-dot"></div>
         <div>
           <div class="cat-detail-title" id="cd-title">—</div>
-          <div class="cat-detail-subtitle">ALL TASKS — CURRENT &amp; FUTURE</div>
+          <div class="cat-detail-subtitle">COMMITMENTS — NOW &amp; AHEAD</div>
         </div>
       </div>
       <button class="panel-close" onclick="closeCatDetail()">✕</button>
@@ -1114,7 +1161,7 @@ svg.ring { transform: rotate(-90deg); }
 <!-- Completion prompt modal (timing/prep) -->
 <div class="completion-prompt-overlay" id="cp-overlay">
   <div class="completion-prompt-box">
-    <div class="completion-prompt-title">⏱ TASK COMPLETE</div>
+    <div class="completion-prompt-title">✓ COMMITMENT KEPT</div>
     <div class="completion-prompt-task" id="cp-task-text">—</div>
     <div class="completion-prompt-section">
       <div class="completion-prompt-section-label">Timing</div>
@@ -1204,7 +1251,7 @@ let trackProgressState = {};
 function getPunctSettings() {
   return ls_get('punct_settings') || {
     enabled: true,
-    name: 'Punctuality & Prep',
+    name: 'How I Show Up',
     onTimeDef: 'Within 5 minutes of scheduled time',
     earlyDef: '15+ minutes ahead of schedule',
     lateDef: 'Any time after scheduled start',
@@ -1587,6 +1634,7 @@ function renderDashboard() {
   const roleDefsOrdered = orderedDefs.filter(d => d.isRole);
   if (roleDefsOrdered.length > 0) {
     rolesLabel.style.display = 'block';
+    rolesLabel.textContent = 'Who I Am';
     roleDefsOrdered.forEach(ro => {
       const r = calcDeficitPct(ro.key, windowDays);
       rolesGrid.appendChild(makeStatCard(ro.key, ro.label, ro.color, r.pct, r.done, r.total, r.missed, r.hasPastData));
@@ -1605,6 +1653,8 @@ function renderDashboard() {
 
   // Punctuality tracker card
   renderPunctCard();
+  // Balance radar
+  renderBalanceRadar();
   // Save window snapshot for comparison
   checkAndSaveWindowSnapshot();
 }
@@ -1645,9 +1695,15 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
   if (lastSnap && lastSnap.catPcts && lastSnap.catPcts[catKey] !== undefined) {
     const prevPct = lastSnap.catPcts[catKey].pct;
     const diff = pct - prevPct;
-    if (diff > 0)      deltaHTML = `<div class="stat-delta better">▲ ${diff}% vs last window</div>`;
-    else if (diff < 0) deltaHTML = `<div class="stat-delta worse">▼ ${Math.abs(diff)}% vs last window</div>`;
-    else               deltaHTML = `<div class="stat-delta same">— same as last window</div>`;
+    if (diff > 0)      deltaHTML = `<div class="stat-delta better">▲ ${diff}% — improving</div>`;
+    else if (diff < 0) deltaHTML = `<div class="stat-delta worse">▼ ${Math.abs(diff)}% — slipping</div>`;
+    else               deltaHTML = `<div class="stat-delta same">— holding steady</div>`;
+  }
+
+  // Needs attention nudge
+  let attentionHTML = '';
+  if (hasPastData && total > 0 && pct < 40) {
+    attentionHTML = `<div class="stat-attention">needs attention</div>`;
   }
 
   const card = document.createElement('div');
@@ -1675,9 +1731,10 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
       </div>
       <div>
         <div class="stat-pct state-${ringState}${isNeg?' negative':''}">${pct}%</div>
-        <div class="stat-detail">${done} / ${total} past</div>
+        <div class="stat-detail">${done} / ${total} kept</div>
         ${deficitNote}
         ${deltaHTML}
+        ${attentionHTML}
       </div>
     </div>`;
 
@@ -2415,7 +2472,7 @@ function renderPanel() {
     const addRow = document.createElement('div');
     addRow.className = 'add-task-row';
     const inp = document.createElement('input');
-    inp.className = 'add-task-input'; inp.placeholder = 'Add task…'; inp.id = 'inp-' + cat.key;
+    inp.className = 'add-task-input'; inp.placeholder = 'Add commitment…'; inp.id = 'inp-' + cat.key;
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(cat.key); });
     const addBtn = document.createElement('button');
     addBtn.className = 'add-task-btn'; addBtn.textContent = '+'; addBtn.onclick = () => addTask(cat.key);
@@ -2431,7 +2488,7 @@ function renderPanel() {
     tCb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
     const tLbl = document.createElement('span');
     tLbl.className = 'track-timing-label' + (trackTimingState[cat.key] ? ' on' : '');
-    tLbl.textContent = 'Track timing/prep for this task';
+    tLbl.textContent = 'Was I present & on time?';
     tCb.onclick = tLbl.onclick = () => {
       trackTimingState[cat.key] = !trackTimingState[cat.key];
       tCb.className = 'track-timing-cb' + (trackTimingState[cat.key] ? ' on' : '');
@@ -2451,7 +2508,7 @@ function renderPanel() {
     const pLbl = document.createElement('span');
     pLbl.className = 'track-timing-label' + (trackProgressState[cat.key] ? ' on' : '');
     pLbl.style.color = trackProgressState[cat.key] ? 'var(--green)' : '';
-    pLbl.textContent = 'Track progress % for this task';
+    pLbl.textContent = 'Track how consistently I show up for this';
     pCb.onclick = pLbl.onclick = () => {
       trackProgressState[cat.key] = !trackProgressState[cat.key];
       pCb.className = 'track-timing-cb' + (trackProgressState[cat.key] ? ' on' : '');
@@ -2945,7 +3002,7 @@ function renderSettings() {
 
   const baseSection = document.createElement('div');
   const deleted = settings._deleted || [];
-  baseSection.innerHTML = '<div class="settings-section-label">Base Categories</div>';
+  baseSection.innerHTML = '<div class="settings-section-label">Life Areas</div>';
   BASE_CATS.forEach(c => {
     if (deleted.includes(c.key)) return;
     // Check if this base cat has been moved to roles
@@ -2967,7 +3024,7 @@ function renderSettings() {
 
   const customCatsNow = getCustomCats();
   const customSection = document.createElement('div');
-  customSection.innerHTML = '<div class="settings-section-label">Custom Categories</div>';
+  customSection.innerHTML = '<div class="settings-section-label">Custom Life Areas</div>';
   customCatsNow.forEach(c => {
     const row = document.createElement('div'); row.className = 'settings-row';
     const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = c.color;
@@ -2995,7 +3052,7 @@ function renderSettings() {
   body.appendChild(customSection);
 
   const rolesSection = document.createElement('div');
-  rolesSection.innerHTML = `<div class="settings-section-label">My Roles (${roles.length}/${MAX_ROLES})</div>`;
+  rolesSection.innerHTML = `<div class="settings-section-label">Who I Am (${roles.length}/${MAX_ROLES})</div>`;
   roles.forEach(r => {
     const row = document.createElement('div'); row.className = 'settings-row';
     const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = r.color;
@@ -3191,7 +3248,7 @@ function renderPunctCard() {
 
   const titleRow = document.createElement('div');
   titleRow.className = 'punct-card-title';
-  titleRow.textContent = `⏱ ${ps.name}`;
+  titleRow.textContent = `◎ ${ps.name}`;
   card.appendChild(titleRow);
 
   if (noData) {
@@ -4108,6 +4165,134 @@ function openCommitmentPrompt(item) {
 function closeCommitmentPrompt() {
   document.getElementById('commit-prompt-overlay').classList.remove('open');
   pendingCommitment = null;
+}
+
+/* ============================================================
+   BALANCE RADAR
+   ============================================================ */
+function renderBalanceRadar() {
+  const wrap = document.getElementById('balance-radar-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  const allCats = getAllCats();
+  if (allCats.length === 0) return;
+
+  const settings  = getSettings();
+  const winMonths = getWindowMonths();
+  const windowDays = [];
+  winMonths.forEach(({ y, m }) => {
+    const dim = new Date(y, m + 1, 0).getDate();
+    for (let d = 1; d <= dim; d++) windowDays.push(dateKey(y, m, d));
+  });
+
+  // Build data points — pct per category, capped 0-100
+  const pts = allCats.map(c => {
+    const r = calcDeficitPct(c.key, windowDays);
+    const pct = Math.max(0, Math.min(100, r.pct));
+    return { label: settings[c.key] || c.label, color: c.color, pct, hasPast: r.hasPastData };
+  }).filter(p => p.hasPast || p.pct > 0);
+
+  if (pts.length === 0) {
+    return; // Nothing to show yet — stays hidden
+  }
+
+  const card = document.createElement('div');
+  card.className = 'balance-radar-card';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'balance-radar-title';
+  titleEl.textContent = 'Life Balance';
+  card.appendChild(titleEl);
+
+  const row = document.createElement('div');
+  row.className = 'balance-radar-row';
+
+  // SVG radar
+  const size  = 140;
+  const cx    = size / 2, cy = size / 2;
+  const maxR  = 54;
+  const n     = pts.length;
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('width', size); svg.setAttribute('height', size);
+  svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+
+  // Background grid rings at 25%, 50%, 75%, 100%
+  [0.25, 0.5, 0.75, 1].forEach(scale => {
+    const poly = document.createElementNS(svgNS, 'polygon');
+    const ringPts = pts.map((_, i) => {
+      const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+      return `${cx + Math.cos(angle) * maxR * scale},${cy + Math.sin(angle) * maxR * scale}`;
+    }).join(' ');
+    poly.setAttribute('points', ringPts);
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', 'rgba(255,255,255,0.06)');
+    poly.setAttribute('stroke-width', '1');
+    svg.appendChild(poly);
+  });
+
+  // Axis spokes
+  pts.forEach((_, i) => {
+    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+    line.setAttribute('x2', cx + Math.cos(angle) * maxR);
+    line.setAttribute('y2', cy + Math.sin(angle) * maxR);
+    line.setAttribute('stroke', 'rgba(255,255,255,0.08)');
+    line.setAttribute('stroke-width', '1');
+    svg.appendChild(line);
+  });
+
+  // Data polygon — filled with gradient-like opacity
+  const dataCoords = pts.map((p, i) => {
+    const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+    const r = maxR * (p.pct / 100);
+    return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+  });
+
+  const fillPoly = document.createElementNS(svgNS, 'polygon');
+  fillPoly.setAttribute('points', dataCoords.map(p => `${p.x},${p.y}`).join(' '));
+  fillPoly.setAttribute('fill', 'rgba(99,102,241,0.18)');
+  fillPoly.setAttribute('stroke', 'rgba(99,102,241,0.6)');
+  fillPoly.setAttribute('stroke-width', '1.5');
+  fillPoly.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(fillPoly);
+
+  // Data points — colored dots per category
+  dataCoords.forEach((coord, i) => {
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', coord.x); circle.setAttribute('cy', coord.y);
+    circle.setAttribute('r', '3.5');
+    circle.setAttribute('fill', pts[i].color);
+    circle.setAttribute('stroke', 'var(--surface)');
+    circle.setAttribute('stroke-width', '1.5');
+    svg.appendChild(circle);
+  });
+
+  const svgWrap = document.createElement('div');
+  svgWrap.className = 'balance-radar-svg-wrap';
+  svgWrap.appendChild(svg);
+
+  // Legend
+  const legend = document.createElement('div');
+  legend.className = 'balance-radar-legend';
+  pts.slice(0, 8).forEach(p => {
+    const item = document.createElement('div'); item.className = 'balance-legend-item';
+    const dot  = document.createElement('div'); dot.className = 'balance-legend-dot'; dot.style.background = p.color;
+    const name = document.createElement('div'); name.className = 'balance-legend-name'; name.textContent = p.label;
+    const pctEl = document.createElement('div'); pctEl.className = 'balance-legend-pct';
+    const color = p.pct >= 80 ? '#22c55e' : p.pct >= 50 ? '#f59e0b' : '#f87171';
+    pctEl.style.color = color;
+    pctEl.textContent = p.pct + '%';
+    item.appendChild(dot); item.appendChild(name); item.appendChild(pctEl);
+    legend.appendChild(item);
+  });
+
+  row.appendChild(svgWrap); row.appendChild(legend);
+  card.appendChild(row);
+  wrap.appendChild(card);
 }
 
 /* ============================================================
