@@ -437,7 +437,139 @@ svg.ring { transform: rotate(-90deg); }
   .dash-summary { gap: 12px; }
   .flag-panel { margin-top: 40px; }
 }
-@media (max-width: 380px) {
+/* ══════════════════════════════════════════════
+   ONBOARDING FLOW
+   ══════════════════════════════════════════════ */
+#onboarding-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 28px 24px;
+  transition: opacity 0.6s ease;
+}
+#onboarding-overlay.fade-out { opacity: 0; pointer-events: none; }
+
+.ob-inner {
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column;
+  gap: 0; animation: ob-slide-in 0.4s cubic-bezier(.4,0,.2,1);
+}
+@keyframes ob-slide-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ob-brand {
+  font-family: 'Bebas Neue', sans-serif; font-size: 2rem;
+  letter-spacing: 0.12em; color: var(--text3); margin-bottom: 32px;
+}
+.ob-brand span { color: var(--blue); }
+.ob-step-indicator {
+  font-size: 0.62rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ob-question {
+  font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem;
+  letter-spacing: 0.06em; line-height: 1.15; color: var(--text);
+  margin-bottom: 8px;
+}
+.ob-subtext {
+  font-size: 0.82rem; color: var(--text3); line-height: 1.5;
+  margin-bottom: 28px; font-family: 'DM Sans', sans-serif;
+}
+.ob-options {
+  display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;
+}
+.ob-option {
+  padding: 14px 16px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text2); font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 500; cursor: pointer;
+  transition: all 0.18s; text-align: left;
+  display: flex; align-items: center; gap: 12px;
+}
+.ob-option:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+.ob-option.selected {
+  border-color: var(--blue); background: var(--blue-dim);
+  color: var(--text);
+}
+.ob-option.selected .ob-option-check { opacity: 1; }
+.ob-option-check {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--blue); flex-shrink: 0; opacity: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.15s;
+}
+.ob-option-check svg { display: block; }
+.ob-multi-hint {
+  font-size: 0.68rem; color: var(--text3); margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.06em;
+}
+.ob-actions { display: flex; gap: 10px; align-items: center; }
+.ob-next-btn {
+  flex: 1; padding: 14px; border-radius: 10px;
+  border: 1px solid var(--blue); background: var(--blue-dim);
+  color: var(--blue); font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  transition: all 0.18s;
+}
+.ob-next-btn:hover { background: var(--blue); color: #fff; }
+.ob-next-btn:disabled { opacity: 0.4; pointer-events: none; }
+.ob-skip-btn {
+  padding: 14px 16px; border-radius: 10px;
+  border: 1px solid transparent; background: transparent;
+  color: var(--text3); font-family: 'DM Sans', sans-serif;
+  font-size: 0.84rem; cursor: pointer; transition: color 0.15s;
+}
+.ob-skip-btn:hover { color: var(--text2); }
+.ob-progress {
+  display: flex; gap: 5px; margin-bottom: 28px;
+}
+.ob-progress-dot {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: var(--border); transition: background 0.3s;
+}
+.ob-progress-dot.active { background: var(--blue); }
+.ob-progress-dot.done   { background: var(--blue); opacity: 0.4; }
+
+/* Summary screen */
+.ob-summary-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.ob-summary-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+}
+.ob-summary-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.ob-summary-name { font-size: 0.84rem; color: var(--text); flex: 1; }
+.ob-summary-badge {
+  font-size: 0.62rem; padding: 2px 7px; border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.ob-summary-badge.role { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+.ob-summary-badge.area { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(99,102,241,0.3); }
+.ob-summary-remove {
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  font-size: 0.82rem; padding: 0 2px; transition: color 0.15s;
+}
+.ob-summary-remove:hover { color: #f87171; }
+.ob-confirm-btn {
+  width: 100%; padding: 15px; border-radius: 10px;
+  border: 1px solid var(--green); background: var(--green-dim);
+  color: var(--green); font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600; cursor: pointer;
+  transition: all 0.18s;
+}
+.ob-confirm-btn:hover { background: var(--green); color: #000; }
+/* Name input */
+.ob-name-inp {
+  width: 100%; padding: 14px 16px; border-radius: 10px;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem;
+  outline: none; margin-bottom: 20px; box-sizing: border-box;
+}
+.ob-name-inp:focus { border-color: var(--blue); }
+.ob-name-inp::placeholder { color: var(--text3); }
   .cal-grid { gap: 2px; }
   .cal-day { min-height: 40px; padding: 3px; }
   .day-pct-badge { font-size: 0.58rem; padding: 1px 3px; }
@@ -925,6 +1057,131 @@ svg.ring { transform: rotate(-90deg); }
   font-size: 0.74rem; color: var(--text3); font-style: italic;
   text-align: center; padding: 8px 0;
 }
+/* ── Equilibrium scale ── */
+.eq-scale {
+  position: absolute; bottom: 8px; right: 10px;
+  font-size: 1rem; line-height: 1;
+  transition: all 0.4s ease;
+  pointer-events: none; user-select: none;
+}
+.eq-scale.silver {
+  filter: grayscale(0.3) brightness(1.4);
+  opacity: 0.85;
+  animation: scale-appear 0.5s cubic-bezier(.4,0,.2,1);
+}
+.eq-scale.gold {
+  filter: none;
+  opacity: 1;
+  animation: scale-appear 0.5s cubic-bezier(.4,0,.2,1), scale-shimmer 2.5s ease-in-out infinite;
+}
+@keyframes scale-appear {
+  from { opacity: 0; transform: scale(0.5) rotate(-15deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes scale-shimmer {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 3px rgba(245,158,11,0.3)); }
+  50%       { filter: brightness(1.3) drop-shadow(0 0 8px rgba(245,158,11,0.7)); }
+}
+
+/* stat-card needs position:relative for absolute scale child */
+.stat-card { position: relative; }
+
+/* ── All-gold dashboard glow ── */
+.dash-summary.all-gold #sum-overall {
+  color: var(--gold) !important;
+  text-shadow: 0 0 12px rgba(245,158,11,0.5);
+  animation: gold-pulse 2.5s ease-in-out infinite;
+}
+@keyframes gold-pulse {
+  0%, 100% { text-shadow: 0 0 8px rgba(245,158,11,0.4); }
+  50%       { text-shadow: 0 0 20px rgba(245,158,11,0.8); }
+}
+.balance-score-gold {
+  color: var(--gold) !important;
+  text-shadow: 0 0 14px rgba(245,158,11,0.6);
+  animation: gold-pulse 2.5s ease-in-out infinite;
+}
+.faq-section-label {
+  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--text3); margin: 20px 0 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.faq-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 8px; overflow: hidden;
+  transition: border-color 0.15s;
+}
+.faq-item.open { border-color: var(--blue); }
+.faq-question {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; cursor: pointer; gap: 12px;
+  font-size: 0.88rem; color: var(--text); font-weight: 500;
+  font-family: 'DM Sans', sans-serif; user-select: none;
+}
+.faq-question:hover { background: var(--surface2); }
+.faq-chevron {
+  font-size: 0.8rem; color: var(--text3); flex-shrink: 0;
+  transition: transform 0.2s; display: inline-block;
+}
+.faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--blue); }
+.faq-answer {
+  display: none; padding: 0 16px 14px;
+  font-size: 0.82rem; color: var(--text2); line-height: 1.65;
+  font-family: 'DM Sans', sans-serif;
+}
+.faq-item.open .faq-answer { display: block; }
+.faq-answer b { color: var(--text); font-weight: 600; }
+.faq-answer ul { margin: 8px 0 4px 16px; display: flex; flex-direction: column; gap: 4px; }
+.faq-answer li { color: var(--text2); }
+.faq-tip {
+  background: var(--blue-dim); border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 7px; padding: 10px 12px; margin-top: 10px;
+  font-size: 0.78rem; color: var(--blue); line-height: 1.5;
+}
+.faq-tip::before { content: '💡 '; }
+.impact-section-header {
+  font-size: 0.62rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--purple); margin: 10px 0 6px;
+  font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 6px;
+}
+.impact-section-header::before { content: '◎'; }
+.impact-task-row {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 6px;
+}
+.impact-task-name {
+  font-size: 0.8rem; color: var(--text); font-weight: 500; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.impact-task-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.04em; transition: color 0.3s; }
+.impact-slider { width: 100%; height: 5px; border-radius: 4px; cursor: pointer; outline: none; border: none; appearance: none; -webkit-appearance: none; background: var(--surface3); }
+.impact-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid var(--surface); transition: transform 0.15s; }
+.impact-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.impact-slider-labels { display: flex; justify-content: space-between; font-size: 0.58rem; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+.impact-del-btn { background: none; border: none; color: var(--text3); font-size: 0.8rem; cursor: pointer; padding: 0 3px; transition: color 0.15s; }
+.impact-del-btn:hover { color: #f87171; }
+.add-impact-row { display: flex; gap: 7px; margin-top: 8px; align-items: center; }
+.add-impact-inp { flex: 1; background: var(--surface3); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; padding: 6px 10px; outline: none; }
+.add-impact-inp:focus { border-color: var(--purple); }
+.add-impact-btn { background: var(--purple-dim); border: 1px solid var(--purple); color: var(--purple); border-radius: 6px; font-size: 0.82rem; padding: 6px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.add-impact-btn:hover { background: var(--purple); color: #fff; }
+.stat-tier-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; transition: color 0.3s; }
+.stat-impact-avg { font-size: 0.65rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+@keyframes impact-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0); border-color: rgba(248,113,113,0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.7); }
+}
+.stat-card.impact-needs-work { animation: impact-pulse 3s ease-in-out infinite; }
+.stat-card.impact-middle { border-color: rgba(245,158,11,0.5); }
+.impact-role-toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 12px; background: var(--surface3); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
+.impact-threshold-box { background: var(--surface3); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.impact-threshold-row { display: flex; align-items: center; gap: 8px; }
+.impact-threshold-lbl { font-size: 0.72rem; color: var(--text2); width: 110px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+.impact-threshold-inp { width: 50px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 5px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; padding: 4px 7px; outline: none; text-align: center; }
+.impact-threshold-inp:focus { border-color: var(--purple); }
+.impact-label-inp { flex: 1; background: var(--surface2); border: 1px solid var(--border2); border-radius: 5px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; padding: 4px 8px; outline: none; }
+.impact-label-inp:focus { border-color: var(--purple); }
+
 .stat-delta { font-size: 0.6rem; font-family: 'JetBrains Mono', monospace; margin-top: 3px; letter-spacing: 0.04em; }
 .stat-delta.better { color: #22c55e; }
 .stat-delta.worse  { color: #f87171; }
@@ -1016,6 +1273,11 @@ svg.ring { transform: rotate(-90deg); }
 </head>
 <body>
 
+<!-- ONBOARDING OVERLAY -->
+<div id="onboarding-overlay">
+  <div class="ob-inner" id="ob-inner"></div>
+</div>
+
 <nav>
   <div class="nav-brand">EQUILIB<span>.</span></div>
   <div class="nav-tabs">
@@ -1023,6 +1285,7 @@ svg.ring { transform: rotate(-90deg); }
     <button class="nav-tab" onclick="showPage('calendar',this)">Calendar</button>
     <button class="nav-tab" onclick="showPage('twoweek',this)">Horizon</button>
     <button class="nav-tab" onclick="showPage('scheduled',this)">Future Plans</button>
+    <button class="nav-tab" onclick="showPage('faq',this)">FAQ</button>
   </div>
   <button class="nav-settings-btn" onclick="openSettings()" title="Settings">⚙</button>
 </nav>
@@ -1067,6 +1330,14 @@ svg.ring { transform: rotate(-90deg); }
     <div class="twoweek-sub">Commitments planned beyond your dashboard window</div>
   </div>
   <div id="scheduled-body" style="padding: 0 16px 32px;"></div>
+</div>
+
+<div id="page-faq" class="page">
+  <div class="twoweek-header">
+    <div class="twoweek-title">FAQ</div>
+    <div class="twoweek-sub">How to get the most out of EQUILIB</div>
+  </div>
+  <div id="faq-body" style="padding: 0 16px 40px;"></div>
 </div>
 
 <!-- Full-day side panel -->
@@ -1202,14 +1473,12 @@ svg.ring { transform: rotate(-90deg); }
    CONFIG
    ============================================================ */
 const BASE_CATS = [
-  { key: 'blue',   label: 'Personal Promises',  color: '#3b82f6' },
-  { key: 'gold',   label: 'Promises to Others', color: '#f59e0b' },
-  { key: 'slate',  label: 'Not Important',       color: '#64748b' },
-  { key: 'green',  label: 'Health & Wellness',   color: '#22c55e' },
+  { key: 'blue',  label: 'Personal Promises',  color: '#6366f1' },
+  { key: 'gold',  label: 'Promises to Others', color: '#f59e0b' },
+  { key: 'green', label: 'Health & Wellness',  color: '#22c55e' },
 ];
 const ROLE_COLORS = ['#f97316','#06b6d4','#ec4899','#84cc16','#eab308','#14b8a6','#6366f1','#f43f5e','#8b5cf6','#10b981'];
 const MAX_ROLES = 10;
-const DEFAULT_ROLE_NAMES = ['Father','Leader','Son','Partner','Professional','Friend'];
 const RECUR_OPTIONS = [
   { key: 'none', label: 'Once' }, { key: 'daily', label: 'Daily' },
   { key: 'weekly', label: 'Weekly' }, { key: 'biweekly', label: 'Biweekly' },
@@ -1354,6 +1623,66 @@ function checkAndSaveWindowSnapshot() {
 }
 
 /* ============================================================
+   IMPACT ROLE STORAGE
+   ============================================================ */
+// impactConfig: { [roleId]: { enabled, topLabel, topThreshold, midLabel, midThreshold, bottomLabel } }
+function getImpactConfigs() { return ls_get('impact_configs') || {}; }
+function saveImpactConfigs(v) { ls_set('impact_configs', v); }
+function getImpactConfig(roleId) {
+  return getImpactConfigs()[roleId] || {
+    enabled: false,
+    topLabel: 'Thriving', topThreshold: 70,
+    midLabel: 'Getting There', midThreshold: 40,
+    bottomLabel: 'Needs Work'
+  };
+}
+function saveImpactConfig(roleId, cfg) {
+  const all = getImpactConfigs(); all[roleId] = cfg; saveImpactConfigs(all);
+}
+
+// Impact scores stored per day: ls_get('impact_scores_YYYY_MM_DD') → { roleId: { metricName: value } }
+function getImpactScores(dateKey2) { return ls_get('impact_scores_' + dateKey2) || {}; }
+function saveImpactScores(dateKey2, v) { ls_set('impact_scores_' + dateKey2, v); }
+
+// Impact metrics (named sliders) per role
+function getImpactMetrics(roleId) { return ls_get('impact_metrics_' + roleId) || []; }
+function saveImpactMetrics(roleId, arr) { ls_set('impact_metrics_' + roleId, arr); }
+
+function getRoleImpactAvg(roleId, windowDayKeys2) {
+  const metrics = getImpactMetrics(roleId);
+  if (metrics.length === 0) return null;
+  const days = windowDayKeys2 || getWindowDayKeys();
+  let sum = 0, count = 0;
+  days.forEach(dk => {
+    const dt = parseKey(dk); if (dt > today) return;
+    const scores = getImpactScores(dk);
+    if (!scores[roleId]) return;
+    metrics.forEach(m => {
+      const v = scores[roleId][m];
+      if (v !== undefined) { sum += v; count++; }
+    });
+  });
+  return count > 0 ? Math.round(sum / count) : null;
+}
+
+function getTodayImpactAvg(roleId) {
+  const metrics = getImpactMetrics(roleId);
+  if (metrics.length === 0) return null;
+  const dk = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  const scores = getImpactScores(dk);
+  if (!scores[roleId]) return null;
+  const vals = metrics.map(m => scores[roleId][m]).filter(v => v !== undefined);
+  return vals.length > 0 ? Math.round(vals.reduce((a,b) => a+b, 0) / vals.length) : null;
+}
+
+function getImpactColor(val) {
+  if (val === null) return 'var(--text3)';
+  if (val >= 70) return '#22c55e';
+  if (val >= 40) return '#f59e0b';
+  return '#f87171';
+}
+
+/* ============================================================
    PANEL SORT
    ============================================================ */
 function getPanelSort() { return ls_get('panel_sort') || 'default'; }
@@ -1391,10 +1720,10 @@ function getSettings() {
 }
 function saveSettings(s) { ls_set('settings', s); }
 function getRoles() {
-  let r = ls_get('roles');
+  const r = ls_get('roles');
   if (!r) {
-    r = DEFAULT_ROLE_NAMES.map((name,i) => ({ id:'role_'+i, name, color: ROLE_COLORS[i%ROLE_COLORS.length] }));
-    ls_set('roles', r);
+    ls_set('roles', []);
+    return [];
   }
   return r;
 }
@@ -1543,6 +1872,7 @@ function showPage(id, btn) {
   if (id === 'dashboard') renderDashboard();
   if (id === 'twoweek')   renderTwoWeek();
   if (id === 'scheduled') renderScheduledPage();
+  if (id === 'faq')       renderFAQPage();
 }
 
 /* ============================================================
@@ -1657,6 +1987,8 @@ function renderDashboard() {
   renderBalanceRadar();
   // Save window snapshot for comparison
   checkAndSaveWindowSnapshot();
+  // All-gold equilibrium check — runs after cards are in DOM
+  setTimeout(checkAllGold, 50);
 }
 
 /* ============================================================
@@ -1706,9 +2038,33 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
     attentionHTML = `<div class="stat-attention">needs attention</div>`;
   }
 
+  // Impact role tier label
+  const impactCfg = getImpactConfig(catKey);
+  let impactTierHTML = '';
+  let impactClass = '';
+  if (impactCfg.enabled) {
+    const avg = getRoleImpactAvg(catKey);
+    if (avg !== null) {
+      const color = getImpactColor(avg);
+      let tierLabel, tierClass;
+      if (avg >= impactCfg.topThreshold) { tierLabel = impactCfg.topLabel; tierClass = ''; }
+      else if (avg >= impactCfg.midThreshold) { tierLabel = impactCfg.midLabel; tierClass = 'impact-middle'; }
+      else { tierLabel = impactCfg.bottomLabel; tierClass = 'impact-needs-work'; }
+      impactClass = tierClass;
+      impactTierHTML = `<div class="stat-tier-label" style="color:${color}">${tierLabel}</div>
+        <div class="stat-impact-avg" style="color:${color}">Impact avg: ${avg}%</div>`;
+    } else {
+      impactTierHTML = `<div class="stat-impact-avg">◎ Impact role — no scores yet</div>`;
+    }
+  }
+
+  // Equilibrium scale — 80%+ with past data earns a scale
+  const hasEquilibrium = hasPastData && total > 0 && pct >= 80;
+
   const card = document.createElement('div');
-  card.className = 'stat-card';
+  card.className = 'stat-card' + (impactClass ? ' ' + impactClass : '');
   card.style.borderTopColor = color;
+  card.dataset.equilibrium = hasEquilibrium ? '1' : '0';
   card.innerHTML = `
     <div class="stat-card-top">
       <div class="stat-label" title="${label}">${label}</div>
@@ -1735,8 +2091,10 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
         ${deficitNote}
         ${deltaHTML}
         ${attentionHTML}
+        ${impactTierHTML}
       </div>
-    </div>`;
+    </div>
+    ${hasEquilibrium ? `<div class="eq-scale silver" title="Equilibrium reached — 80%+">⚖️</div>` : ''}`;
 
   // Attach flag click handler
   const flagBtn = card.querySelector('.stat-flag');
@@ -2548,6 +2906,80 @@ function renderPanel() {
     });
     addArea.appendChild(customRow);
     block.appendChild(addArea);
+
+    // Impact role sliders section
+    const impCfg = getImpactConfig(cat.key);
+    if (impCfg.enabled) {
+      const metrics = getImpactMetrics(cat.key);
+      const dk = activeDateKey;
+      const scores = getImpactScores(dk);
+      if (!scores[cat.key]) scores[cat.key] = {};
+
+      const impSection = document.createElement('div');
+      const impHdr = document.createElement('div');
+      impHdr.className = 'impact-section-header';
+      impHdr.appendChild(document.createTextNode(' Today\'s Impact Scores'));
+      impSection.appendChild(impHdr);
+
+      metrics.forEach(metricName => {
+        const val = scores[cat.key][metricName] !== undefined ? scores[cat.key][metricName] : 50;
+        const impRow = document.createElement('div'); impRow.className = 'impact-task-row';
+        const nameRow = document.createElement('div'); nameRow.className = 'impact-task-name';
+        const nameTxt = document.createElement('span'); nameTxt.textContent = metricName;
+        const valEl   = document.createElement('span'); valEl.className = 'impact-task-val';
+        valEl.textContent = val + '%';
+        valEl.style.color = getImpactColor(val);
+        const delBtn = document.createElement('button'); delBtn.className = 'impact-del-btn'; delBtn.textContent = '×';
+        delBtn.title = 'Remove this metric';
+        delBtn.onclick = () => {
+          const ms = getImpactMetrics(cat.key).filter(m => m !== metricName);
+          saveImpactMetrics(cat.key, ms);
+          renderPanel();
+        };
+        nameRow.appendChild(nameTxt); nameRow.appendChild(valEl); nameRow.appendChild(delBtn);
+
+        const slider = document.createElement('input'); slider.type = 'range';
+        slider.min = '0'; slider.max = '100'; slider.value = val;
+        slider.className = 'impact-slider';
+        const sliderColor = getImpactColor(val);
+        slider.style.accentColor = sliderColor;
+        slider.oninput = () => {
+          const newVal = parseInt(slider.value);
+          valEl.textContent = newVal + '%';
+          const c = getImpactColor(newVal);
+          valEl.style.color = c; slider.style.accentColor = c;
+          // Save immediately
+          const s2 = getImpactScores(dk);
+          if (!s2[cat.key]) s2[cat.key] = {};
+          s2[cat.key][metricName] = newVal;
+          saveImpactScores(dk, s2);
+          renderDashboard();
+        };
+
+        const labelsRow = document.createElement('div'); labelsRow.className = 'impact-slider-labels';
+        labelsRow.innerHTML = '<span>0%</span><span>50%</span><span>100%</span>';
+
+        impRow.appendChild(nameRow); impRow.appendChild(slider); impRow.appendChild(labelsRow);
+        impSection.appendChild(impRow);
+      });
+
+      // Add new metric
+      const addImpRow = document.createElement('div'); addImpRow.className = 'add-impact-row';
+      const addImpInp = document.createElement('input'); addImpInp.className = 'add-impact-inp';
+      addImpInp.placeholder = 'Add metric (e.g. Kindness)…';
+      const addImpBtn = document.createElement('button'); addImpBtn.className = 'add-impact-btn'; addImpBtn.textContent = '+';
+      addImpBtn.onclick = () => {
+        const name = addImpInp.value.trim(); if (!name) return;
+        const ms = getImpactMetrics(cat.key);
+        if (!ms.includes(name)) { ms.push(name); saveImpactMetrics(cat.key, ms); }
+        addImpInp.value = ''; renderPanel();
+      };
+      addImpInp.addEventListener('keydown', e => { if (e.key === 'Enter') addImpBtn.click(); });
+      addImpRow.appendChild(addImpInp); addImpRow.appendChild(addImpBtn);
+      impSection.appendChild(addImpRow);
+      block.appendChild(impSection);
+    }
+
     container.appendChild(block);
   });
   refreshCalCell(activeDateKey);
@@ -3054,6 +3486,9 @@ function renderSettings() {
   const rolesSection = document.createElement('div');
   rolesSection.innerHTML = `<div class="settings-section-label">Who I Am (${roles.length}/${MAX_ROLES})</div>`;
   roles.forEach(r => {
+    const roleWrap = document.createElement('div');
+    roleWrap.style.cssText = 'margin-bottom:12px;';
+
     const row = document.createElement('div'); row.className = 'settings-row';
     const dot = document.createElement('div'); dot.className = 'settings-color-dot'; dot.style.background = r.color;
     const inp = document.createElement('input'); inp.className = 'settings-input'; inp.value = r.name; inp.placeholder = 'Role name';
@@ -3064,7 +3499,77 @@ function renderSettings() {
     const delBtn = document.createElement('button'); delBtn.className = 'settings-del-btn'; delBtn.textContent = '🗑';
     delBtn.onclick = () => showInlineConfirm(row, `Delete role "${r.name}"? Removes all its tasks.`, () => { deleteRole(r.id); renderSettings(); });
     row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(moveBtn); row.appendChild(delBtn);
-    rolesSection.appendChild(row);
+    roleWrap.appendChild(row);
+
+    // Impact Role toggle
+    const impCfg = getImpactConfig(r.id);
+    const impToggleRow = document.createElement('div'); impToggleRow.className = 'impact-role-toggle-row';
+    const impSwitch = document.createElement('div'); impSwitch.className = 'toggle-switch' + (impCfg.enabled ? ' on' : '');
+    impSwitch.innerHTML = '<div class="toggle-knob"></div>';
+    const impToggleLbl = document.createElement('div');
+    impToggleLbl.style.cssText = 'flex:1;font-size:0.78rem;color:var(--text2);';
+    impToggleLbl.textContent = impCfg.enabled ? '◎ Impact Role — ON' : '◎ Impact Role — OFF';
+    impToggleRow.appendChild(impSwitch); impToggleRow.appendChild(impToggleLbl);
+
+    // Threshold box (show/hide based on toggle)
+    const threshBox = document.createElement('div'); threshBox.className = 'impact-threshold-box';
+    threshBox.style.display = impCfg.enabled ? 'flex' : 'none';
+
+    const threshNote = document.createElement('div');
+    threshNote.style.cssText = 'font-size:0.68rem;color:var(--text3);font-family:"JetBrains Mono",monospace;margin-bottom:2px;';
+    threshNote.textContent = 'Set tier labels and thresholds (impact avg %)';
+    threshBox.appendChild(threshNote);
+
+    const tierDefs = [
+      { field: 'top',    label: 'Top tier ≥',    lblField: 'topLabel',    tField: 'topThreshold',    defaultLbl: 'Thriving',      defaultT: 70 },
+      { field: 'mid',    label: 'Mid tier ≥',    lblField: 'midLabel',    tField: 'midThreshold',    defaultLbl: 'Getting There', defaultT: 40 },
+      { field: 'bottom', label: 'Bottom tier',   lblField: 'bottomLabel', tField: null,              defaultLbl: 'Needs Work',    defaultT: null },
+    ];
+    const threshInputs = {};
+    tierDefs.forEach(td => {
+      const tRow = document.createElement('div'); tRow.className = 'impact-threshold-row';
+      const tLbl = document.createElement('div'); tLbl.className = 'impact-threshold-lbl'; tLbl.textContent = td.label;
+      const lInp = document.createElement('input'); lInp.className = 'impact-label-inp';
+      lInp.value = impCfg[td.lblField] || td.defaultLbl; lInp.placeholder = td.defaultLbl;
+      threshInputs[td.lblField] = lInp;
+      tRow.appendChild(tLbl); tRow.appendChild(lInp);
+      if (td.tField) {
+        const tInp = document.createElement('input'); tInp.className = 'impact-threshold-inp'; tInp.type = 'number';
+        tInp.min = '0'; tInp.max = '100'; tInp.value = impCfg[td.tField] || td.defaultT;
+        tInp.placeholder = td.defaultT;
+        threshInputs[td.tField] = tInp;
+        const pct = document.createElement('span'); pct.style.cssText = 'font-size:0.7rem;color:var(--text3);'; pct.textContent = '%';
+        tRow.appendChild(tInp); tRow.appendChild(pct);
+      }
+      threshBox.appendChild(tRow);
+    });
+
+    const saveThreshBtn = document.createElement('button'); saveThreshBtn.className = 'settings-save-btn'; saveThreshBtn.style.marginTop = '4px'; saveThreshBtn.textContent = 'Save Thresholds';
+    saveThreshBtn.onclick = () => {
+      const newCfg = Object.assign({}, getImpactConfig(r.id));
+      newCfg.topLabel      = threshInputs.topLabel.value.trim()      || 'Thriving';
+      newCfg.midLabel      = threshInputs.midLabel.value.trim()      || 'Getting There';
+      newCfg.bottomLabel   = threshInputs.bottomLabel.value.trim()   || 'Needs Work';
+      newCfg.topThreshold  = parseInt(threshInputs.topThreshold.value)  || 70;
+      newCfg.midThreshold  = parseInt(threshInputs.midThreshold.value)  || 40;
+      saveImpactConfig(r.id, newCfg);
+      saveThreshBtn.textContent = '✓ Saved'; setTimeout(() => { saveThreshBtn.textContent = 'Save Thresholds'; }, 1400);
+      renderDashboard();
+    };
+    threshBox.appendChild(saveThreshBtn);
+
+    impToggleRow.onclick = (e) => {
+      if (e.target === saveThreshBtn) return;
+      const cfg = getImpactConfig(r.id); cfg.enabled = !cfg.enabled; saveImpactConfig(r.id, cfg);
+      impSwitch.className = 'toggle-switch' + (cfg.enabled ? ' on' : '');
+      impToggleLbl.textContent = cfg.enabled ? '◎ Impact Role — ON' : '◎ Impact Role — OFF';
+      threshBox.style.display = cfg.enabled ? 'flex' : 'none';
+      renderDashboard();
+    };
+
+    roleWrap.appendChild(impToggleRow);
+    roleWrap.appendChild(threshBox);
+    rolesSection.appendChild(roleWrap);
   });
   if (roles.length < MAX_ROLES) {
     const addRow = document.createElement('div'); addRow.className = 'add-role-row';
@@ -4310,6 +4815,261 @@ function renderBalanceRadar() {
 }
 
 /* ============================================================
+   FAQ PAGE
+   ============================================================ */
+const FAQ_CONTENT = [
+  {
+    section: 'Getting Started',
+    items: [
+      {
+        q: 'What is EQUILIB and how is it different from a to-do app?',
+        a: `EQUILIB isn't a to-do app — it's a life balance tracker. The goal isn't to check off tasks, it's to see clearly where you're showing up consistently and where you're not. Most people feel unfulfilled not because they're unproductive, but because they're pouring into one area while unknowingly neglecting others. EQUILIB makes that visible.`,
+        tip: 'Think of it less as a task manager and more as a mirror for your daily habits across all the roles you play.'
+      },
+      {
+        q: 'What are Life Areas vs Roles?',
+        a: `<b>Life Areas</b> are the domains of your life — Health & Wellness, Faith, Finance, Personal Growth. These are things you invest in for yourself.\n\n<b>Roles</b> are the identities you carry — Husband, Father, Professional, Friend. These are defined by your relationships and responsibilities to others.\n\nBoth have commitments (tasks), but Roles can also be marked as <b>Impact Roles</b> which adds a daily slider system for qualities that can't be checked off — like kindness, presence, or patience.`,
+      },
+      {
+        q: 'How do I set up my roles and life areas?',
+        a: `Go to <b>Settings → Who I Am</b> to add and configure roles. Go to <b>Settings → Life Areas</b> to manage your categories.\n\nIf you just opened the app for the first time, you were walked through a setup flow that suggested roles based on your answers — anything you selected was added automatically. You can modify everything at any time.`,
+        tip: 'Start with 3–5 roles maximum. Too many at once makes it hard to build momentum. Add more as you get comfortable with the system.'
+      },
+    ]
+  },
+  {
+    section: 'The Dashboard',
+    items: [
+      {
+        q: 'What does the ring percentage mean?',
+        a: `The ring shows your <b>completion rate</b> for that category within the current dashboard window. It's calculated as: tasks completed ÷ tasks that were due (past dates only).\n\n<ul><li><b>Green ring</b> — 100% — you're fully showing up</li><li><b>Amber ring</b> — partial completion — room to grow</li><li><b>Red ring</b> — below 0% — you have a deficit (more missed than completed)</li><li><b>Gray ring</b> — no past data yet</li></ul>`,
+      },
+      {
+        q: 'What is the Balance Score?',
+        a: `The Balance Score at the bottom of the dashboard is an overall average across all your life areas and roles. It's not about being 100% — it's about spotting imbalance. A 90% in Career and 20% in Family is a warning sign even if your average looks okay.`,
+        tip: 'Pay more attention to the individual rings than the overall score. Balance means no single area is being ignored.'
+      },
+      {
+        q: 'What does the Balance Radar show?',
+        a: `The radar chart gives you a visual snapshot of how balanced your life is across all categories. A perfect circle means everything is even. A lopsided shape shows you exactly where you\'re over-investing and where you\'re falling short. It only appears once you have past data logged.`,
+      },
+      {
+        q: 'What does ▲ improving / ▼ slipping mean on a card?',
+        a: `At the end of each dashboard window, EQUILIB saves a snapshot of your percentages. The next window compares your current numbers against that snapshot. <b>▲ improving</b> means you're doing better than last window. <b>▼ slipping</b> means you were performing better before. This is how you track whether you're actually growing over time, not just day to day.`,
+      },
+      {
+        q: 'Why is a card pulsing red?',
+        a: `A pulsing red border means an <b>Impact Role</b> has fallen below your bottom tier threshold — the average of your daily slider scores is below the minimum you set for that role. It's a quiet signal, not a punishment. It means that role needs your attention right now.`,
+        tip: 'Don\'t ignore the pulse. Go tap on that card, look at the stats view, and ask yourself honestly what\'s been missing.'
+      },
+    ]
+  },
+  {
+    section: 'Adding & Managing Commitments',
+    items: [
+      {
+        q: 'How do I add a commitment to a day?',
+        a: `Tap any date on the <b>Calendar</b> tab to open the day panel. Each category and role has its own section with an "Add commitment…" input at the bottom. Type your commitment and tap + or press Enter. You can also set it to repeat using the recurrence buttons (Once, Daily, Weekly, etc.).`,
+      },
+      {
+        q: 'What\'s the difference between recurring commitments and one-time ones?',
+        a: `A <b>one-time commitment</b> only appears on the day you add it. A <b>recurring commitment</b> automatically appears on future dates based on the schedule you set — daily, weekly, biweekly, monthly, or custom days of the week.\n\nRecurring commitments count toward your completion percentage on every day they appear. If you miss them, it affects your ring.`,
+        tip: 'Use recurring commitments for habits you\'re trying to build — workouts, prayer, journaling. Use one-time commitments for specific events or tasks.'
+      },
+      {
+        q: 'How do I delete a recurring commitment for just one day?',
+        a: `Tap the × next to a recurring commitment in the day panel. You\'ll be asked: <b>"This day only"</b> or <b>"Delete all (stop recurring)"</b>. Choosing "This day only" removes it just from that date but keeps it on all other days.`,
+      },
+      {
+        q: 'How do I edit an existing commitment?',
+        a: `Tap the <b>✎ pencil icon</b> next to any commitment in the day panel. An edit panel drops down letting you change the text, toggle timing/prep tracking, toggle progress % tracking, and update the recurrence schedule. Hit Save Changes when done.`,
+      },
+      {
+        q: 'What is "Track timing/prep" on a commitment?',
+        a: `When you mark a commitment as done, if it has timing/prep tracking enabled, EQUILIB will ask you: were you <b>On Time, Early, or Late</b>? And were you <b>Prepared, Unprepared, or Last Minute</b>?\n\nThese answers feed your <b>How I Show Up</b> card on the Balance dashboard — so you can see patterns in how you approach your commitments, not just whether you complete them.`,
+        tip: 'Enable this on commitments where timing and preparedness matter — meetings, appointments, calls with people you care about.'
+      },
+      {
+        q: 'What is "Track how consistently I show up for this"?',
+        a: `This is the <b>progress % tracker</b>. When enabled on a recurring commitment, EQUILIB tracks what percentage of the time you actually complete it within the current window. Tap a category card on the dashboard and switch to Stats view to see a breakdown per commitment.`,
+      },
+    ]
+  },
+  {
+    section: 'Impact Roles',
+    items: [
+      {
+        q: 'What is an Impact Role?',
+        a: `An Impact Role is a role where your performance can\'t be measured by checkboxes alone. Being a great husband, an engaged father, or a caring friend isn\'t something you simply do or don\'t do — it\'s a quality that fluctuates throughout the day.\n\nWhen you mark a role as an Impact Role in Settings, it gains a <b>slider system</b> in the day panel where you rate yourself on specific qualities (Kindness, Presence, Patience, etc.) from 0–100.`,
+      },
+      {
+        q: 'How do I set up an Impact Role?',
+        a: `Go to <b>Settings → Who I Am</b>, find the role, and toggle <b>◎ Impact Role — ON</b>. A threshold configuration will expand where you can:\n<ul><li>Set the top tier label and minimum % (e.g. "Great Husband" ≥ 70%)</li><li>Set the mid tier label and minimum % (e.g. "Room to Grow" ≥ 40%)</li><li>Set the bottom tier label (applies below mid threshold)</li></ul>\nThen tap Save Thresholds.`,
+      },
+      {
+        q: 'How do I log my impact scores for the day?',
+        a: `Open any day on the Calendar and scroll to the Impact Role\'s section. Below the regular commitments you\'ll see <b>Today\'s Impact Scores</b> with a slider for each metric you\'ve added. Drag the slider to reflect how you showed up — 80% means mostly yes, 30% means you struggled. You can add new metrics with the input at the bottom.`,
+        tip: 'Rate yourself at the end of the day when you have the full picture. Be honest — this data is only for you.'
+      },
+      {
+        q: 'What do the impact tier labels on the card mean?',
+        a: `The card shows your <b>average impact score</b> across all metrics for the current window and which tier that puts you in — the label you defined in Settings. If you\'re in the bottom tier, the card pulses red as a quiet reminder. Tap the card to see the detailed breakdown.`,
+      },
+    ]
+  },
+  {
+    section: 'The How I Show Up Card',
+    items: [
+      {
+        q: 'What are the two rings on the How I Show Up card?',
+        a: `The <b>left ring — Timing</b> shows your leading timing outcome and what percentage of tracked commitments you were on time for.\n\nThe <b>right ring — Prep</b> shows your leading preparedness outcome and your prepared rate.\n\n<ul><li>🟡 Yellow = On Time / Last Minute</li><li>🟢 Green = Early / Prepared</li><li>🔴 Red = Late / Unprepared</li></ul>\nThe ring color reflects whichever outcome is most frequent.`,
+      },
+      {
+        q: 'How do I define what "On Time" means to me?',
+        a: `Go to <b>Settings → How I Show Up</b>. There you can define what each timing label means in your own words — for example "On Time = within 5 minutes of scheduled time" or "Early = 15+ minutes ahead." These are reference definitions only — they guide your own honest self-assessment when logging.`,
+      },
+      {
+        q: 'Can I rename the How I Show Up card?',
+        a: `Yes — go to <b>Settings → How I Show Up</b> and type a new name in the rename field. It will update everywhere in the app.`,
+      },
+    ]
+  },
+  {
+    section: 'Future Plans',
+    items: [
+      {
+        q: 'What is the Future Plans tab for?',
+        a: `Future Plans is a holding area for commitments you know about that are outside your current dashboard window — things weeks or months away. Add them here so you don\'t forget them.\n\nWhen your dashboard window advances and a future plan falls within range, it moves to the <b>"Ready to Assign"</b> section and prompts you to officially add it as a commitment — with full options for date, category, recurrence, and tracking.`,
+      },
+      {
+        q: 'What happens when I tap "Assign" on a Future Plan?',
+        a: `A prompt opens letting you confirm or adjust the date, choose which category or role to add it to, set recurrence, and toggle timing/prep tracking — the same options you have when adding any commitment. Once confirmed it\'s added to that day and removed from Future Plans.`,
+        tip: 'You can also tap "Remind Me Later" if you\'re not ready to decide — it will stay in Future Plans without bugging you again until next session.'
+      },
+    ]
+  },
+  {
+    section: 'Data & Privacy',
+    items: [
+      {
+        q: 'Where is my data stored?',
+        a: `All your data is stored locally in your browser\'s <b>localStorage</b> — it never leaves your device unless you explicitly use the Firebase sync feature. Nothing is sent to any server automatically.`,
+      },
+      {
+        q: 'How do I back up my data?',
+        a: `Go to <b>Settings → Backup & Sync → Local Backup</b> and tap <b>↓ Export Backup</b>. This downloads a JSON file containing all your data. To restore it on a new device, tap <b>↑ Import Backup</b> and select that file.`,
+        tip: 'Export a backup before switching devices or clearing your browser data. It takes 2 seconds and prevents losing everything.'
+      },
+      {
+        q: 'How does Firebase sync work?',
+        a: `Firebase is an optional cloud sync. Once you set up a free Firebase project and enter your config in <b>Settings → Backup & Sync → Firebase Sync</b>, you can sign in with Google and push/pull your data across devices. Your data is stored under your Google account in your own Firebase project — EQUILIB doesn\'t have access to it.`,
+      },
+      {
+        q: 'Will my onboarding answers be stored or shared?',
+        a: `No. Your onboarding answers (gender, relationship status, etc.) are only used in the moment to generate role suggestions. They are not stored in your data, not synced to Firebase, and never shared with anyone. Once onboarding is complete those answers are discarded.`,
+      },
+    ]
+  },
+  {
+    section: 'Settings & Customization',
+    items: [
+      {
+        q: 'Can I move a Life Area to a Role or vice versa?',
+        a: `Yes — in Settings, every Life Area row has a <b>"→ Role"</b> button and every Role row has a <b>"→ Cat"</b> button. Tapping either moves it to the other group while preserving all its task data. Nothing gets deleted.`,
+      },
+      {
+        q: 'Can I change the dashboard window size?',
+        a: `Yes — in Settings you can change the window from 1 to 3 months. The window affects which dates are included in your ring percentages and balance score.`,
+      },
+      {
+        q: 'How do I sort categories in the day panel?',
+        a: `Open any day panel and look for the sort controls at the top. You can sort by default order, completion percentage, or alphabetically.`,
+      },
+      {
+        q: 'Can I re-run the onboarding setup?',
+        a: `Not automatically — but you can add, rename, delete, and move any role or life area at any time through Settings. The onboarding is just a shortcut for first-time setup.`,
+      },
+    ]
+  },
+];
+
+function renderFAQPage() {
+  const body = document.getElementById('faq-body');
+  body.innerHTML = '';
+
+  FAQ_CONTENT.forEach(section => {
+    const sectionLbl = document.createElement('div');
+    sectionLbl.className = 'faq-section-label';
+    sectionLbl.textContent = section.section;
+    body.appendChild(sectionLbl);
+
+    section.items.forEach(item => {
+      const el = document.createElement('div'); el.className = 'faq-item';
+
+      const qRow = document.createElement('div'); qRow.className = 'faq-question';
+      const qTxt = document.createElement('span'); qTxt.textContent = item.q;
+      const chev = document.createElement('span'); chev.className = 'faq-chevron'; chev.textContent = '▾';
+      qRow.appendChild(qTxt); qRow.appendChild(chev);
+
+      const ans = document.createElement('div'); ans.className = 'faq-answer';
+      // Render answer — support basic HTML
+      const ansText = document.createElement('div');
+      ansText.innerHTML = item.a.replace(/\n/g, '<br>');
+      ans.appendChild(ansText);
+
+      if (item.tip) {
+        const tip = document.createElement('div'); tip.className = 'faq-tip'; tip.textContent = item.tip;
+        ans.appendChild(tip);
+      }
+
+      qRow.onclick = () => {
+        const isOpen = el.classList.contains('open');
+        // Close all others
+        body.querySelectorAll('.faq-item.open').forEach(o => o.classList.remove('open'));
+        if (!isOpen) el.classList.add('open');
+      };
+
+      el.appendChild(qRow); el.appendChild(ans);
+      body.appendChild(el);
+    });
+  });
+}
+
+/* ============================================================
+   EQUILIBRIUM — ALL-GOLD CHECK
+   ============================================================ */
+function checkAllGold() {
+  const allCards = [...document.querySelectorAll('#dash-base-grid .stat-card, #dash-roles-grid .stat-card')];
+  // Only consider cards that have past data (equilibrium=1 or 0, ignore ones never set)
+  const dataCards = allCards.filter(c => c.dataset.equilibrium !== undefined);
+  if (dataCards.length === 0) return;
+
+  const allGold = dataCards.length > 0 && dataCards.every(c => c.dataset.equilibrium === '1');
+
+  // Update all scale icons
+  allCards.forEach(c => {
+    const scale = c.querySelector('.eq-scale');
+    if (!scale) return;
+    if (allGold) {
+      scale.classList.remove('silver');
+      scale.classList.add('gold');
+      scale.title = 'Full Equilibrium — all categories 80%+';
+    } else {
+      scale.classList.remove('gold');
+      scale.classList.add('silver');
+      scale.title = 'Equilibrium reached — 80%+';
+    }
+  });
+
+  // Gold balance score
+  const sumOverall = document.getElementById('sum-overall');
+  if (sumOverall) {
+    if (allGold) sumOverall.classList.add('balance-score-gold');
+    else sumOverall.classList.remove('balance-score-gold');
+  }
+}
+
+/* ============================================================
    HELPERS
    ============================================================ */
 function getAllCats() {
@@ -4328,11 +5088,394 @@ function hexAlpha(hex, alpha) {
 }
 
 /* ============================================================
+   ONBOARDING
+   ============================================================ */
+const OB_ROLE_COLORS = ['#6366f1','#a855f7','#22c55e','#f59e0b','#f97316','#ec4899','#14b8a6','#3b82f6'];
+
+function obDone() { return !!(ls_get('ob_complete')); }
+function markObDone() { ls_set('ob_complete', true); }
+
+const OB_STEPS = ['intro','name','gender','relationship','children','employment','focus'];
+
+let obState = {
+  step: 0,
+  name: '',
+  gender: null,
+  relationship: null,
+  children: null,
+  employment: null,
+  focus: [],  // multi-select
+};
+
+function startOnboarding() {
+  obState = { step: 0, name: '', gender: null, relationship: null, children: null, employment: null, focus: [] };
+  renderObStep();
+}
+
+function renderObStep() {
+  const inner = document.getElementById('ob-inner');
+  inner.innerHTML = '';
+  inner.style.animation = 'none';
+  requestAnimationFrame(() => {
+    inner.style.animation = 'ob-slide-in 0.35s cubic-bezier(.4,0,.2,1)';
+  });
+
+  const step = obState.step;
+
+  // Brand
+  const brand = document.createElement('div');
+  brand.className = 'ob-brand';
+  brand.innerHTML = 'EQUILIB<span>.</span>';
+  inner.appendChild(brand);
+
+  if (step === 0) { renderObIntro(inner); return; }
+  if (step === OB_STEPS.length) { renderObSummary(inner); return; }
+
+  // Progress dots (steps 1-6)
+  const prog = document.createElement('div'); prog.className = 'ob-progress';
+  for (let i = 1; i < OB_STEPS.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'ob-progress-dot' + (i < step ? ' done' : i === step ? ' active' : '');
+    prog.appendChild(dot);
+  }
+  inner.appendChild(prog);
+
+  // Step indicator
+  const stepInd = document.createElement('div'); stepInd.className = 'ob-step-indicator';
+  stepInd.textContent = `Step ${step} of ${OB_STEPS.length - 1}`;
+  inner.appendChild(stepInd);
+
+  if (step === 1) renderObName(inner);
+  else if (step === 2) renderObGender(inner);
+  else if (step === 3) renderObRelationship(inner);
+  else if (step === 4) renderObChildren(inner);
+  else if (step === 5) renderObEmployment(inner);
+  else if (step === 6) renderObFocus(inner);
+}
+
+function renderObIntro(inner) {
+  const q = document.createElement('div'); q.className = 'ob-question';
+  q.textContent = 'Let\'s build your life around you.';
+  const sub = document.createElement('div'); sub.className = 'ob-subtext';
+  sub.textContent = 'EQUILIB will ask you a few short questions to automatically create roles that reflect who you are — as a partner, parent, professional, and more.\n\nYour answers are never shared with anyone. They stay on your device, strictly for setting up your roles. You can modify or delete anything at any time.';
+  sub.style.whiteSpace = 'pre-line';
+  const actions = document.createElement('div'); actions.className = 'ob-actions';
+  const startBtn = document.createElement('button'); startBtn.className = 'ob-next-btn';
+  startBtn.textContent = 'Let\'s get started';
+  startBtn.onclick = () => { obState.step = 1; renderObStep(); };
+  const skipBtn = document.createElement('button'); skipBtn.className = 'ob-skip-btn';
+  skipBtn.textContent = 'Skip setup';
+  skipBtn.onclick = () => finishOnboarding(true);
+  actions.appendChild(startBtn); actions.appendChild(skipBtn);
+  inner.appendChild(q); inner.appendChild(sub); inner.appendChild(actions);
+}
+
+function renderObName(inner) {
+  const q = document.createElement('div'); q.className = 'ob-question'; q.textContent = 'What do you go by?';
+  const sub = document.createElement('div'); sub.className = 'ob-subtext'; sub.textContent = 'We\'ll use this to personalize your experience.';
+  const inp = document.createElement('input'); inp.className = 'ob-name-inp'; inp.placeholder = 'Your name…'; inp.value = obState.name;
+  inp.oninput = () => { obState.name = inp.value.trim(); nextBtn.disabled = !obState.name; };
+  const actions = document.createElement('div'); actions.className = 'ob-actions';
+  const nextBtn = document.createElement('button'); nextBtn.className = 'ob-next-btn'; nextBtn.textContent = 'Continue';
+  nextBtn.disabled = !obState.name;
+  nextBtn.onclick = () => { obState.step++; renderObStep(); };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter' && obState.name) nextBtn.click(); });
+  actions.appendChild(nextBtn);
+  inner.appendChild(q); inner.appendChild(sub); inner.appendChild(inp); inner.appendChild(actions);
+  setTimeout(() => inp.focus(), 80);
+}
+
+function renderObGender(inner) {
+  renderObChoice(inner,
+    'How do you identify?', null,
+    [{ val: 'male', label: '👨 Male' }, { val: 'female', label: '👩 Female' }, { val: 'nonbinary', label: '🧑 Non-binary' }, { val: 'skip', label: '— Prefer not to say' }],
+    false,
+    v => { obState.gender = v; obState.step++; renderObStep(); }
+  );
+}
+
+function renderObRelationship(inner) {
+  renderObChoice(inner,
+    'What\'s your relationship status?', null,
+    [{ val: 'married', label: '💍 Married' }, { val: 'relationship', label: '❤️ In a relationship' }, { val: 'single', label: '🙂 Single' }, { val: 'divorced', label: '— Divorced / separated' }, { val: 'skip', label: '— Prefer not to say' }],
+    false,
+    v => { obState.relationship = v; obState.step++; renderObStep(); }
+  );
+}
+
+function renderObChildren(inner) {
+  renderObChoice(inner,
+    'Do you have children?', null,
+    [{ val: 'yes', label: '👨‍👧 Yes' }, { val: 'no', label: '— No' }, { val: 'skip', label: '— Prefer not to say' }],
+    false,
+    v => { obState.children = v; obState.step++; renderObStep(); }
+  );
+}
+
+function renderObEmployment(inner) {
+  renderObChoice(inner,
+    'How do you earn?',
+    'Select all that apply — choose more than one if you have a side hustle or your own business.',
+    [
+      { val: 'employed', label: '💼 Employed' },
+      { val: 'business', label: '🏢 Business Owner / Side Hustle' },
+      { val: 'student',  label: '🎓 Student' },
+      { val: 'between',  label: '— Between roles' },
+      { val: 'skip',     label: '— Prefer not to say' },
+    ],
+    true,
+    v => { obState.employment = v; obState.step++; renderObStep(); }
+  );
+}
+
+function renderObFocus(inner) {
+  renderObChoice(inner,
+    'What matters most to you right now?',
+    'Select all that apply — these become your core Life Areas.',
+    [
+      { val: 'health',   label: '💪 Health & Wellness' },
+      { val: 'family',   label: '👨‍👩‍👧 Family' },
+      { val: 'faith',    label: '🙏 Faith & Spirituality' },
+      { val: 'career',   label: '📈 Career & Growth' },
+      { val: 'personal', label: '🌱 Personal Development' },
+      { val: 'social',   label: '🤝 Social & Community' },
+      { val: 'finance',  label: '💰 Financial Health' },
+    ],
+    true,
+    vals => { obState.focus = vals; obState.step++; renderObStep(); }
+  );
+}
+
+function renderObChoice(inner, question, subtext, options, multi, onDone) {
+  const q = document.createElement('div'); q.className = 'ob-question'; q.textContent = question;
+  inner.appendChild(q);
+  if (subtext) {
+    const sub = document.createElement('div'); sub.className = 'ob-subtext'; sub.textContent = subtext;
+    inner.appendChild(sub);
+  }
+  if (multi) {
+    const hint = document.createElement('div'); hint.className = 'ob-multi-hint'; hint.textContent = 'Tap to select — choose as many as you like';
+    inner.appendChild(hint);
+  }
+
+  let selected = multi ? [] : null;
+  const optWrap = document.createElement('div'); optWrap.className = 'ob-options';
+
+  if (multi) {
+    const actions = document.createElement('div'); actions.className = 'ob-actions';
+    const nextBtn = document.createElement('button'); nextBtn.className = 'ob-next-btn'; nextBtn.textContent = 'Continue';
+    nextBtn.disabled = true;
+    nextBtn.onclick = () => onDone(selected);
+
+    options.forEach(opt => {
+      const btn = document.createElement('button'); btn.className = 'ob-option';
+      const chk = document.createElement('div'); chk.className = 'ob-option-check';
+      chk.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+      const lbl = document.createElement('span'); lbl.textContent = opt.label;
+      btn.appendChild(chk); btn.appendChild(lbl);
+      btn.onclick = () => {
+        if (selected.includes(opt.val)) {
+          selected = selected.filter(v => v !== opt.val);
+          btn.classList.remove('selected');
+        } else {
+          selected.push(opt.val);
+          btn.classList.add('selected');
+        }
+        nextBtn.disabled = selected.length === 0;
+      };
+      optWrap.appendChild(btn);
+    });
+
+    inner.appendChild(optWrap);
+    actions.appendChild(nextBtn);
+    inner.appendChild(actions);
+  } else {
+    options.forEach(opt => {
+      const btn = document.createElement('button'); btn.className = 'ob-option';
+      const chk = document.createElement('div'); chk.className = 'ob-option-check';
+      chk.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+      const lbl = document.createElement('span'); lbl.textContent = opt.label;
+      btn.appendChild(chk); btn.appendChild(lbl);
+      btn.onclick = () => onDone(opt.val);
+      optWrap.appendChild(btn);
+    });
+    inner.appendChild(optWrap);
+  }
+}
+
+function buildObRolesAndAreas() {
+  const result = { roles: [], areas: [] };
+  const g = obState.gender, r = obState.relationship;
+  const c = obState.children, e = obState.employment;
+
+  // ── Always suggested roles ──
+  result.roles.push({ name: 'Personal Promises',  color: '#6366f1', impact: false, badge: 'Role' });
+  result.roles.push({ name: 'Promises to Others', color: '#a855f7', impact: false, badge: 'Role' });
+
+  // ── Relationship roles ──
+  if (r === 'married') {
+    const name = g === 'female' ? 'Wife' : g === 'nonbinary' ? 'Partner' : 'Husband';
+    result.roles.push({ name, color: '#ec4899', impact: true, badge: 'Impact Role',
+      topLabel: `Great ${name}`, midLabel: 'Room to Grow', bottomLabel: 'Needs Attention' });
+  } else if (r === 'relationship') {
+    result.roles.push({ name: 'Partner', color: '#ec4899', impact: true, badge: 'Impact Role',
+      topLabel: 'Great Partner', midLabel: 'Room to Grow', bottomLabel: 'Needs Attention' });
+  }
+
+  // ── Parent ──
+  if (c === 'yes') {
+    result.roles.push({ name: 'Parent', color: '#f97316', impact: true, badge: 'Impact Role',
+      topLabel: 'Present Parent', midLabel: 'Getting There', bottomLabel: 'Needs Focus' });
+  }
+
+  // ── Professional roles (multi-select employment) ──
+  if (e && e.includes('employed'))  result.roles.push({ name: 'Professional', color: '#3b82f6', impact: false, badge: 'Role' });
+  if (e && e.includes('business'))  result.roles.push({ name: 'Entrepreneur',  color: '#f59e0b', impact: false, badge: 'Role' });
+  if (e && e.includes('student'))   result.roles.push({ name: 'Student',       color: '#22c55e', impact: false, badge: 'Role' });
+
+  // ── Life areas from focus ──
+  const areaMap = {
+    health:   { name: 'Health & Wellness',  color: '#22c55e' },
+    family:   { name: 'Family',             color: '#f97316' },
+    faith:    { name: 'Faith',              color: '#a855f7' },
+    career:   { name: 'Career',             color: '#6366f1' },
+    personal: { name: 'Personal Growth',    color: '#14b8a6' },
+    social:   { name: 'Social',             color: '#3b82f6' },
+    finance:  { name: 'Financial Health',   color: '#f59e0b' },
+  };
+  obState.focus.forEach(f => { if (areaMap[f]) result.areas.push({ ...areaMap[f], badge: 'Life Area' }); });
+
+  return result;
+}
+
+function renderObSummary(inner) {
+  const generated = buildObRolesAndAreas();
+  const allSuggestions = [
+    ...generated.roles.map(r => ({ ...r, type: 'role',  id: 'ob_' + r.name.toLowerCase().replace(/\s+/g,'_') })),
+    ...generated.areas.map(a => ({ ...a, type: 'area',  id: 'ob_' + a.name.toLowerCase().replace(/\s+/g,'_') })),
+  ];
+
+  // All start unselected
+  const selected = new Set();
+
+  const q = document.createElement('div'); q.className = 'ob-question';
+  q.style.fontSize = '1.6rem';
+  q.textContent = obState.name ? `Almost there, ${obState.name}.` : 'Almost there.';
+  const sub = document.createElement('div'); sub.className = 'ob-subtext';
+  sub.textContent = 'Here\'s what we suggest based on your answers. Tap anything you\'d like to add — you\'re not locked in to anything. You can add, modify, or remove at any time in Settings.';
+
+  const hint = document.createElement('div'); hint.className = 'ob-multi-hint';
+  hint.textContent = 'Nothing is selected yet — tap to choose what to add';
+
+  inner.appendChild(q); inner.appendChild(sub); inner.appendChild(hint);
+
+  if (allSuggestions.length === 0) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'color:var(--text3);font-size:0.84rem;margin-bottom:20px;font-style:italic;';
+    empty.textContent = 'No suggestions generated — you can add roles manually in Settings.';
+    inner.appendChild(empty);
+  } else {
+    const list = document.createElement('div'); list.className = 'ob-summary-list';
+    allSuggestions.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'ob-summary-item';
+      row.style.cssText += 'cursor:pointer;transition:all 0.15s;';
+      const dot  = document.createElement('div'); dot.className = 'ob-summary-dot'; dot.style.background = item.color;
+      const name = document.createElement('div'); name.className = 'ob-summary-name'; name.textContent = item.name;
+      const badge = document.createElement('div');
+      badge.className = 'ob-summary-badge ' + (item.type === 'role' ? 'role' : 'area');
+      badge.textContent = item.badge || (item.type === 'role' ? 'Role' : 'Life Area');
+      const chk = document.createElement('div');
+      chk.style.cssText = 'width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;';
+      chk.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8" style="display:none"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
+      row.appendChild(chk); row.appendChild(dot); row.appendChild(name); row.appendChild(badge);
+
+      row.onclick = () => {
+        if (selected.has(item.id)) {
+          selected.delete(item.id);
+          row.style.borderColor = '';
+          row.style.background = '';
+          chk.style.background = ''; chk.style.borderColor = 'var(--border2)';
+          chk.querySelector('svg').style.display = 'none';
+        } else {
+          selected.add(item.id);
+          row.style.borderColor = item.color;
+          row.style.background = 'var(--surface2)';
+          chk.style.background = item.color; chk.style.borderColor = item.color;
+          chk.querySelector('svg').style.display = 'block';
+        }
+        confirmBtn.textContent = selected.size > 0
+          ? `✓ Add ${selected.size} item${selected.size !== 1 ? 's' : ''} to my EQUILIB`
+          : 'Continue without adding';
+      };
+      list.appendChild(row);
+    });
+    inner.appendChild(list);
+  }
+
+  const confirmBtn = document.createElement('button'); confirmBtn.className = 'ob-confirm-btn';
+  confirmBtn.textContent = 'Continue without adding';
+  confirmBtn.onclick = () => {
+    const chosenItems = allSuggestions.filter(item => selected.has(item.id));
+    finishOnboarding(false, chosenItems, obState.name);
+  };
+  inner.appendChild(confirmBtn);
+}
+
+function finishOnboarding(skip, items, userName) {
+  if (!skip && items && items.length > 0) {
+    // Save user name
+    if (userName) { const s = getSettings(); s._userName = userName; saveSettings(s); }
+
+    const existingRoles = getRoles();
+    const existingCats  = getCustomCats();
+    let colorIdx = 0;
+
+    items.forEach(item => {
+      if (item.type === 'role') {
+        if (!existingRoles.find(r => r.name === item.name)) {
+          const roleId = 'role_ob_' + Date.now() + '_' + Math.random().toString(36).slice(2,5);
+          existingRoles.push({ id: roleId, name: item.name, color: item.color });
+          if (item.impact) {
+            saveImpactConfig(roleId, {
+              enabled: true,
+              topLabel: item.topLabel || 'Thriving', topThreshold: 70,
+              midLabel: item.midLabel || 'Getting There', midThreshold: 40,
+              bottomLabel: item.bottomLabel || 'Needs Work'
+            });
+          }
+        }
+      } else {
+        if (!existingCats.find(c => c.name === item.name)) {
+          existingCats.push({ id: 'cat_ob_' + Date.now() + '_' + (colorIdx++), name: item.name, color: item.color });
+        }
+      }
+    });
+    saveRoles(existingRoles);
+    saveCustomCats(existingCats);
+  }
+
+  markObDone();
+  const overlay = document.getElementById('onboarding-overlay');
+  overlay.classList.add('fade-out');
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    renderDashboard();
+    buildCalendar();
+  }, 600);
+}
+
+/* ============================================================
    INIT
    ============================================================ */
-renderDashboard();
-// Check for scheduled commitments that have entered the window
-setTimeout(checkAndPromptCommitments, 800);
+if (obDone()) {
+  document.getElementById('onboarding-overlay').style.display = 'none';
+  renderDashboard();
+  setTimeout(checkAndPromptCommitments, 800);
+} else {
+  startOnboarding();
+}
 </script>
 </body>
 </html>
