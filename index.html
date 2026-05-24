@@ -1148,12 +1148,29 @@ svg.ring { transform: rotate(-90deg); }
 .impact-task-row {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 8px; padding: 10px 12px; margin-bottom: 6px;
+  transition: border-color 0.2s;
 }
+.impact-task-row.checked { border-color: var(--purple); }
 .impact-task-name {
-  font-size: 0.8rem; color: var(--text); font-weight: 500; margin-bottom: 8px;
-  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.8rem; color: var(--text); font-weight: 500; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
 }
-.impact-task-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.04em; transition: color 0.3s; }
+.impact-task-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.04em; transition: color 0.3s; margin-left: auto; flex-shrink: 0; }
+.impact-cb {
+  width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0;
+  border: 1.5px solid var(--border2); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.impact-cb.on { background: var(--purple); border-color: var(--purple); }
+.impact-cb svg { display: none; }
+.impact-cb.on svg { display: block; }
+.impact-slider-section { margin-top: 6px; display: none; }
+.impact-slider-section.visible { display: block; }
+.impact-no-opp {
+  font-size: 0.68rem; color: var(--text3); font-style: italic;
+  font-family: 'JetBrains Mono', monospace; margin-top: 2px;
+}
 .impact-slider { width: 100%; height: 5px; border-radius: 4px; cursor: pointer; outline: none; border: none; appearance: none; -webkit-appearance: none; background: var(--surface3); }
 .impact-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid var(--surface); transition: transform 0.15s; }
 .impact-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
@@ -1658,8 +1675,9 @@ function getRoleImpactAvg(roleId, windowDayKeys2) {
     const scores = getImpactScores(dk);
     if (!scores[roleId]) return;
     metrics.forEach(m => {
-      const v = scores[roleId][m];
-      if (v !== undefined) { sum += v; count++; }
+      const entry = scores[roleId][m];
+      // Only count if checked (entry is object with checked:true)
+      if (entry && entry.checked) { sum += (entry.value !== undefined ? entry.value : 50); count++; }
     });
   });
   return count > 0 ? Math.round(sum / count) : null;
@@ -1671,8 +1689,12 @@ function getTodayImpactAvg(roleId) {
   const dk = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
   const scores = getImpactScores(dk);
   if (!scores[roleId]) return null;
-  const vals = metrics.map(m => scores[roleId][m]).filter(v => v !== undefined);
-  return vals.length > 0 ? Math.round(vals.reduce((a,b) => a+b, 0) / vals.length) : null;
+  let sum = 0, count = 0;
+  metrics.forEach(m => {
+    const entry = scores[roleId][m];
+    if (entry && entry.checked) { sum += (entry.value !== undefined ? entry.value : 50); count++; }
+  });
+  return count > 0 ? Math.round(sum / count) : null;
 }
 
 function getImpactColor(val) {
@@ -2922,13 +2944,27 @@ function renderPanel() {
       impSection.appendChild(impHdr);
 
       metrics.forEach(metricName => {
-        const val = scores[cat.key][metricName] !== undefined ? scores[cat.key][metricName] : 50;
-        const impRow = document.createElement('div'); impRow.className = 'impact-task-row';
+        const entry = scores[cat.key][metricName] || { checked: false, value: 50 };
+        const isChecked = !!(entry.checked);
+        const val = entry.value !== undefined ? entry.value : 50;
+
+        const impRow = document.createElement('div');
+        impRow.className = 'impact-task-row' + (isChecked ? ' checked' : '');
+
+        // Name row: checkbox + name + value (when checked)
         const nameRow = document.createElement('div'); nameRow.className = 'impact-task-name';
+
+        const cb = document.createElement('div');
+        cb.className = 'impact-cb' + (isChecked ? ' on' : '');
+        cb.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
         const nameTxt = document.createElement('span'); nameTxt.textContent = metricName;
-        const valEl   = document.createElement('span'); valEl.className = 'impact-task-val';
-        valEl.textContent = val + '%';
-        valEl.style.color = getImpactColor(val);
+
+        const valEl = document.createElement('span'); valEl.className = 'impact-task-val';
+        valEl.textContent = isChecked ? val + '%' : '—';
+        valEl.style.color = isChecked ? getImpactColor(val) : 'var(--text3)';
+        valEl.style.display = 'block';
+
         const delBtn = document.createElement('button'); delBtn.className = 'impact-del-btn'; delBtn.textContent = '×';
         delBtn.title = 'Remove this metric';
         delBtn.onclick = () => {
@@ -2936,22 +2972,26 @@ function renderPanel() {
           saveImpactMetrics(cat.key, ms);
           renderPanel();
         };
-        nameRow.appendChild(nameTxt); nameRow.appendChild(valEl); nameRow.appendChild(delBtn);
+
+        nameRow.appendChild(cb); nameRow.appendChild(nameTxt); nameRow.appendChild(valEl); nameRow.appendChild(delBtn);
+
+        // Slider section (only visible when checked)
+        const sliderSection = document.createElement('div');
+        sliderSection.className = 'impact-slider-section' + (isChecked ? ' visible' : '');
 
         const slider = document.createElement('input'); slider.type = 'range';
         slider.min = '0'; slider.max = '100'; slider.value = val;
         slider.className = 'impact-slider';
-        const sliderColor = getImpactColor(val);
-        slider.style.accentColor = sliderColor;
+        slider.style.accentColor = getImpactColor(val);
+
         slider.oninput = () => {
           const newVal = parseInt(slider.value);
           valEl.textContent = newVal + '%';
           const c = getImpactColor(newVal);
           valEl.style.color = c; slider.style.accentColor = c;
-          // Save immediately
           const s2 = getImpactScores(dk);
           if (!s2[cat.key]) s2[cat.key] = {};
-          s2[cat.key][metricName] = newVal;
+          s2[cat.key][metricName] = { checked: true, value: newVal };
           saveImpactScores(dk, s2);
           renderDashboard();
         };
@@ -2959,7 +2999,32 @@ function renderPanel() {
         const labelsRow = document.createElement('div'); labelsRow.className = 'impact-slider-labels';
         labelsRow.innerHTML = '<span>0%</span><span>50%</span><span>100%</span>';
 
-        impRow.appendChild(nameRow); impRow.appendChild(slider); impRow.appendChild(labelsRow);
+        sliderSection.appendChild(slider); sliderSection.appendChild(labelsRow);
+
+        // No-opportunity note (shown when unchecked)
+        const noOpp = document.createElement('div'); noOpp.className = 'impact-no-opp';
+        noOpp.textContent = 'No opportunity today — not counted';
+        noOpp.style.display = isChecked ? 'none' : 'block';
+
+        // Checkbox toggle logic
+        cb.onclick = () => {
+          const nowChecked = !cb.classList.contains('on');
+          cb.className = 'impact-cb' + (nowChecked ? ' on' : '');
+          impRow.className = 'impact-task-row' + (nowChecked ? ' checked' : '');
+          sliderSection.classList.toggle('visible', nowChecked);
+          noOpp.style.display = nowChecked ? 'none' : 'block';
+          valEl.textContent = nowChecked ? slider.value + '%' : '—';
+          valEl.style.color = nowChecked ? getImpactColor(parseInt(slider.value)) : 'var(--text3)';
+          // If newly checked and slider is still at default, set to 50
+          if (nowChecked && parseInt(slider.value) === 50) { slider.value = 50; }
+          const s2 = getImpactScores(dk);
+          if (!s2[cat.key]) s2[cat.key] = {};
+          s2[cat.key][metricName] = { checked: nowChecked, value: parseInt(slider.value) };
+          saveImpactScores(dk, s2);
+          renderDashboard();
+        };
+
+        impRow.appendChild(nameRow); impRow.appendChild(noOpp); impRow.appendChild(sliderSection);
         impSection.appendChild(impRow);
       });
 
@@ -3558,8 +3623,56 @@ function renderSettings() {
     };
     threshBox.appendChild(saveThreshBtn);
 
+    // ── Impact metric names editor ──
+    const metrics = getImpactMetrics(r.id);
+    if (metrics.length > 0) {
+      const metricsDivider = document.createElement('div');
+      metricsDivider.style.cssText = 'height:1px;background:var(--border);margin:6px 0;';
+      threshBox.appendChild(metricsDivider);
+
+      const metricsLbl = document.createElement('div');
+      metricsLbl.style.cssText = 'font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);font-family:"JetBrains Mono",monospace;margin-bottom:4px;';
+      metricsLbl.textContent = 'Impact Score Names';
+      threshBox.appendChild(metricsLbl);
+
+      metrics.forEach((metricName, idx) => {
+        const mRow = document.createElement('div');
+        mRow.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:6px;';
+        const mInp = document.createElement('input');
+        mInp.className = 'impact-label-inp'; mInp.value = metricName; mInp.placeholder = metricName;
+        const mSave = document.createElement('button');
+        mSave.className = 'settings-save-btn'; mSave.textContent = 'Rename';
+        mSave.onclick = () => {
+          const newName = mInp.value.trim();
+          if (!newName || newName === metricName) return;
+          const ms = getImpactMetrics(r.id);
+          // Update name in metrics list
+          ms[idx] = newName;
+          saveImpactMetrics(r.id, ms);
+          // Update all existing impact score entries that use the old name
+          const allKeys = Object.keys(localStorage)
+            .filter(k => k.startsWith('lt_impact_scores_'))
+            .map(k => k.replace('lt_', ''));
+          allKeys.forEach(scoreKey => {
+            const scores = ls_get(scoreKey);
+            if (!scores || !scores[r.id]) return;
+            if (scores[r.id][metricName] !== undefined) {
+              scores[r.id][newName] = scores[r.id][metricName];
+              delete scores[r.id][metricName];
+              ls_set(scoreKey, scores);
+            }
+          });
+          mSave.textContent = '✓'; setTimeout(() => { mSave.textContent = 'Rename'; }, 1400);
+          // Update placeholder to new name
+          mInp.placeholder = newName;
+        };
+        mRow.appendChild(mInp); mRow.appendChild(mSave);
+        threshBox.appendChild(mRow);
+      });
+    }
+
     impToggleRow.onclick = (e) => {
-      if (e.target === saveThreshBtn) return;
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
       const cfg = getImpactConfig(r.id); cfg.enabled = !cfg.enabled; saveImpactConfig(r.id, cfg);
       impSwitch.className = 'toggle-switch' + (cfg.enabled ? ' on' : '');
       impToggleLbl.textContent = cfg.enabled ? '◎ Impact Role — ON' : '◎ Impact Role — OFF';
