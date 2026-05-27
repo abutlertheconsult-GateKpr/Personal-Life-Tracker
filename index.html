@@ -438,8 +438,75 @@ svg.ring { transform: rotate(-90deg); }
   .flag-panel { margin-top: 40px; }
 }
 /* ══════════════════════════════════════════════
-   ONBOARDING FLOW
+   SPOTLIGHT TUTORIAL
    ══════════════════════════════════════════════ */
+#spotlight-overlay {
+  display: none; position: fixed; inset: 0; z-index: 8000;
+  pointer-events: none;
+}
+#spotlight-overlay.active { display: block; }
+#spotlight-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.78);
+  transition: all 0.35s ease;
+}
+#spotlight-hole {
+  position: absolute;
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.78);
+  border: 2px solid var(--blue);
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+#spotlight-tooltip {
+  position: absolute;
+  background: var(--surface);
+  border: 1px solid var(--blue);
+  border-radius: 12px;
+  padding: 14px 16px;
+  max-width: 280px; min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  pointer-events: all;
+  transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  z-index: 8001;
+}
+.spotlight-step-label {
+  font-size: 0.6rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--blue); letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.spotlight-tip-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
+  letter-spacing: 0.06em; color: var(--text); margin-bottom: 4px;
+}
+.spotlight-tip-body {
+  font-size: 0.8rem; color: var(--text2); line-height: 1.55;
+  font-family: 'DM Sans', sans-serif;
+}
+.spotlight-actions {
+  display: flex; gap: 8px; margin-top: 12px; align-items: center;
+}
+.spotlight-next-btn {
+  flex: 1; padding: 9px; border-radius: 7px;
+  border: 1px solid var(--blue); background: var(--blue-dim); color: var(--blue);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.spotlight-next-btn:hover { background: var(--blue); color: #fff; }
+.spotlight-skip-btn {
+  font-size: 0.76rem; color: var(--text3); cursor: pointer;
+  font-family: 'DM Sans', sans-serif; padding: 4px 6px;
+  background: none; border: none; transition: color 0.15s;
+}
+.spotlight-skip-btn:hover { color: var(--text2); }
+.spotlight-dots {
+  display: flex; gap: 4px; align-items: center; margin-right: auto;
+}
+.spotlight-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border2); transition: background 0.2s;
+}
+.spotlight-dot.active { background: var(--blue); }
 #onboarding-overlay {
   position: fixed; inset: 0; z-index: 9999;
   background: var(--bg);
@@ -1101,6 +1168,101 @@ svg.ring { transform: rotate(-90deg); }
   text-shadow: 0 0 14px rgba(245,158,11,0.6);
   animation: gold-pulse 2.5s ease-in-out infinite;
 }
+
+/* ── Task time picker ── */
+.task-time-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;
+}
+.task-time-toggle {
+  font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: var(--text3);
+  cursor: pointer; padding: 4px 8px; border-radius: 5px;
+  border: 1px solid var(--border); background: transparent; transition: all 0.15s;
+  white-space: nowrap;
+}
+.task-time-toggle:hover { border-color: var(--border2); color: var(--text2); }
+.task-time-toggle.on { border-color: var(--teal); color: var(--teal); background: rgba(20,184,166,0.08); }
+.task-time-fields {
+  display: none; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.task-time-fields.visible { display: flex; }
+.task-time-inp {
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--text); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; padding: 4px 8px; outline: none; width: 100px;
+}
+.task-time-inp:focus { border-color: var(--teal); }
+.task-dur-select {
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--text); font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; padding: 4px 8px; outline: none; cursor: pointer;
+}
+.task-time-label {
+  font-size: 0.65rem; color: var(--text3); font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Task time badge (shown in panel and modal) ── */
+.task-time-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 0.62rem; padding: 2px 7px; border-radius: 8px;
+  background: rgba(20,184,166,0.1); color: var(--teal);
+  border: 1px solid rgba(20,184,166,0.3); font-family: 'JetBrains Mono', monospace;
+  margin-top: 2px; white-space: nowrap;
+}
+
+/* ── Conflict warning modal ── */
+.conflict-overlay {
+  display: none; position: fixed; inset: 0; z-index: 700;
+  background: rgba(0,0,0,0.82); align-items: center; justify-content: center; padding: 20px;
+}
+.conflict-overlay.open { display: flex; }
+.conflict-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-top: 3px solid #f87171; border-radius: var(--radius);
+  width: 100%; max-width: 380px; padding: 20px 22px;
+  animation: flag-panel-in 0.2s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.conflict-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem;
+  letter-spacing: 0.06em; color: #f87171;
+}
+.conflict-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+.conflict-desc b { color: var(--text); }
+.conflict-actions { display: flex; flex-direction: column; gap: 7px; }
+.conflict-btn {
+  padding: 10px 14px; border-radius: 7px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 500;
+  border: 1px solid var(--border2); background: var(--surface2); color: var(--text2);
+  transition: all 0.15s; text-align: left;
+}
+.conflict-btn:hover { border-color: var(--text3); color: var(--text); }
+.conflict-btn.primary { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
+.conflict-btn.primary:hover { background: var(--blue); color: #fff; }
+.conflict-adjust-time-row {
+  display: none; gap: 6px; align-items: center; flex-wrap: wrap; padding: 8px 0;
+}
+.conflict-adjust-time-row.visible { display: flex; }
+.cat-add-task-overlay { display: none; position: fixed; inset: 0; z-index: 400; background: rgba(0,0,0,0.78); align-items: flex-start; justify-content: center; padding: 20px; }
+.cat-add-task-overlay.open { display: flex; }
+.cat-add-task-modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 420px; max-height: min(90vh,640px); display: flex; flex-direction: column; margin-top: 50px; box-shadow: 0 24px 64px rgba(0,0,0,0.6); animation: flag-panel-in 0.22s cubic-bezier(.4,0,.2,1); }
+.cat-add-task-header { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.cat-add-task-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.07em; display: flex; align-items: center; gap: 8px; }
+.cat-add-task-body { flex: 1; overflow-y: auto; padding: 14px 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.cat-add-task-body::-webkit-scrollbar { width: 4px; }
+.cat-add-task-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+.cat-add-field-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+.cat-add-task-inp { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 7px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; padding: 10px 12px; outline: none; box-sizing: border-box; }
+.cat-add-task-inp:focus { border-color: var(--blue); }
+.cat-add-save-btn { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid var(--blue); background: var(--blue-dim); color: var(--blue); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.cat-add-save-btn:hover { background: var(--blue); color: #fff; }
+.cat-detail-task-edit { background: none; border: none; color: var(--text3); font-size: 0.78rem; cursor: pointer; padding: 2px 5px; transition: color 0.15s; flex-shrink: 0; }
+.cat-detail-task-edit:hover { color: var(--blue); }
+.cat-detail-task-del { background: none; border: none; color: var(--text3); font-size: 0.82rem; cursor: pointer; padding: 2px 5px; transition: color 0.15s; flex-shrink: 0; }
+.cat-detail-task-del:hover { color: #f87171; }
+.cat-detail-task-edit-inp { flex: 1; background: var(--surface3); border: 1px solid var(--blue); border-radius: 5px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; padding: 3px 7px; outline: none; }
+.cat-detail-add-btn { background: var(--blue-dim); border: 1px solid var(--blue); color: var(--blue); border-radius: 7px; font-size: 0.82rem; padding: 5px 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; transition: all 0.15s; flex-shrink: 0; }
+.cat-detail-add-btn:hover { background: var(--blue); color: #fff; }
+
 .faq-section-label {
   font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
   letter-spacing: 0.12em; color: var(--text3); margin: 20px 0 8px;
@@ -1290,6 +1452,12 @@ svg.ring { transform: rotate(-90deg); }
 </head>
 <body>
 
+<!-- SPOTLIGHT TUTORIAL -->
+<div id="spotlight-overlay">
+  <div id="spotlight-hole"></div>
+  <div id="spotlight-tooltip"></div>
+</div>
+
 <!-- ONBOARDING OVERLAY -->
 <div id="onboarding-overlay">
   <div class="ob-inner" id="ob-inner"></div>
@@ -1429,6 +1597,25 @@ svg.ring { transform: rotate(-90deg); }
   </div>
 </div>
 
+<!-- Conflict warning modal -->
+<div class="conflict-overlay" id="conflict-overlay">
+  <div class="conflict-box" id="conflict-box"></div>
+</div>
+
+<!-- Category add-task modal -->
+<div class="cat-add-task-overlay" id="cat-add-task-overlay" onclick="maybeCatAddTaskClose(event)">
+  <div class="cat-add-task-modal">
+    <div class="cat-add-task-header">
+      <div class="cat-add-task-title">
+        <div id="cat-add-task-dot" style="width:10px;height:10px;border-radius:50%;flex-shrink:0;"></div>
+        <span id="cat-add-task-title-text">ADD COMMITMENT</span>
+      </div>
+      <button class="panel-close" onclick="closeCatAddTask()">✕</button>
+    </div>
+    <div class="cat-add-task-body" id="cat-add-task-body"></div>
+  </div>
+</div>
+
 <!-- Category detail modal (dashboard card click) -->
 <div class="cat-detail-overlay" id="cat-detail-overlay" onclick="maybeCatDetailClose(event)">
   <div class="cat-detail-modal" id="cat-detail-modal">
@@ -1490,9 +1677,9 @@ svg.ring { transform: rotate(-90deg); }
    CONFIG
    ============================================================ */
 const BASE_CATS = [
-  { key: 'blue',  label: 'Personal Promises',  color: '#6366f1' },
-  { key: 'gold',  label: 'Promises to Others', color: '#f59e0b' },
-  { key: 'green', label: 'Health & Wellness',  color: '#22c55e' },
+  { key: 'blue',     label: 'Personal Promises',        color: '#6366f1' },
+  { key: 'gold',     label: 'Promises to Others',       color: '#f59e0b' },
+  { key: 'green',    label: 'Health & Wellness',        color: '#22c55e' },
 ];
 const ROLE_COLORS = ['#f97316','#06b6d4','#ec4899','#84cc16','#eab308','#14b8a6','#6366f1','#f43f5e','#8b5cf6','#10b981'];
 const MAX_ROLES = 10;
@@ -1743,9 +1930,24 @@ function getSettings() {
 function saveSettings(s) { ls_set('settings', s); }
 function getRoles() {
   const r = ls_get('roles');
-  if (!r) {
-    ls_set('roles', []);
-    return [];
+  if (!r) { ls_set('roles', []); return []; }
+
+  // One-time migration: purge legacy hardcoded default roles injected by old DEFAULT_ROLE_NAMES
+  const LEGACY_ROLE_NAMES = ['Father','Leader','Son','Partner','Professional','Friend','Entrepreneur','Student','Wife','Husband','Parent','Not Important'];
+  const obComplete = ls_get('ob_complete');
+  if (!obComplete) {
+    // Before onboarding is done, wipe any auto-injected legacy roles entirely
+    const cleaned = r.filter(role => !LEGACY_ROLE_NAMES.includes(role.name));
+    if (cleaned.length !== r.length) { ls_set('roles', cleaned); return cleaned; }
+  } else {
+    // After onboarding, only wipe roles that were auto-injected (not user-chosen)
+    // We flag user-chosen roles with id starting 'role_ob_'
+    // Legacy auto-injected ones had id 'role_0', 'role_1' etc.
+    const cleaned = r.filter(role => {
+      const isLegacyId = /^role_\d+$/.test(role.id);
+      return !isLegacyId;
+    });
+    if (cleaned.length !== r.length) { ls_set('roles', cleaned); return cleaned; }
   }
   return r;
 }
@@ -1890,8 +2092,8 @@ function showPage(id, btn) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (id === 'calendar')  buildCalendar();
-  if (id === 'dashboard') renderDashboard();
+  if (id === 'calendar')  { buildCalendar(); maybeStartCalTutorial(); }
+  if (id === 'dashboard') { renderDashboard(); }
   if (id === 'twoweek')   renderTwoWeek();
   if (id === 'scheduled') renderScheduledPage();
   if (id === 'faq')       renderFAQPage();
@@ -2237,6 +2439,13 @@ function openCatDetail(catKey, label, color) {
   }
   hdrRight.innerHTML = '';
 
+  // + Add task button always visible
+  const addTaskBtn = document.createElement('button');
+  addTaskBtn.className = 'cat-detail-add-btn';
+  addTaskBtn.textContent = '+ Add';
+  addTaskBtn.onclick = () => openCatAddTask(catKey, label, color);
+  hdrRight.appendChild(addTaskBtn);
+
   if (hasStatsData) {
     const statsBtn = document.createElement('button');
     statsBtn.className = 'cat-detail-view-btn';
@@ -2292,13 +2501,24 @@ function renderCatDetailBody() {
       txt.className = 'cat-detail-task-text' + (t.done ? ' done' : '');
       txt.textContent = t.text;
       txtWrap.appendChild(txt);
+      if (t.time) {
+        const tb = document.createElement('div'); tb.className = 'task-time-badge';
+        const ds = t.duration ? (t.duration >= 60 ? (t.duration/60)+'hr' : t.duration+'min') : '';
+        tb.textContent = `⏰ ${formatTime12(t.time)}${ds ? ' · '+ds : ''}`;
+        txtWrap.appendChild(tb);
+      }
       if (t.trackTiming) {
         const badge = document.createElement('span');
         badge.style.cssText = 'font-size:0.6rem;padding:1px 5px;border-radius:8px;background:var(--purple-dim);color:var(--purple);border:1px solid rgba(168,85,247,0.3);font-family:"JetBrains Mono",monospace;margin-top:3px;display:inline-block;';
         badge.textContent = '⏱ tracked';
         txtWrap.appendChild(badge);
       }
-      row.appendChild(cb); row.appendChild(txtWrap);
+      // Edit & delete buttons
+      const editBtn = document.createElement('button'); editBtn.className = 'cat-detail-task-edit'; editBtn.textContent = '✎'; editBtn.title = 'Edit';
+      const delBtn  = document.createElement('button'); delBtn.className  = 'cat-detail-task-del';  delBtn.textContent  = '🗑'; delBtn.title  = 'Delete';
+      editBtn.onclick = () => startCatDetailInlineEdit(row, txt, editBtn, delBtn, catKey, t, g.key, color, label);
+      delBtn.onclick  = () => catDetailDeleteTask(catKey, t, g.key, color, label);
+      row.appendChild(cb); row.appendChild(txtWrap); row.appendChild(editBtn); row.appendChild(delBtn);
       wrap.appendChild(row);
     });
     body.appendChild(wrap);
@@ -2794,6 +3014,7 @@ function openPanel(key, y, m, day) {
   document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected'));
   const sel = document.querySelector(`[data-key="${key}"]`);
   if (sel) sel.classList.add('selected');
+  maybeStartPanelTutorial();
 }
 
 function closePanel() {
@@ -2898,6 +3119,14 @@ function renderPanel() {
     };
     progRow.appendChild(pCb); progRow.appendChild(pLbl);
     addArea.appendChild(progRow);
+
+    // Time picker
+    if (!addState[cat.key].time) addState[cat.key].time = null;
+    if (!addState[cat.key].duration) addState[cat.key].duration = null;
+    const timePicker = buildTimePicker(addState[cat.key].time, addState[cat.key].duration, (t, d) => {
+      addState[cat.key].time = t; addState[cat.key].duration = d;
+    });
+    addArea.appendChild(timePicker);
 
     const recurRow = document.createElement('div');
     recurRow.className = 'recur-row';
@@ -3062,6 +3291,12 @@ function makeTaskEl(cat, task, idx) {
   const txt = document.createElement('div');
   txt.className = 'task-text' + (task.done ? ' done-text' : ''); txt.textContent = task.text;
   info.appendChild(txt);
+  if (task.time) {
+    const timeBadge = document.createElement('div'); timeBadge.className = 'task-time-badge';
+    const durStr = task.duration ? (task.duration >= 60 ? (task.duration/60)+'hr' : task.duration+'min') : '';
+    timeBadge.textContent = `⏰ ${formatTime12(task.time)}${durStr ? ' · '+durStr : ''}`;
+    info.appendChild(timeBadge);
+  }
   if (task.recur && task.recur !== 'none') {
     const rl = document.createElement('div'); rl.className = 'task-recur-label';
     rl.textContent = recurLabel(task.recur, task.customDays); info.appendChild(rl);
@@ -3133,7 +3368,12 @@ function startEditTask(item, cat, task, idx, txtEl, editBtn) {
   progEditRow.appendChild(pCbE); progEditRow.appendChild(pLblE);
   panel.appendChild(progEditLbl); panel.appendChild(progEditRow);
 
-  // ── Recurrence ──
+  // ── Time picker ──
+  let editTime = task.time || null;
+  let editDuration = task.duration || 60;
+  const timePickerLbl = document.createElement('div'); timePickerLbl.className = 'task-edit-section-lbl'; timePickerLbl.textContent = 'Time (optional)';
+  const timePickerEl = buildTimePicker(editTime, editDuration, (t, d) => { editTime = t; editDuration = d || 60; });
+  panel.appendChild(timePickerLbl); panel.appendChild(timePickerEl);
   let editRecur = task.recur || 'none';
   let editCustomDays = [...(task.customDays || [])];
   const recurLbl = document.createElement('div'); recurLbl.className = 'task-edit-section-lbl'; recurLbl.textContent = 'Recurrence';
@@ -3184,6 +3424,8 @@ function startEditTask(item, cat, task, idx, txtEl, editBtn) {
     t.text = newText;
     t.trackTiming   = trackOn;
     t.trackProgress = progressOn;
+    t.time     = editTime     || null;
+    t.duration = editTime ? (editDuration || 60) : null;
 
     // Handle recurrence change
     const recurChanged = editRecur !== (t.recur || 'none');
@@ -3244,19 +3486,41 @@ function addTask(catKey) {
   const recur = st.recur, customDays = [...st.customDays];
   const trackTiming   = !!(trackTimingState[catKey]);
   const trackProgress = !!(trackProgressState[catKey]);
+  const time     = st.time     || null;
+  const duration = st.duration || null;
+
+  const newTask = { text, done: false, recur: 'none', customDays: [], trackTiming, trackProgress, time, duration };
+
+  // Conflict check
+  if (time && duration) {
+    const conflicts = findConflicts(activeDateKey, catKey, newTask, -1);
+    if (conflicts.length > 0) {
+      openConflictModal(
+        conflicts,
+        () => { commitAddTask(catKey, newTask, recur, customDays, inp); }, // double book
+        () => {}  // cancel — do nothing, user adjusts time
+      );
+      return;
+    }
+  }
+  commitAddTask(catKey, newTask, recur, customDays, inp);
+}
+
+function commitAddTask(catKey, newTask, recur, customDays, inp) {
   const data = getDay(activeDateKey);
   if (!data[catKey]) data[catKey] = [];
   if (recur !== 'none') {
     const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
     const templates = getRecurring();
-    templates.push({ id: templateId, catKey, text, recur, customDays, startKey: activeDateKey, trackTiming, trackProgress });
+    templates.push({ id: templateId, catKey, text: newTask.text, recur, customDays, startKey: activeDateKey, trackTiming: newTask.trackTiming, trackProgress: newTask.trackProgress });
     saveRecurring(templates);
-    data[catKey].push({ text, done: false, recurId: templateId, recur, customDays, trackTiming, trackProgress });
+    data[catKey].push({ ...newTask, recurId: templateId, recur, customDays });
   } else {
-    data[catKey].push({ text, done: false, recur: 'none', customDays: [], trackTiming, trackProgress });
+    data[catKey].push(newTask);
   }
-  setDay(activeDateKey, data); inp.value = '';
-  addState[catKey] = { recur: 'none', customDays: [] };
+  setDay(activeDateKey, data);
+  if (inp) inp.value = '';
+  addState[catKey] = { recur: 'none', customDays: [], time: null, duration: null };
   trackTimingState[catKey]   = false;
   trackProgressState[catKey] = false;
   renderPanel();
@@ -3535,17 +3799,38 @@ function renderSettings() {
     row.appendChild(dot); row.appendChild(inp); row.appendChild(saveBtn); row.appendChild(moveBtn); row.appendChild(delBtn);
     customSection.appendChild(row);
   });
-  const addCatRow = document.createElement('div'); addCatRow.className = 'add-role-row';
-  const addCatInp = document.createElement('input'); addCatInp.className = 'settings-input'; addCatInp.placeholder = 'New category name…';
-  const addCatBtn = document.createElement('button'); addCatBtn.className = 'add-role-btn'; addCatBtn.textContent = '+ Add Category';
-  addCatBtn.onclick = () => {
-    const name = addCatInp.value.trim(); if (!name) return;
-    const cs = getCustomCats(); cs.push({ id:'cat_'+Date.now(), name, color: ROLE_COLORS[(cs.length+getRoles().length)%ROLE_COLORS.length] });
-    saveCustomCats(cs); addCatInp.value=''; renderSettings();
+
+  // Add new item — choose Life Area or Role
+  const addNewBox = document.createElement('div');
+  addNewBox.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:8px;display:flex;flex-direction:column;gap:8px;';
+  const addNewLbl = document.createElement('div'); addNewLbl.className = 'cat-add-field-label'; addNewLbl.textContent = 'Add New';
+  const addNewInp = document.createElement('input'); addNewInp.className = 'settings-input'; addNewInp.placeholder = 'Name…';
+
+  // Life Area / Role toggle
+  let newItemType = 'area';
+  const typeRow = document.createElement('div'); typeRow.style.cssText = 'display:flex;gap:6px;';
+  const areaToggle = document.createElement('button'); areaToggle.className = 'recur-btn selected'; areaToggle.textContent = 'Life Area';
+  const roleToggle = document.createElement('button'); roleToggle.className = 'recur-btn'; roleToggle.textContent = 'Role';
+  areaToggle.onclick = () => { newItemType = 'area'; areaToggle.classList.add('selected'); roleToggle.classList.remove('selected'); };
+  roleToggle.onclick = () => { newItemType = 'role'; roleToggle.classList.add('selected'); areaToggle.classList.remove('selected'); };
+  typeRow.appendChild(areaToggle); typeRow.appendChild(roleToggle);
+
+  const addNewBtn = document.createElement('button'); addNewBtn.className = 'backup-btn primary'; addNewBtn.textContent = '+ Add';
+  addNewBtn.onclick = () => {
+    const name = addNewInp.value.trim(); if (!name) return;
+    const color = ROLE_COLORS[(getCustomCats().length + getRoles().length) % ROLE_COLORS.length];
+    if (newItemType === 'area') {
+      const cs = getCustomCats(); cs.push({ id: 'cat_'+Date.now(), name, color }); saveCustomCats(cs);
+    } else {
+      const rs = getRoles();
+      if (rs.length >= MAX_ROLES) { alert(`Maximum of ${MAX_ROLES} roles reached.`); return; }
+      rs.push({ id: 'role_'+Date.now(), name, color }); saveRoles(rs);
+    }
+    addNewInp.value = ''; renderSettings();
   };
-  addCatInp.addEventListener('keydown', e => { if(e.key==='Enter') addCatBtn.click(); });
-  addCatRow.appendChild(addCatInp); addCatRow.appendChild(addCatBtn);
-  customSection.appendChild(addCatRow);
+  addNewInp.addEventListener('keydown', e => { if (e.key === 'Enter') addNewBtn.click(); });
+  addNewBox.appendChild(addNewLbl); addNewBox.appendChild(addNewInp); addNewBox.appendChild(typeRow); addNewBox.appendChild(addNewBtn);
+  customSection.appendChild(addNewBox);
   body.appendChild(customSection);
 
   const rolesSection = document.createElement('div');
@@ -3684,23 +3969,10 @@ function renderSettings() {
     roleWrap.appendChild(threshBox);
     rolesSection.appendChild(roleWrap);
   });
-  if (roles.length < MAX_ROLES) {
-    const addRow = document.createElement('div'); addRow.className = 'add-role-row';
-    const addInp = document.createElement('input'); addInp.className = 'settings-input'; addInp.placeholder = 'New role name…'; addInp.id = 'new-role-input';
-    const addBtn = document.createElement('button'); addBtn.className = 'add-role-btn'; addBtn.textContent = '+ Add Role';
-    addBtn.onclick = () => {
-      const name = addInp.value.trim(); if(!name) return;
-      const rs = getRoles(); if(rs.length>=MAX_ROLES) return;
-      rs.push({ id:'role_'+Date.now(), name, color: ROLE_COLORS[rs.length%ROLE_COLORS.length] });
-      saveRoles(rs); addInp.value=''; renderSettings();
-    };
-    addInp.addEventListener('keydown', e => { if(e.key==='Enter') addBtn.click(); });
-    addRow.appendChild(addInp); addRow.appendChild(addBtn);
-    rolesSection.appendChild(addRow);
-    const note = document.createElement('div'); note.className = 'role-limit-note'; note.textContent = `${MAX_ROLES - roles.length} role slot(s) remaining`; rolesSection.appendChild(note);
-  } else {
-    const note = document.createElement('div'); note.className = 'role-limit-note'; note.textContent = `Maximum of ${MAX_ROLES} roles reached`; rolesSection.appendChild(note);
-  }
+  // Role slot note only
+  const slotNote = document.createElement('div'); slotNote.className = 'role-limit-note';
+  slotNote.textContent = roles.length >= MAX_ROLES ? `Maximum of ${MAX_ROLES} roles reached` : `${MAX_ROLES - roles.length} role slot(s) remaining — add via the "Add New" form above`;
+  rolesSection.appendChild(slotNote);
   body.appendChild(rolesSection);
 
   // Commitment highlight category
@@ -3711,6 +3983,29 @@ function renderSettings() {
   renderPunctSettingsSection(body);
   // Backup & Sync
   renderBackupSection(body);
+
+  // Tutorials
+  const tutSection = document.createElement('div');
+  tutSection.innerHTML = '<div class="settings-section-label">Tutorials</div>';
+  const tutNote = document.createElement('div');
+  tutNote.style.cssText = 'font-size:0.72rem;color:var(--text3);margin-bottom:10px;font-family:"JetBrains Mono",monospace;';
+  tutNote.textContent = 'Replay a guided tour at any time.';
+  tutSection.appendChild(tutNote);
+  [
+    { label: 'Balance Dashboard Tour', key: TUTORIAL_KEYS.dashboard },
+    { label: 'Calendar Tour',          key: TUTORIAL_KEYS.calendar  },
+    { label: 'Day Panel Tour',         key: TUTORIAL_KEYS.dayPanel  },
+  ].forEach(({ label, key }) => {
+    const btn = document.createElement('button'); btn.className = 'backup-btn'; btn.style.marginBottom = '6px'; btn.style.width = '100%'; btn.textContent = '▶ ' + label;
+    btn.onclick = () => {
+      ls_set(key, false); closeSettings();
+      if (key === TUTORIAL_KEYS.dashboard) { showPage('dashboard', document.querySelector('.nav-tab')); setTimeout(() => startTutorial(DASH_STEPS, key), 500); }
+      if (key === TUTORIAL_KEYS.calendar)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(CAL_STEPS, key), 500); }
+      if (key === TUTORIAL_KEYS.dayPanel)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => { startTutorial(PANEL_STEPS, key); }, 500); }
+    };
+    tutSection.appendChild(btn);
+  });
+  body.appendChild(tutSection);
 }
 
 function deleteBaseCat(catKey) {
@@ -4507,6 +4802,43 @@ function renderBackupSection(body) {
   const fbStatus = document.createElement('div'); fbStatus.className = 'backup-status'; fbStatus.id = 'firebase-status';
   fbBox.appendChild(fbStatus);
   section.appendChild(fbBox);
+
+  // ── Hard Reset ──
+  const resetBox = document.createElement('div'); resetBox.className = 'backup-box'; resetBox.style.marginTop = '10px';
+  resetBox.style.borderTop = '2px solid #f87171';
+  resetBox.innerHTML = `<div class="backup-box-title" style="color:#f87171">⚠ Hard Reset</div>
+    <div class="backup-box-desc">Permanently erases all your data and restarts the app from scratch. This cannot be undone.</div>`;
+
+  const resetInpRow = document.createElement('div'); resetInpRow.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  const resetInp = document.createElement('input'); resetInp.className = 'settings-input';
+  resetInp.placeholder = 'Type "I approve" to unlock…'; resetInp.autocomplete = 'off';
+  const resetBtn = document.createElement('button'); resetBtn.className = 'backup-btn danger'; resetBtn.textContent = 'Reset'; resetBtn.disabled = true;
+  resetBtn.style.opacity = '0.4'; resetBtn.style.cursor = 'not-allowed';
+
+  resetInp.oninput = () => {
+    const approved = resetInp.value.trim() === 'I approve';
+    resetBtn.disabled = !approved;
+    resetBtn.style.opacity = approved ? '1' : '0.4';
+    resetBtn.style.cursor = approved ? 'pointer' : 'not-allowed';
+  };
+
+  resetBtn.onclick = () => {
+    if (resetInp.value.trim() !== 'I approve') return;
+    // Wipe all lt_ keys
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('lt_')) keys.push(k);
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+    // Reload app
+    location.reload();
+  };
+
+  resetInpRow.appendChild(resetInp); resetInpRow.appendChild(resetBtn);
+  resetBox.appendChild(resetInpRow);
+  section.appendChild(resetBox);
+
   body.appendChild(section);
 }
 
@@ -5149,6 +5481,202 @@ function renderFAQPage() {
 }
 
 /* ============================================================
+   CATEGORY ADD-TASK MODAL (from dashboard card)
+   ============================================================ */
+let catAddTaskState = { catKey: null, label: null, color: null, recur: 'none', customDays: [], trackTiming: false, trackProgress: false };
+
+function openCatAddTask(catKey, label, color) {
+  catAddTaskState = { catKey, label, color, recur: 'none', customDays: [], trackTiming: false, trackProgress: false };
+  document.getElementById('cat-add-task-dot').style.background = color;
+  document.getElementById('cat-add-task-title-text').textContent = `ADD TO ${label.toUpperCase()}`;
+  const body = document.getElementById('cat-add-task-body');
+  body.innerHTML = '';
+
+  // Date picker
+  const dateLbl = document.createElement('div'); dateLbl.className = 'cat-add-field-label'; dateLbl.textContent = 'Date';
+  const dateInp = document.createElement('input'); dateInp.type = 'date'; dateInp.className = 'cat-add-task-inp';
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  dateInp.value = todayStr;
+
+  // Task name
+  const taskLbl = document.createElement('div'); taskLbl.className = 'cat-add-field-label'; taskLbl.textContent = 'Commitment';
+  const taskInp = document.createElement('input'); taskInp.className = 'cat-add-task-inp'; taskInp.placeholder = 'Add commitment…';
+
+  // Recurrence
+  const recurLbl = document.createElement('div'); recurLbl.className = 'cat-add-field-label'; recurLbl.textContent = 'Repeat';
+  const recurRow = document.createElement('div'); recurRow.className = 'recur-row'; recurRow.style.flexWrap = 'wrap';
+  const customDayRow = document.createElement('div'); customDayRow.className = 'custom-days-row';
+  RECUR_OPTIONS.forEach(ro => {
+    const btn = document.createElement('button'); btn.className = 'recur-btn' + (ro.key === 'none' ? ' selected' : '');
+    btn.textContent = ro.label; btn.dataset.val = ro.key;
+    btn.onclick = () => {
+      catAddTaskState.recur = ro.key;
+      recurRow.querySelectorAll('.recur-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === ro.key));
+      customDayRow.classList.toggle('visible', ro.key === 'custom');
+    };
+    recurRow.appendChild(btn);
+  });
+  DOW_LABELS.forEach((dl, di) => {
+    const btn = document.createElement('button'); btn.className = 'day-pick-btn';
+    btn.textContent = dl;
+    btn.onclick = () => {
+      if (catAddTaskState.customDays.includes(di)) catAddTaskState.customDays = catAddTaskState.customDays.filter(x => x !== di);
+      else catAddTaskState.customDays.push(di);
+      btn.classList.toggle('on', catAddTaskState.customDays.includes(di));
+    };
+    customDayRow.appendChild(btn);
+  });
+
+  // Track timing toggle
+  const timingRow = document.createElement('div'); timingRow.className = 'track-timing-row';
+  const tCb = document.createElement('div'); tCb.className = 'track-timing-cb';
+  tCb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const tLbl = document.createElement('span'); tLbl.className = 'track-timing-label'; tLbl.textContent = 'Was I present & on time?';
+  tCb.onclick = tLbl.onclick = () => {
+    catAddTaskState.trackTiming = !catAddTaskState.trackTiming;
+    tCb.className = 'track-timing-cb' + (catAddTaskState.trackTiming ? ' on' : '');
+    tLbl.className = 'track-timing-label' + (catAddTaskState.trackTiming ? ' on' : '');
+  };
+  timingRow.appendChild(tCb); timingRow.appendChild(tLbl);
+
+  // Track progress toggle
+  const progRow = document.createElement('div'); progRow.className = 'track-timing-row';
+  const pCb = document.createElement('div'); pCb.className = 'track-timing-cb';
+  pCb.style.cssText = '';
+  pCb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const pLbl = document.createElement('span'); pLbl.className = 'track-timing-label'; pLbl.textContent = 'Track how consistently I show up for this';
+  pCb.onclick = pLbl.onclick = () => {
+    catAddTaskState.trackProgress = !catAddTaskState.trackProgress;
+    pCb.className = 'track-timing-cb' + (catAddTaskState.trackProgress ? ' on' : '');
+    pCb.style.cssText = catAddTaskState.trackProgress ? 'background:var(--green);border-color:var(--green)' : '';
+    pLbl.className = 'track-timing-label' + (catAddTaskState.trackProgress ? ' on' : '');
+    pLbl.style.color = catAddTaskState.trackProgress ? 'var(--green)' : '';
+  };
+  progRow.appendChild(pCb); progRow.appendChild(pLbl);
+
+  // Time picker
+  const timePicker = buildTimePicker(null, 60, (t, d) => {
+    catAddTaskState.time = t; catAddTaskState.duration = d;
+  });
+
+  // Save button
+  const saveBtn = document.createElement('button'); saveBtn.className = 'cat-add-save-btn'; saveBtn.textContent = 'Add Commitment';
+  saveBtn.onclick = () => {
+    const text = taskInp.value.trim(); if (!text) { taskInp.focus(); return; }
+    const selectedDate = dateInp.value; if (!selectedDate) return;
+    const parts = selectedDate.split('-');
+    const dk = dateKey(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+    const { recur, customDays, trackTiming, trackProgress, time, duration } = catAddTaskState;
+    const newTask = { text, done: false, recur: 'none', customDays: [], trackTiming, trackProgress, time: time||null, duration: duration||null };
+
+    const doSave = () => {
+      const data = getDay(dk);
+      if (!data[catAddTaskState.catKey]) data[catAddTaskState.catKey] = [];
+      if (recur !== 'none') {
+        const templateId = 'rt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+        const templates = getRecurring();
+        templates.push({ id: templateId, catKey: catAddTaskState.catKey, text, recur, customDays, startKey: dk, trackTiming, trackProgress });
+        saveRecurring(templates);
+        data[catAddTaskState.catKey].push({ ...newTask, recurId: templateId, recur, customDays });
+      } else {
+        data[catAddTaskState.catKey].push(newTask);
+      }
+      setDay(dk, data);
+      closeCatAddTask();
+      openCatDetail(catAddTaskState.catKey, catAddTaskState.label, catAddTaskState.color);
+      renderDashboard(); buildCalendar();
+      if (activeDateKey === dk) renderPanel();
+    };
+
+    if (time && duration) {
+      const conflicts = findConflicts(dk, catAddTaskState.catKey, newTask, -1);
+      if (conflicts.length > 0) {
+        openConflictModal(conflicts, doSave, () => {});
+        return;
+      }
+    }
+    doSave();
+  };
+  taskInp.addEventListener('keydown', e => { if (e.key === 'Enter') saveBtn.click(); });
+
+  body.appendChild(dateLbl); body.appendChild(dateInp);
+  body.appendChild(taskLbl); body.appendChild(taskInp);
+  body.appendChild(recurLbl); body.appendChild(recurRow); body.appendChild(customDayRow);
+  body.appendChild(timingRow); body.appendChild(progRow);
+  body.appendChild(timePicker);
+  body.appendChild(saveBtn);
+
+  document.getElementById('cat-add-task-overlay').classList.add('open');
+  setTimeout(() => taskInp.focus(), 80);
+}
+
+function closeCatAddTask() { document.getElementById('cat-add-task-overlay').classList.remove('open'); }
+function maybeCatAddTaskClose(e) { if (e.target === document.getElementById('cat-add-task-overlay')) closeCatAddTask(); }
+
+/* ── Inline edit in cat detail task row ── */
+function startCatDetailInlineEdit(row, txtEl, editBtn, delBtn, catKey, task, dayKey, color, label) {
+  if (row.dataset.editing === '1') return;
+  row.dataset.editing = '1';
+  editBtn.style.display = 'none'; delBtn.style.display = 'none';
+  txtEl.style.display = 'none';
+  const inp = document.createElement('input'); inp.className = 'cat-detail-task-edit-inp'; inp.value = task.text;
+  const saveB = document.createElement('button'); saveB.className = 'cat-detail-task-edit'; saveB.textContent = '✓'; saveB.style.color = 'var(--green)';
+  const cancelB = document.createElement('button'); cancelB.className = 'cat-detail-task-del'; cancelB.textContent = '✕';
+  const done = (save) => {
+    row.dataset.editing = ''; inp.remove(); saveB.remove(); cancelB.remove();
+    editBtn.style.display = ''; delBtn.style.display = ''; txtEl.style.display = '';
+    if (save && inp.value.trim() && inp.value.trim() !== task.text) {
+      const data = getDay(dayKey);
+      const idx = (data[catKey]||[]).findIndex(x => x.text === task.text && x.recur === task.recur);
+      if (idx >= 0) { data[catKey][idx].text = inp.value.trim(); setDay(dayKey, data); }
+      txtEl.textContent = inp.value.trim();
+      renderDashboard();
+    }
+  };
+  saveB.onclick = () => done(true); cancelB.onclick = () => done(false);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); });
+  const txtWrap = txtEl.parentNode;
+  txtWrap.insertBefore(inp, txtEl.nextSibling);
+  txtWrap.insertBefore(saveB, inp.nextSibling);
+  txtWrap.insertBefore(cancelB, saveB.nextSibling);
+  inp.focus(); inp.select();
+}
+
+/* ── Delete task from cat detail ── */
+function catDetailDeleteTask(catKey, task, dayKey, color, label) {
+  const data = getDay(dayKey);
+  if (!data[catKey]) return;
+  const idx = data[catKey].findIndex(x => x.text === task.text && x.recur === task.recur);
+  if (idx < 0) return;
+  const t = data[catKey][idx];
+  if (t.recurId) {
+    const doAll = confirm(`"${task.text}" is recurring.\n\nOK = delete all future occurrences\nCancel = remove this date only`);
+    if (doAll) {
+      let templates = getRecurring(); templates = templates.filter(x => x.id !== t.recurId); saveRecurring(templates);
+      for (let i = 0; i <= 90; i++) {
+        const dt2 = new Date(today); dt2.setDate(today.getDate() + i);
+        const fkey = dateKey(dt2.getFullYear(), dt2.getMonth(), dt2.getDate());
+        const fd = ls_get('day_' + fkey); if (!fd) continue;
+        let ch = false;
+        Object.keys(fd).forEach(k => { if (k==='_excluded') return; const b=fd[k].length; fd[k]=fd[k].filter(x=>x.recurId!==t.recurId); if(fd[k].length!==b) ch=true; });
+        if (ch) ls_set('day_' + fkey, fd);
+      }
+    } else {
+      data[catKey].splice(idx, 1);
+      if (!data._excluded) data._excluded = [];
+      if (!data._excluded.includes(t.recurId)) data._excluded.push(t.recurId);
+      setDay(dayKey, data);
+    }
+  } else {
+    data[catKey].splice(idx, 1);
+    setDay(dayKey, data);
+  }
+  renderDashboard(); buildCalendar();
+  if (activeDateKey === dayKey) renderPanel();
+  openCatDetail(catKey, label, color);
+}
+
+/* ============================================================
    EQUILIBRIUM — ALL-GOLD CHECK
    ============================================================ */
 function checkAllGold() {
@@ -5181,6 +5709,170 @@ function checkAllGold() {
     else sumOverall.classList.remove('balance-score-gold');
   }
 }
+
+/* ============================================================
+   TIME BLOCK HELPERS
+   ============================================================ */
+const DURATION_OPTIONS = [
+  { val: 30,  label: '30 min' },
+  { val: 60,  label: '1 hr'   },
+  { val: 90,  label: '1.5 hr' },
+  { val: 120, label: '2 hr'   },
+  { val: 180, label: '3 hr'   },
+  { val: 240, label: '4 hr'   },
+  { val: 480, label: '8 hr'   },
+];
+
+function timeToMins(timeStr) {
+  // "HH:MM" → minutes since midnight
+  if (!timeStr) return null;
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function minsToTime(mins) {
+  const h = Math.floor(mins / 60) % 24;
+  const m = mins % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+function formatTime12(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12  = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function tasksOverlap(t1, t2) {
+  // t1 and t2 are task objects with optional .time (HH:MM) and .duration (mins)
+  if (!t1.time || !t2.time || !t1.duration || !t2.duration) return false;
+  const s1 = timeToMins(t1.time), e1 = s1 + t1.duration;
+  const s2 = timeToMins(t2.time), e2 = s2 + t2.duration;
+  return s1 < e2 && s2 < e1;
+}
+
+function findConflicts(dayKey, catKey, newTask, excludeIdx) {
+  // Returns array of conflicting { task, catKey, catLabel, idx }
+  const data = getDay(dayKey);
+  const allCats = getAllCats();
+  const conflicts = [];
+  allCats.forEach(c => {
+    const tasks = data[c.key] || [];
+    tasks.forEach((t, idx) => {
+      if (c.key === catKey && idx === excludeIdx) return;
+      if (tasksOverlap(newTask, t)) {
+        conflicts.push({ task: t, catKey: c.key, catLabel: c.label, idx });
+      }
+    });
+  });
+  return conflicts;
+}
+
+/* ── Build time picker UI (reused in renderPanel and cat-add-task modal) ── */
+let conflictPending = null; // { dayKey, catKey, taskData, onProceed }
+
+function buildTimePicker(initialTime, initialDuration, onChange) {
+  const wrap = document.createElement('div');
+
+  const toggleRow = document.createElement('div'); toggleRow.className = 'task-time-row';
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'task-time-toggle' + (initialTime ? ' on' : '');
+  toggleBtn.textContent = initialTime ? `⏰ ${formatTime12(initialTime)}` : '⏰ Add time (optional)';
+
+  const fields = document.createElement('div');
+  fields.className = 'task-time-fields' + (initialTime ? ' visible' : '');
+
+  const timeLbl = document.createElement('span'); timeLbl.className = 'task-time-label'; timeLbl.textContent = 'Time:';
+  const timeInp = document.createElement('input'); timeInp.type = 'time';
+  timeInp.className = 'task-time-inp'; timeInp.value = initialTime || '';
+
+  const durLbl = document.createElement('span'); durLbl.className = 'task-time-label'; durLbl.textContent = 'Duration:';
+  const durSel = document.createElement('select'); durSel.className = 'task-dur-select';
+  DURATION_OPTIONS.forEach(d => {
+    const opt = document.createElement('option'); opt.value = d.val; opt.textContent = d.label;
+    if (d.val === (initialDuration || 60)) opt.selected = true;
+    durSel.appendChild(opt);
+  });
+
+  const clearBtn = document.createElement('button'); clearBtn.className = 'task-time-toggle'; clearBtn.textContent = '✕ Clear';
+  clearBtn.onclick = () => {
+    timeInp.value = ''; toggleBtn.textContent = '⏰ Add time (optional)';
+    toggleBtn.classList.remove('on'); fields.classList.remove('visible');
+    onChange(null, null);
+  };
+
+  const notify = () => {
+    const t = timeInp.value;
+    const d = parseInt(durSel.value);
+    toggleBtn.textContent = t ? `⏰ ${formatTime12(t)}` : '⏰ Add time (optional)';
+    toggleBtn.classList.toggle('on', !!t);
+    onChange(t || null, t ? d : null);
+  };
+
+  timeInp.oninput = notify; durSel.onchange = notify;
+  toggleBtn.onclick = () => {
+    const isVisible = fields.classList.contains('visible');
+    fields.classList.toggle('visible', !isVisible);
+    if (!isVisible) setTimeout(() => timeInp.focus(), 50);
+  };
+
+  fields.appendChild(timeLbl); fields.appendChild(timeInp);
+  fields.appendChild(durLbl); fields.appendChild(durSel);
+  fields.appendChild(clearBtn);
+  toggleRow.appendChild(toggleBtn); toggleRow.appendChild(fields);
+  wrap.appendChild(toggleRow);
+  return wrap;
+}
+
+function openConflictModal(conflicts, onDoubleBook, onCancel, dayKey, catKey, newTaskIdx) {
+  const box = document.getElementById('conflict-box');
+  box.innerHTML = '';
+
+  const title = document.createElement('div'); title.className = 'conflict-title'; title.textContent = '⚠ SCHEDULING CONFLICT';
+  const desc = document.createElement('div'); desc.className = 'conflict-desc';
+  const conflictList = conflicts.map(c =>
+    `<b>"${c.task.text}"</b> (${c.catLabel}) at ${formatTime12(c.task.time)} — ${c.task.duration >= 60 ? (c.task.duration/60)+'hr' : c.task.duration+'min'}`
+  ).join('<br>');
+  desc.innerHTML = `This conflicts with:<br>${conflictList}`;
+
+  const actions = document.createElement('div'); actions.className = 'conflict-actions';
+
+  // Adjust conflicting task time
+  conflicts.forEach(c => {
+    const adjustRow = document.createElement('div'); adjustRow.className = 'conflict-adjust-time-row'; adjustRow.id = 'adjust-row-' + c.idx;
+    const adjustTimePicker = buildTimePicker(c.task.time, c.task.duration, (t, d) => {
+      const data = getDay(dayKey);
+      if (data[c.catKey] && data[c.catKey][c.idx]) {
+        data[c.catKey][c.idx].time = t; data[c.catKey][c.idx].duration = d; setDay(dayKey, data);
+      }
+    });
+    adjustRow.appendChild(adjustTimePicker);
+
+    const adjustBtn = document.createElement('button'); adjustBtn.className = 'conflict-btn';
+    adjustBtn.innerHTML = `✏ Adjust <b>"${c.task.text}"</b> time`;
+    adjustBtn.onclick = () => {
+      adjustRow.classList.toggle('visible');
+    };
+    actions.appendChild(adjustBtn); actions.appendChild(adjustRow);
+  });
+
+  // Double book
+  const doubleBtn = document.createElement('button'); doubleBtn.className = 'conflict-btn';
+  doubleBtn.textContent = '📅 Keep both (double book)';
+  doubleBtn.onclick = () => { closeConflictModal(); onDoubleBook(); };
+
+  // Cancel
+  const cancelBtn = document.createElement('button'); cancelBtn.className = 'conflict-btn';
+  cancelBtn.textContent = '← Pick a different time';
+  cancelBtn.onclick = () => { closeConflictModal(); onCancel(); };
+
+  actions.appendChild(doubleBtn); actions.appendChild(cancelBtn);
+  box.appendChild(title); box.appendChild(desc); box.appendChild(actions);
+  document.getElementById('conflict-overlay').classList.add('open');
+}
+
+function closeConflictModal() { document.getElementById('conflict-overlay').classList.remove('open'); }
 
 /* ============================================================
    HELPERS
@@ -5217,11 +5909,13 @@ let obState = {
   relationship: null,
   children: null,
   employment: null,
-  focus: [],  // multi-select
+  focus: [],
+  selectedItems: [], // items chosen on summary screen
+  organize: {},      // { itemId: 'role' | 'area' }
 };
 
 function startOnboarding() {
-  obState = { step: 0, name: '', gender: null, relationship: null, children: null, employment: null, focus: [] };
+  obState = { step: 0, name: '', gender: null, relationship: null, children: null, employment: null, focus: [], selectedItems: [], organize: {} };
   renderObStep();
 }
 
@@ -5464,74 +6158,168 @@ function buildObRolesAndAreas() {
 function renderObSummary(inner) {
   const generated = buildObRolesAndAreas();
   const allSuggestions = [
-    ...generated.roles.map(r => ({ ...r, type: 'role',  id: 'ob_' + r.name.toLowerCase().replace(/\s+/g,'_') })),
-    ...generated.areas.map(a => ({ ...a, type: 'area',  id: 'ob_' + a.name.toLowerCase().replace(/\s+/g,'_') })),
+    ...generated.roles.map(r => ({ ...r, type: 'role', id: 'ob_' + r.name.toLowerCase().replace(/\s+/g,'_') })),
+    ...generated.areas.map(a => ({ ...a, type: 'area', id: 'ob_' + a.name.toLowerCase().replace(/\s+/g,'_') })),
   ];
 
-  // All start unselected
-  const selected = new Set();
+  // Track selected and type per item — nothing selected by default
+  const selected  = new Set();
+  const itemTypes = {}; // id → 'role' | 'area'
+  allSuggestions.forEach(item => { itemTypes[item.id] = item.type; });
 
   const q = document.createElement('div'); q.className = 'ob-question';
   q.style.fontSize = '1.6rem';
   q.textContent = obState.name ? `Almost there, ${obState.name}.` : 'Almost there.';
   const sub = document.createElement('div'); sub.className = 'ob-subtext';
-  sub.textContent = 'Here\'s what we suggest based on your answers. Tap anything you\'d like to add — you\'re not locked in to anything. You can add, modify, or remove at any time in Settings.';
-
+  sub.textContent = 'Tap to select what to add. For each item, choose whether it\'s a Life Area or a Role. Nothing is locked in — you can change everything in Settings at any time.';
   const hint = document.createElement('div'); hint.className = 'ob-multi-hint';
-  hint.textContent = 'Nothing is selected yet — tap to choose what to add';
+  hint.textContent = 'Nothing selected yet — tap a card to choose it';
 
   inner.appendChild(q); inner.appendChild(sub); inner.appendChild(hint);
 
   if (allSuggestions.length === 0) {
     const empty = document.createElement('div');
     empty.style.cssText = 'color:var(--text3);font-size:0.84rem;margin-bottom:20px;font-style:italic;';
-    empty.textContent = 'No suggestions generated — you can add roles manually in Settings.';
+    empty.textContent = 'No suggestions — add roles and life areas manually in Settings.';
     inner.appendChild(empty);
   } else {
     const list = document.createElement('div'); list.className = 'ob-summary-list';
+
     allSuggestions.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'ob-summary-item';
-      row.style.cssText += 'cursor:pointer;transition:all 0.15s;';
-      const dot  = document.createElement('div'); dot.className = 'ob-summary-dot'; dot.style.background = item.color;
-      const name = document.createElement('div'); name.className = 'ob-summary-name'; name.textContent = item.name;
-      const badge = document.createElement('div');
-      badge.className = 'ob-summary-badge ' + (item.type === 'role' ? 'role' : 'area');
-      badge.textContent = item.badge || (item.type === 'role' ? 'Role' : 'Life Area');
+      const card = document.createElement('div');
+      card.className = 'ob-summary-item';
+      card.style.cssText = 'cursor:pointer;transition:all 0.15s;flex-wrap:wrap;gap:8px;align-items:center;';
+
       const chk = document.createElement('div');
       chk.style.cssText = 'width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;';
       chk.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8" style="display:none"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
 
-      row.appendChild(chk); row.appendChild(dot); row.appendChild(name); row.appendChild(badge);
+      const dot = document.createElement('div'); dot.className = 'ob-summary-dot'; dot.style.background = item.color;
+      const name = document.createElement('div'); name.className = 'ob-summary-name'; name.textContent = item.name;
 
-      row.onclick = () => {
-        if (selected.has(item.id)) {
-          selected.delete(item.id);
-          row.style.borderColor = '';
-          row.style.background = '';
-          chk.style.background = ''; chk.style.borderColor = 'var(--border2)';
-          chk.querySelector('svg').style.display = 'none';
+      // Type toggle — Life Area / Role
+      const typeWrap = document.createElement('div');
+      typeWrap.style.cssText = 'display:flex;gap:4px;margin-left:auto;';
+      typeWrap.onclick = e => e.stopPropagation(); // don't trigger card select
+
+      const areaBtn = document.createElement('button');
+      areaBtn.style.cssText = 'padding:4px 9px;border-radius:5px;font-size:0.68rem;font-family:"DM Sans",sans-serif;cursor:pointer;transition:all 0.15s;border:1px solid var(--border2);background:transparent;color:var(--text3);';
+      areaBtn.textContent = 'Life Area';
+      const roleBtn = document.createElement('button');
+      roleBtn.style.cssText = areaBtn.style.cssText;
+      roleBtn.textContent = 'Role';
+
+      const setType = (t) => {
+        itemTypes[item.id] = t;
+        if (t === 'area') {
+          areaBtn.style.background = 'var(--blue-dim)'; areaBtn.style.borderColor = 'var(--blue)'; areaBtn.style.color = 'var(--blue)';
+          roleBtn.style.background = 'transparent'; roleBtn.style.borderColor = 'var(--border2)'; roleBtn.style.color = 'var(--text3)';
         } else {
+          roleBtn.style.background = 'var(--purple-dim)'; roleBtn.style.borderColor = 'var(--purple)'; roleBtn.style.color = 'var(--purple)';
+          areaBtn.style.background = 'transparent'; areaBtn.style.borderColor = 'var(--border2)'; areaBtn.style.color = 'var(--text3)';
+        }
+      };
+      setType(item.type); // apply default
+      areaBtn.onclick = () => setType('area');
+      roleBtn.onclick = () => setType('role');
+      typeWrap.appendChild(areaBtn); typeWrap.appendChild(roleBtn);
+
+      // Card select toggle
+      const setSelected = (on) => {
+        if (on) {
           selected.add(item.id);
-          row.style.borderColor = item.color;
-          row.style.background = 'var(--surface2)';
+          card.style.borderColor = item.color; card.style.background = 'var(--surface2)';
           chk.style.background = item.color; chk.style.borderColor = item.color;
           chk.querySelector('svg').style.display = 'block';
+          typeWrap.style.opacity = '1'; typeWrap.style.pointerEvents = 'auto';
+        } else {
+          selected.delete(item.id);
+          card.style.borderColor = ''; card.style.background = '';
+          chk.style.background = ''; chk.style.borderColor = 'var(--border2)';
+          chk.querySelector('svg').style.display = 'none';
+          typeWrap.style.opacity = '0.4'; typeWrap.style.pointerEvents = 'none';
         }
         confirmBtn.textContent = selected.size > 0
           ? `✓ Add ${selected.size} item${selected.size !== 1 ? 's' : ''} to my EQUILIB`
           : 'Continue without adding';
       };
-      list.appendChild(row);
+
+      typeWrap.style.opacity = '0.4'; typeWrap.style.pointerEvents = 'none'; // dimmed until selected
+      card.onclick = () => setSelected(!selected.has(item.id));
+
+      card.appendChild(chk); card.appendChild(dot); card.appendChild(name); card.appendChild(typeWrap);
+      list.appendChild(card);
     });
+
     inner.appendChild(list);
   }
 
   const confirmBtn = document.createElement('button'); confirmBtn.className = 'ob-confirm-btn';
   confirmBtn.textContent = 'Continue without adding';
   confirmBtn.onclick = () => {
-    const chosenItems = allSuggestions.filter(item => selected.has(item.id));
+    const chosenItems = allSuggestions
+      .filter(item => selected.has(item.id))
+      .map(item => ({ ...item, type: itemTypes[item.id] }));
     finishOnboarding(false, chosenItems, obState.name);
+  };
+  inner.appendChild(confirmBtn);
+}
+
+function renderObOrganize(inner) {
+  const items = obState.selectedItems || [];
+  if (items.length === 0) { finishOnboarding(false, [], obState.name); return; }
+
+  const q = document.createElement('div'); q.className = 'ob-question';
+  q.style.fontSize = '1.6rem';
+  q.textContent = 'How do you see these?';
+  const sub = document.createElement('div'); sub.className = 'ob-subtext';
+  sub.textContent = 'Tell us whether each item is a Life Area (something you invest in) or a Role (an identity you carry). We\'ve made our best guess — change anything that doesn\'t feel right.';
+  inner.appendChild(q); inner.appendChild(sub);
+
+  const list = document.createElement('div'); list.className = 'ob-summary-list';
+
+  items.forEach(item => {
+    const current = obState.organize[item.id] || 'area';
+    const row = document.createElement('div'); row.className = 'ob-summary-item'; row.style.flexWrap = 'wrap'; row.style.gap = '8px';
+    const dot = document.createElement('div'); dot.className = 'ob-summary-dot'; dot.style.background = item.color;
+    const name = document.createElement('div'); name.className = 'ob-summary-name'; name.textContent = item.name;
+
+    // Toggle buttons
+    const toggleWrap = document.createElement('div'); toggleWrap.style.cssText = 'display:flex;gap:5px;margin-left:auto;';
+    const areaBtn = document.createElement('button');
+    areaBtn.className = 'ob-option' + (current === 'area' ? ' selected' : '');
+    areaBtn.style.cssText = 'padding:5px 10px;min-width:0;flex:0;font-size:0.72rem;';
+    areaBtn.textContent = 'Life Area';
+    const roleBtn = document.createElement('button');
+    roleBtn.className = 'ob-option' + (current === 'role' ? ' selected' : '');
+    roleBtn.style.cssText = 'padding:5px 10px;min-width:0;flex:0;font-size:0.72rem;';
+    roleBtn.textContent = 'Role';
+
+    areaBtn.onclick = () => {
+      obState.organize[item.id] = 'area';
+      areaBtn.classList.add('selected'); roleBtn.classList.remove('selected');
+    };
+    roleBtn.onclick = () => {
+      obState.organize[item.id] = 'role';
+      roleBtn.classList.add('selected'); areaBtn.classList.remove('selected');
+    };
+
+    toggleWrap.appendChild(areaBtn); toggleWrap.appendChild(roleBtn);
+    row.appendChild(dot); row.appendChild(name); row.appendChild(toggleWrap);
+    list.appendChild(row);
+  });
+
+  inner.appendChild(list);
+
+  const confirmBtn = document.createElement('button'); confirmBtn.className = 'ob-confirm-btn';
+  confirmBtn.textContent = `✓ Build my EQUILIB`;
+  confirmBtn.onclick = () => {
+    // Apply organize choices to items
+    const finalItems = items.map(item => ({
+      ...item,
+      type: obState.organize[item.id] || item.type,
+    }));
+    finishOnboarding(false, finalItems, obState.name);
   };
   inner.appendChild(confirmBtn);
 }
@@ -5576,7 +6364,181 @@ function finishOnboarding(skip, items, userName) {
     overlay.style.display = 'none';
     renderDashboard();
     buildCalendar();
+    maybeStartDashTutorial();
   }, 600);
+}
+
+/* ============================================================
+   SPOTLIGHT TUTORIAL
+   ============================================================ */
+const TUTORIAL_KEYS = {
+  dashboard: 'tut_dashboard_done',
+  calendar:  'tut_calendar_done',
+  dayPanel:  'tut_daypanel_done',
+};
+
+function tutDone(key) { return !!(ls_get(key)); }
+function markTutDone(key) { ls_set(key, true); }
+
+// Dashboard tutorial steps
+const DASH_STEPS = [
+  {
+    selector: () => document.querySelector('.dash-header'),
+    title: 'YOUR BALANCE',
+    body: 'This is your Balance dashboard. It shows how consistently you\'re showing up across every area of your life — not just what you did, but how balanced you are overall.',
+  },
+  {
+    selector: () => document.querySelector('#punct-card-wrap .punct-card') || document.querySelector('#punct-card-wrap'),
+    title: 'HOW I SHOW UP',
+    body: 'These rings track your timing and preparedness across all commitments you choose to monitor. Are you showing up on time? Are you prepared? This card tells you.',
+  },
+  {
+    selector: () => document.querySelector('#balance-radar-wrap .balance-radar-card') || document.querySelector('#balance-radar-wrap'),
+    title: 'LIFE BALANCE RADAR',
+    body: 'The radar shows all your life areas at a glance. A balanced shape means you\'re investing evenly. A lopsided shape reveals where you\'re over- or under-investing.',
+    skip: () => !document.querySelector('#balance-radar-wrap .balance-radar-card'),
+  },
+  {
+    selector: () => document.querySelector('#dash-base-grid .stat-card') || document.querySelector('#dash-base-grid'),
+    title: 'CATEGORY CARDS',
+    body: 'Each ring is a life area or role. The color shows your completion rate — green means you\'re showing up, red means it needs attention. Tap any card to see your tasks and stats.',
+  },
+  {
+    selector: () => document.querySelector('.dash-summary'),
+    title: 'BALANCE SCORE',
+    body: 'Your overall balance score sits here. When every category reaches 80%+, the score turns gold and a ⚖ scale appears on each card — you\'ve reached equilibrium.',
+  },
+  {
+    selector: () => document.querySelector('.nav-tabs'),
+    title: 'NAVIGATION',
+    body: 'Use these tabs to move around. Balance is your home. Calendar is where you log commitments. Horizon shows the next two weeks. Future Plans holds commitments planned far ahead.',
+  },
+];
+
+// Calendar tutorial steps
+const CAL_STEPS = [
+  {
+    selector: () => document.querySelector('.cal-months'),
+    title: 'YOUR CALENDAR',
+    body: 'This is your calendar. Each date can hold commitments across all your life areas and roles. Tap any date to open it and start logging.',
+  },
+  {
+    selector: () => document.querySelector('.cal-day.today') || document.querySelector('.cal-day'),
+    title: 'TAP A DATE',
+    body: 'Tap any date to open the day panel where you can add commitments, set recurrence, track timing, and log impact scores for your roles.',
+  },
+];
+
+// Day panel tutorial steps
+const PANEL_STEPS = [
+  {
+    selector: () => document.querySelector('.panel-header') || document.querySelector('.side-panel'),
+    title: 'DAY PANEL',
+    body: 'This panel shows everything for the selected date. Each section is a life area or role. Add commitments, check them off, and track how you show up.',
+  },
+  {
+    selector: () => document.querySelector('.add-task-row'),
+    title: 'ADD A COMMITMENT',
+    body: 'Type a commitment here and tap + to add it. You can set it to repeat daily, weekly, or on custom days. Optional: add a time block and set a duration.',
+  },
+  {
+    selector: () => document.querySelector('.track-timing-row'),
+    title: 'TRACKING TOGGLES',
+    body: '"Was I present & on time?" logs your timing and preparedness when you complete this commitment. "Track how consistently I show up" monitors your completion rate over time.',
+  },
+];
+
+let spotlightSteps  = [];
+let spotlightIndex  = 0;
+let spotlightTutKey = null;
+
+function startTutorial(steps, tutKey) {
+  spotlightSteps  = steps.filter(s => !s.skip || !s.skip());
+  spotlightIndex  = 0;
+  spotlightTutKey = tutKey;
+  document.getElementById('spotlight-overlay').classList.add('active');
+  showSpotlightStep(0);
+}
+
+function showSpotlightStep(idx) {
+  const step = spotlightSteps[idx];
+  if (!step) { endTutorial(); return; }
+  const el = step.selector();
+  if (!el) { showSpotlightStep(idx + 1); return; }
+
+  const rect = el.getBoundingClientRect();
+  const pad  = 8;
+  const hole = document.getElementById('spotlight-hole');
+  const tip  = document.getElementById('spotlight-tooltip');
+
+  hole.style.left   = (rect.left   - pad) + 'px';
+  hole.style.top    = (rect.top    - pad) + 'px';
+  hole.style.width  = (rect.width  + pad * 2) + 'px';
+  hole.style.height = (rect.height + pad * 2) + 'px';
+
+  // Build tooltip
+  tip.innerHTML = '';
+  const stepLbl = document.createElement('div'); stepLbl.className = 'spotlight-step-label';
+  stepLbl.textContent = `Step ${idx + 1} of ${spotlightSteps.length}`;
+  const title = document.createElement('div'); title.className = 'spotlight-tip-title'; title.textContent = step.title;
+  const body  = document.createElement('div'); body.className  = 'spotlight-tip-body';  body.textContent  = step.body;
+
+  const actions = document.createElement('div'); actions.className = 'spotlight-actions';
+  const dots = document.createElement('div'); dots.className = 'spotlight-dots';
+  spotlightSteps.forEach((_, i) => {
+    const d = document.createElement('div'); d.className = 'spotlight-dot' + (i === idx ? ' active' : '');
+    dots.appendChild(d);
+  });
+  const nextBtn = document.createElement('button'); nextBtn.className = 'spotlight-next-btn';
+  nextBtn.textContent = idx === spotlightSteps.length - 1 ? 'Got it ✓' : 'Next →';
+  nextBtn.onclick = () => showSpotlightStep(idx + 1);
+  const skipBtn = document.createElement('button'); skipBtn.className = 'spotlight-skip-btn'; skipBtn.textContent = 'Skip tour';
+  skipBtn.onclick = endTutorial;
+
+  actions.appendChild(dots); actions.appendChild(skipBtn); actions.appendChild(nextBtn);
+  tip.appendChild(stepLbl); tip.appendChild(title); tip.appendChild(body); tip.appendChild(actions);
+
+  // Position tooltip below or above the hole
+  const tipH = 160; // approx
+  const below = rect.bottom + pad + 12 + tipH < window.innerHeight;
+  tip.style.top  = below ? (rect.bottom + pad + 12) + 'px' : (rect.top - pad - tipH - 12) + 'px';
+  const tipW = 280;
+  let left = rect.left;
+  if (left + tipW > window.innerWidth - 12) left = window.innerWidth - tipW - 12;
+  if (left < 12) left = 12;
+  tip.style.left = left + 'px';
+
+  // Scroll element into view
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function endTutorial() {
+  document.getElementById('spotlight-overlay').classList.remove('active');
+  if (spotlightTutKey) markTutDone(spotlightTutKey);
+  spotlightSteps = []; spotlightIndex = 0; spotlightTutKey = null;
+}
+
+function maybeStartDashTutorial() {
+  if (tutDone(TUTORIAL_KEYS.dashboard)) return;
+  setTimeout(() => startTutorial(DASH_STEPS, TUTORIAL_KEYS.dashboard), 600);
+}
+
+function maybeStartCalTutorial() {
+  if (tutDone(TUTORIAL_KEYS.calendar)) return;
+  setTimeout(() => startTutorial(CAL_STEPS, TUTORIAL_KEYS.calendar), 400);
+}
+
+function maybeStartPanelTutorial() {
+  if (tutDone(TUTORIAL_KEYS.dayPanel)) return;
+  setTimeout(() => startTutorial(PANEL_STEPS, TUTORIAL_KEYS.dayPanel), 400);
+}
+
+/* ── Allow replaying tutorials from Settings or FAQ ── */
+function replayTutorial(key) {
+  markTutDone(key); // clear so it fires
+  ls_set(key, false);
+  if (key === TUTORIAL_KEYS.dashboard) { showPage('dashboard', document.querySelector('.nav-tab')); maybeStartDashTutorial(); }
+  if (key === TUTORIAL_KEYS.calendar)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); maybeStartCalTutorial(); }
 }
 
 /* ============================================================
@@ -5585,6 +6547,7 @@ function finishOnboarding(skip, items, userName) {
 if (obDone()) {
   document.getElementById('onboarding-overlay').style.display = 'none';
   renderDashboard();
+  maybeStartDashTutorial();
   setTimeout(checkAndPromptCommitments, 800);
 } else {
   startOnboarding();
