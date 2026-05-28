@@ -507,6 +507,24 @@ svg.ring { transform: rotate(-90deg); }
   background: var(--border2); transition: background 0.2s;
 }
 .spotlight-dot.active { background: var(--blue); }
+
+/* ── Auto-added categories notice banner ── */
+.auto-cats-banner { background: var(--surface2); border: 1px solid var(--teal); border-left: 3px solid var(--teal); border-radius: 9px; padding: 12px 14px; margin: 0 16px 10px; display: flex; align-items: flex-start; gap: 10px; }
+.auto-cats-banner-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.auto-cats-banner-text { flex: 1; font-size: 0.78rem; color: var(--text2); line-height: 1.5; font-family: 'DM Sans', sans-serif; }
+.auto-cats-banner-text b { color: var(--text); }
+.auto-cats-banner-dismiss { background: none; border: none; color: var(--text3); font-size: 0.9rem; cursor: pointer; padding: 0 2px; flex-shrink: 0; transition: color 0.15s; }
+.auto-cats-banner-dismiss:hover { color: var(--text); }
+
+/* ── Role vs Life Area explainer ── */
+.role-area-explainer { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; margin-bottom: 12px; font-size: 0.78rem; color: var(--text2); line-height: 1.6; font-family: 'DM Sans', sans-serif; }
+.role-area-explainer b { color: var(--text); }
+.explainer-row { display: flex; gap: 8px; margin-top: 8px; }
+.explainer-col { flex: 1; background: var(--surface3); border-radius: 7px; padding: 8px 10px; }
+.explainer-col-title { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; }
+.explainer-col-title.area { color: var(--blue); }
+.explainer-col-title.role { color: var(--purple); }
+.explainer-col-body { font-size: 0.7rem; color: var(--text3); line-height: 1.5; }
 #onboarding-overlay {
   position: fixed; inset: 0; z-index: 9999;
   background: var(--bg);
@@ -1480,6 +1498,7 @@ svg.ring { transform: rotate(-90deg); }
     <div class="dash-title">YOUR BALANCE</div>
     <div class="dash-subtitle" id="dash-range">Loading…</div>
   </div>
+  <div id="auto-cats-banner-wrap"></div>
   <div id="punct-card-wrap" style="padding: 0 16px 8px;"></div>
   <div id="balance-radar-wrap" style="padding: 0 16px 8px;"></div>
   <div class="dash-section-label">Life Areas</div>
@@ -2204,6 +2223,9 @@ function renderDashboard() {
   document.getElementById('sum-overall').textContent = displayPct + '%';
   document.getElementById('sum-overall').className = 'sum-val' + (overallPct < 0 ? ' negative' : '');
   document.getElementById('sum-overall').style.color = grandCombinedTotal > 0 ? overallColor(overallPct) : '';
+
+  // Auto-cats notice banner
+  renderAutoCatsBanner();
 
   // Punctuality tracker card
   renderPunctCard();
@@ -3806,14 +3828,19 @@ function renderSettings() {
   const addNewLbl = document.createElement('div'); addNewLbl.className = 'cat-add-field-label'; addNewLbl.textContent = 'Add New';
   const addNewInp = document.createElement('input'); addNewInp.className = 'settings-input'; addNewInp.placeholder = 'Name…';
 
-  // Life Area / Role toggle
+  // Life Area / Role toggle with explainer
   let newItemType = 'area';
-  const typeRow = document.createElement('div'); typeRow.style.cssText = 'display:flex;gap:6px;';
+  const explainerWrap = document.createElement('div');
+  explainerWrap.appendChild(buildRoleAreaExplainer());
+  explainerWrap.style.display = 'none'; // collapsed by default
+  const typeRow = document.createElement('div'); typeRow.style.cssText = 'display:flex;gap:6px;align-items:center;';
   const areaToggle = document.createElement('button'); areaToggle.className = 'recur-btn selected'; areaToggle.textContent = 'Life Area';
   const roleToggle = document.createElement('button'); roleToggle.className = 'recur-btn'; roleToggle.textContent = 'Role';
+  const whatBtn = document.createElement('button'); whatBtn.className = 'task-time-toggle'; whatBtn.textContent = '? What\'s the difference';
+  whatBtn.onclick = () => { explainerWrap.style.display = explainerWrap.style.display === 'none' ? 'block' : 'none'; };
   areaToggle.onclick = () => { newItemType = 'area'; areaToggle.classList.add('selected'); roleToggle.classList.remove('selected'); };
   roleToggle.onclick = () => { newItemType = 'role'; roleToggle.classList.add('selected'); areaToggle.classList.remove('selected'); };
-  typeRow.appendChild(areaToggle); typeRow.appendChild(roleToggle);
+  typeRow.appendChild(areaToggle); typeRow.appendChild(roleToggle); typeRow.appendChild(whatBtn);
 
   const addNewBtn = document.createElement('button'); addNewBtn.className = 'backup-btn primary'; addNewBtn.textContent = '+ Add';
   addNewBtn.onclick = () => {
@@ -3824,12 +3851,12 @@ function renderSettings() {
     } else {
       const rs = getRoles();
       if (rs.length >= MAX_ROLES) { alert(`Maximum of ${MAX_ROLES} roles reached.`); return; }
-      rs.push({ id: 'role_'+Date.now(), name, color }); saveRoles(rs);
+      rs.push({ id: 'role_custom_'+Date.now(), name, color }); saveRoles(rs);
     }
     addNewInp.value = ''; renderSettings();
   };
   addNewInp.addEventListener('keydown', e => { if (e.key === 'Enter') addNewBtn.click(); });
-  addNewBox.appendChild(addNewLbl); addNewBox.appendChild(addNewInp); addNewBox.appendChild(typeRow); addNewBox.appendChild(addNewBtn);
+  addNewBox.appendChild(addNewLbl); addNewBox.appendChild(addNewInp); addNewBox.appendChild(typeRow); addNewBox.appendChild(explainerWrap); addNewBox.appendChild(addNewBtn);
   customSection.appendChild(addNewBox);
   body.appendChild(customSection);
 
@@ -3998,10 +4025,10 @@ function renderSettings() {
   ].forEach(({ label, key }) => {
     const btn = document.createElement('button'); btn.className = 'backup-btn'; btn.style.marginBottom = '6px'; btn.style.width = '100%'; btn.textContent = '▶ ' + label;
     btn.onclick = () => {
-      ls_set(key, false); closeSettings();
+      localStorage.removeItem('lt_' + key); closeSettings();
       if (key === TUTORIAL_KEYS.dashboard) { showPage('dashboard', document.querySelector('.nav-tab')); setTimeout(() => startTutorial(DASH_STEPS, key), 500); }
       if (key === TUTORIAL_KEYS.calendar)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(CAL_STEPS, key), 500); }
-      if (key === TUTORIAL_KEYS.dayPanel)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => { startTutorial(PANEL_STEPS, key); }, 500); }
+      if (key === TUTORIAL_KEYS.dayPanel)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(PANEL_STEPS, key), 500); }
     };
     tutSection.appendChild(btn);
   });
@@ -4504,20 +4531,27 @@ function saveLastSync() { ls_set('firebase_last_sync', new Date().toISOString())
 async function loadFirebaseSDK() {
   if (window._firebaseLoaded) return true;
   return new Promise((resolve) => {
-    // Load Firebase app + auth + firestore from CDN
     const scripts = [
-      'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
-      'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js',
-      'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
     ];
     let loaded = 0;
+    let failed = false;
     scripts.forEach(src => {
       const s = document.createElement('script');
       s.src = src;
-      s.onload = () => { loaded++; if (loaded === scripts.length) { window._firebaseLoaded = true; resolve(true); } };
-      s.onerror = () => resolve(false);
+      s.onload = () => {
+        loaded++;
+        if (loaded === scripts.length) { window._firebaseLoaded = true; resolve(true); }
+      };
+      s.onerror = () => {
+        if (!failed) { failed = true; resolve(false); }
+      };
       document.head.appendChild(s);
     });
+    // Timeout fallback after 10s
+    setTimeout(() => { if (!window._firebaseLoaded) resolve(false); }, 10000);
   });
 }
 
@@ -4525,7 +4559,10 @@ async function initFirebase(statusId) {
   const cfg = getFirebaseConfig();
   if (!cfg) { setBackupStatus(statusId, '✗ No Firebase config saved', 'err'); return false; }
   const ok = await loadFirebaseSDK();
-  if (!ok) { setBackupStatus(statusId, '✗ Failed to load Firebase SDK', 'err'); return false; }
+  if (!ok) {
+    setBackupStatus(statusId, '✗ Could not load Firebase SDK. Make sure you have internet access and the domain gstatic.com is not blocked.', 'err');
+    return false;
+  }
   try {
     if (!firebase.apps.length) {
       window._firebaseApp  = firebase.initializeApp(cfg);
@@ -4701,24 +4738,25 @@ function renderBackupSection(body) {
 2. Create a project → Add a Web App<br>
 3. Enable <b>Authentication → Google</b> sign-in<br>
 4. Enable <b>Firestore Database</b> (start in test mode)<br>
-5. Copy your config object values below and hit Save<br><br>
+5. Copy your config values below — only <b>API Key, Auth Domain, and Project ID</b> are required<br><br>
 <b>Also add your app's domain</b> to <code>Authentication → Settings → Authorized domains</code>`;
     fbBox.appendChild(setupBox);
 
     const fields = [
-      { key: 'apiKey',            label: 'API Key' },
-      { key: 'authDomain',        label: 'Auth Domain' },
-      { key: 'projectId',         label: 'Project ID' },
-      { key: 'storageBucket',     label: 'Storage Bucket' },
-      { key: 'messagingSenderId', label: 'Messaging Sender ID' },
-      { key: 'appId',             label: 'App ID' },
+      { key: 'apiKey',            label: 'API Key',             required: true  },
+      { key: 'authDomain',        label: 'Auth Domain',         required: true  },
+      { key: 'projectId',         label: 'Project ID',          required: true  },
+      { key: 'storageBucket',     label: 'Storage Bucket',      required: false },
+      { key: 'messagingSenderId', label: 'Messaging Sender ID', required: false },
+      { key: 'appId',             label: 'App ID',              required: false },
     ];
     const inputMap = {};
     fields.forEach(f => {
       const row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:8px;';
       const lbl = document.createElement('div'); lbl.style.cssText = 'font-size:0.7rem;color:var(--text3);width:140px;flex-shrink:0;font-family:"JetBrains Mono",monospace;';
-      lbl.textContent = f.label;
-      const inp = document.createElement('input'); inp.className = 'settings-input'; inp.placeholder = f.key + '…';
+      lbl.textContent = f.label + (f.required ? '' : ' (optional)');
+      const inp = document.createElement('input'); inp.className = 'settings-input'; inp.placeholder = f.required ? f.key + '…' : 'optional';
+      if (cfg && cfg[f.key]) inp.value = cfg[f.key];
       inputMap[f.key] = inp;
       row.appendChild(lbl); row.appendChild(inp);
       fbBox.appendChild(row);
@@ -4731,10 +4769,10 @@ function renderBackupSection(body) {
       let valid = true;
       fields.forEach(f => {
         const v = inputMap[f.key].value.trim();
-        if (!v) valid = false;
-        newCfg[f.key] = v;
+        if (f.required && !v) valid = false;
+        if (v) newCfg[f.key] = v;
       });
-      if (!valid) { setBackupStatus('firebase-status', '✗ Please fill in all fields', 'err'); return; }
+      if (!valid) { setBackupStatus('firebase-status', '✗ API Key, Auth Domain and Project ID are required', 'err'); return; }
       saveBtn.textContent = 'Verifying…'; saveBtn.disabled = true;
 
       const ok = await loadFirebaseSDK();
@@ -5875,6 +5913,44 @@ function openConflictModal(conflicts, onDoubleBook, onCancel, dayKey, catKey, ne
 function closeConflictModal() { document.getElementById('conflict-overlay').classList.remove('open'); }
 
 /* ============================================================
+   AUTO-CATS BANNER
+   ============================================================ */
+function renderAutoCatsBanner() {
+  const wrap = document.getElementById('auto-cats-banner-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const notice = ls_get('auto_cats_notice');
+  if (!notice || notice.length === 0) return;
+
+  const banner = document.createElement('div'); banner.className = 'auto-cats-banner';
+  const icon = document.createElement('div'); icon.className = 'auto-cats-banner-icon'; icon.textContent = 'ℹ';
+  const text = document.createElement('div'); text.className = 'auto-cats-banner-text';
+  const names = notice.map(n => `<b>${n}</b>`).join(' and ');
+  text.innerHTML = `We automatically added ${names} to get you started. You can delete either at any time in <b>Settings → Life Areas</b>.`;
+  const dismiss = document.createElement('button'); dismiss.className = 'auto-cats-banner-dismiss'; dismiss.textContent = '✕';
+  dismiss.title = 'Dismiss';
+  dismiss.onclick = () => { ls_set('auto_cats_notice', null); wrap.innerHTML = ''; };
+  banner.appendChild(icon); banner.appendChild(text); banner.appendChild(dismiss);
+  wrap.appendChild(banner);
+}
+
+/* ============================================================
+   ROLE VS LIFE AREA EXPLAINER
+   ============================================================ */
+function buildRoleAreaExplainer() {
+  const box = document.createElement('div'); box.className = 'role-area-explainer';
+  box.innerHTML = `<b>What's the difference?</b><br>Understanding this helps you build a dashboard that truly reflects your life.`;
+  const row = document.createElement('div'); row.className = 'explainer-row';
+  const areaCol = document.createElement('div'); areaCol.className = 'explainer-col';
+  areaCol.innerHTML = `<div class="explainer-col-title area">🌱 Life Area</div><div class="explainer-col-body">Something you invest in for yourself. It's a domain — like Health, Faith, or Finance. You grow it over time. You show up for it regardless of who else is involved.</div>`;
+  const roleCol = document.createElement('div'); roleCol.className = 'explainer-col';
+  roleCol.innerHTML = `<div class="explainer-col-title role">👤 Role</div><div class="explainer-col-body">An identity defined by your relationship to others. Husband, Father, Professional, Friend. It's not just what you do — it's who you are to someone else. Roles can have impact scores.</div>`;
+  row.appendChild(areaCol); row.appendChild(roleCol);
+  box.appendChild(row);
+  return box;
+}
+
+/* ============================================================
    HELPERS
    ============================================================ */
 function getAllCats() {
@@ -6175,7 +6251,9 @@ function renderObSummary(inner) {
   const hint = document.createElement('div'); hint.className = 'ob-multi-hint';
   hint.textContent = 'Nothing selected yet — tap a card to choose it';
 
-  inner.appendChild(q); inner.appendChild(sub); inner.appendChild(hint);
+  inner.appendChild(q); inner.appendChild(sub);
+  inner.appendChild(buildRoleAreaExplainer());
+  inner.appendChild(hint);
 
   if (allSuggestions.length === 0) {
     const empty = document.createElement('div');
@@ -6326,13 +6404,10 @@ function renderObOrganize(inner) {
 
 function finishOnboarding(skip, items, userName) {
   if (!skip && items && items.length > 0) {
-    // Save user name
     if (userName) { const s = getSettings(); s._userName = userName; saveSettings(s); }
-
     const existingRoles = getRoles();
     const existingCats  = getCustomCats();
     let colorIdx = 0;
-
     items.forEach(item => {
       if (item.type === 'role') {
         if (!existingRoles.find(r => r.name === item.name)) {
@@ -6357,6 +6432,22 @@ function finishOnboarding(skip, items, userName) {
     saveCustomCats(existingCats);
   }
 
+  // Auto-add Personal Goals + Commitments & Schedule if not already present
+  const autoCats = getCustomCats();
+  const autoAdded = [];
+  [
+    { name: 'Personal Goals',         color: '#14b8a6', id: 'cat_auto_goals'    },
+    { name: 'Commitments & Schedule', color: '#f97316', id: 'cat_auto_schedule' },
+  ].forEach(ac => {
+    if (!autoCats.find(c => c.id === ac.id || c.name === ac.name)) {
+      autoCats.push(ac); autoAdded.push(ac.name);
+    }
+  });
+  if (autoAdded.length > 0) {
+    saveCustomCats(autoCats);
+    ls_set('auto_cats_notice', autoAdded);
+  }
+
   markObDone();
   const overlay = document.getElementById('onboarding-overlay');
   overlay.classList.add('fade-out');
@@ -6377,8 +6468,8 @@ const TUTORIAL_KEYS = {
   dayPanel:  'tut_daypanel_done',
 };
 
-function tutDone(key) { return !!(ls_get(key)); }
-function markTutDone(key) { ls_set(key, true); }
+function tutDone(key) { return localStorage.getItem('lt_' + key) === 'true'; }
+function markTutDone(key) { localStorage.setItem('lt_' + key, 'true'); }
 
 // Dashboard tutorial steps
 const DASH_STEPS = [
@@ -6498,15 +6589,24 @@ function showSpotlightStep(idx) {
   actions.appendChild(dots); actions.appendChild(skipBtn); actions.appendChild(nextBtn);
   tip.appendChild(stepLbl); tip.appendChild(title); tip.appendChild(body); tip.appendChild(actions);
 
-  // Position tooltip below or above the hole
-  const tipH = 160; // approx
-  const below = rect.bottom + pad + 12 + tipH < window.innerHeight;
-  tip.style.top  = below ? (rect.bottom + pad + 12) + 'px' : (rect.top - pad - tipH - 12) + 'px';
-  const tipW = 280;
-  let left = rect.left;
-  if (left + tipW > window.innerWidth - 12) left = window.innerWidth - tipW - 12;
-  if (left < 12) left = 12;
-  tip.style.left = left + 'px';
+  // Position tooltip — always keep within viewport
+  const tipW = 280; const tipH = 180;
+  // Try below first, then above, then center
+  let tipTop;
+  if (rect.bottom + pad + 16 + tipH < window.innerHeight) {
+    tipTop = rect.bottom + pad + 12;
+  } else if (rect.top - pad - 16 - tipH > 0) {
+    tipTop = rect.top - pad - tipH - 12;
+  } else {
+    tipTop = Math.max(10, (window.innerHeight - tipH) / 2);
+  }
+  // Clamp to viewport
+  tipTop = Math.max(10, Math.min(tipTop, window.innerHeight - tipH - 10));
+  let tipLeft = rect.left;
+  tipLeft = Math.max(12, Math.min(tipLeft, window.innerWidth - tipW - 12));
+  tip.style.top  = tipTop + 'px';
+  tip.style.left = tipLeft + 'px';
+  tip.style.width = tipW + 'px';
 
   // Scroll element into view
   el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -6535,10 +6635,11 @@ function maybeStartPanelTutorial() {
 
 /* ── Allow replaying tutorials from Settings or FAQ ── */
 function replayTutorial(key) {
-  markTutDone(key); // clear so it fires
-  ls_set(key, false);
-  if (key === TUTORIAL_KEYS.dashboard) { showPage('dashboard', document.querySelector('.nav-tab')); maybeStartDashTutorial(); }
-  if (key === TUTORIAL_KEYS.calendar)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); maybeStartCalTutorial(); }
+  localStorage.removeItem('lt_' + key);
+  closeSettings();
+  if (key === TUTORIAL_KEYS.dashboard) { showPage('dashboard', document.querySelector('.nav-tab')); setTimeout(() => startTutorial(DASH_STEPS, key), 500); }
+  if (key === TUTORIAL_KEYS.calendar)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(CAL_STEPS, key), 500); }
+  if (key === TUTORIAL_KEYS.dayPanel)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(PANEL_STEPS, key), 500); }
 }
 
 /* ============================================================
@@ -6546,6 +6647,18 @@ function replayTutorial(key) {
    ============================================================ */
 if (obDone()) {
   document.getElementById('onboarding-overlay').style.display = 'none';
+  // Ensure auto-cats exist even for users who skipped onboarding
+  const autoCats = getCustomCats();
+  const autoAdded = [];
+  [
+    { name: 'Personal Goals',         color: '#14b8a6', id: 'cat_auto_goals'    },
+    { name: 'Commitments & Schedule', color: '#f97316', id: 'cat_auto_schedule' },
+  ].forEach(ac => {
+    if (!autoCats.find(c => c.id === ac.id || c.name === ac.name)) {
+      autoCats.push(ac); autoAdded.push(ac.name);
+    }
+  });
+  if (autoAdded.length > 0) { saveCustomCats(autoCats); ls_set('auto_cats_notice', autoAdded); }
   renderDashboard();
   maybeStartDashTutorial();
   setTimeout(checkAndPromptCommitments, 800);
