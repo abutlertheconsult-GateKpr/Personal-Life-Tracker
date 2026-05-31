@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>EQUILIB</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -39,7 +39,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
 nav {
   position: sticky; top: 0; z-index: 100;
@@ -58,7 +58,7 @@ nav {
 .nav-settings-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); border-radius: 7px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .nav-settings-btn:hover { background: var(--surface3); color: var(--text); }
 
-.page { display: none; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
+.page { display: none; padding: 24px 20px 80px; max-width: 1100px; margin: 0 auto; }
 .page.active { display: block; }
 
 .dash-header { margin-bottom: 24px; }
@@ -169,7 +169,7 @@ svg.ring { transform: rotate(-90deg); }
 
 .panel-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.55); }
 .panel-overlay.open { display: block; }
-.side-panel { position: fixed; top: 0; right: -100%; bottom: 0; width: min(var(--panel-w), 100vw); z-index: 201; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
+.side-panel { position: fixed; top: 56px; right: -100%; bottom: 0; width: min(var(--panel-w), 100vw); z-index: 201; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(.4,0,.2,1); overflow: hidden; }
 .side-panel.open { right: 0; }
 .panel-header { padding: 16px 18px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; flex-shrink: 0; }
 .panel-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; line-height: 1; }
@@ -360,9 +360,9 @@ svg.ring { transform: rotate(-90deg); }
 
 /* ─────────────────────────────── */
 
-.modal-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.7); align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .modal-overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); width: 100%; max-width: 480px; max-height: calc(100dvh - 40px); overflow-y: auto; display: flex; flex-direction: column; margin-top: 10px; }
 .modal::-webkit-scrollbar { width: 4px; }
 .modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 .modal-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: sticky; top: 0; background: var(--surface); z-index: 1; }
@@ -427,7 +427,7 @@ svg.ring { transform: rotate(-90deg); }
   .stat-card { padding: 14px 12px; }
   .stat-pct { font-size: 1.7rem; }
   .stat-pct.negative { font-size: 1.35rem; }
-  .page { padding: 16px 12px; }
+  .page { padding: 16px 12px 80px; }
   .cal-day { min-height: 46px; padding: 4px; }
   .day-num { font-size: 0.72rem; }
   nav { padding: 0 10px; height: 52px; }
@@ -451,24 +451,27 @@ svg.ring { transform: rotate(-90deg); }
   transition: all 0.35s ease;
 }
 #spotlight-hole {
-  position: absolute;
+  position: fixed;
   border-radius: 10px;
-  box-shadow: 0 0 0 9999px rgba(0,0,0,0.78);
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.82);
   border: 2px solid var(--blue);
   transition: all 0.35s cubic-bezier(.4,0,.2,1);
   pointer-events: none;
 }
 #spotlight-tooltip {
-  position: absolute;
+  position: fixed;
   background: var(--surface);
   border: 1px solid var(--blue);
   border-radius: 12px;
-  padding: 14px 16px;
-  max-width: 280px; min-width: 200px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  padding: 14px 16px 10px;
+  max-width: 300px; min-width: 240px;
+  width: calc(100vw - 32px);
+  max-width: min(300px, calc(100vw - 32px));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
   pointer-events: all;
-  transition: all 0.35s cubic-bezier(.4,0,.2,1);
   z-index: 8001;
+  display: flex; flex-direction: column;
+  max-height: 45vh;
 }
 .spotlight-step-label {
   font-size: 0.6rem; font-family: 'JetBrains Mono', monospace;
@@ -482,9 +485,12 @@ svg.ring { transform: rotate(-90deg); }
 .spotlight-tip-body {
   font-size: 0.8rem; color: var(--text2); line-height: 1.55;
   font-family: 'DM Sans', sans-serif;
+  overflow-y: auto; flex: 1;
 }
 .spotlight-actions {
-  display: flex; gap: 8px; margin-top: 12px; align-items: center;
+  display: flex; gap: 8px; margin-top: 10px; align-items: center;
+  flex-shrink: 0; background: var(--surface); padding-top: 6px;
+  border-top: 1px solid var(--border);
 }
 .spotlight-next-btn {
   flex: 1; padding: 9px; border-radius: 7px;
@@ -1952,7 +1958,7 @@ function getRoles() {
   if (!r) { ls_set('roles', []); return []; }
 
   // One-time migration: purge legacy hardcoded default roles injected by old DEFAULT_ROLE_NAMES
-  const LEGACY_ROLE_NAMES = ['Father','Leader','Son','Partner','Professional','Friend','Entrepreneur','Student','Wife','Husband','Parent','Not Important'];
+  const LEGACY_ROLE_NAMES = ['Father','Leader','Son','Partner','Professional','Friend','Entrepreneur','Student','Wife','Husband','Parent','Not Important','Personal Promises','Promises to Others'];
   const obComplete = ls_get('ob_complete');
   if (!obComplete) {
     // Before onboarding is done, wipe any auto-injected legacy roles entirely
@@ -2063,44 +2069,54 @@ function dayTotals(key) {
    ============================================================ */
 function calcDeficitPct(catKey, windowDays) {
   let totalTasks = 0, doneTasks = 0, hasPastData = false;
-  // Today's completed tasks: each done = +1, each incomplete = 0 (no penalty while live)
-  // We model this by only counting done tasks from today toward the score,
-  // treating each as if it were a "task with no missed counterpart".
-  // Mechanically: score += doneTodayCount (not subject to the missed penalty).
   let todayDoneBonus = 0;
   windowDays.forEach(key => {
     const dt = parseKey(key);
     const isToday = dt.getTime() === today.getTime();
-    if (dt > today) return;  // future → skip
+    if (dt > today) return;
     propagateRecurring(key);
     const raw = ls_get('day_' + key);
     if (!raw) return;
     const arr = raw[catKey] || [];
     if (arr.length === 0) return;
     if (isToday) {
-      // Only completed tasks from today contribute; incomplete are neutral
       const doneToday = arr.filter(t => t.done).length;
-      if (doneToday > 0) {
-        todayDoneBonus += doneToday;
-        hasPastData = true;
-      }
+      if (doneToday > 0) { todayDoneBonus += doneToday; hasPastData = true; }
       return;
     }
-    // Past days: full deficit logic
     hasPastData = true;
     totalTasks += arr.length;
     doneTasks  += arr.filter(t => t.done).length;
   });
-  // Build score: past deficit + today bonus
-  // Past score = doneTasks - missed = 2*doneTasks - totalTasks
-  // Today bonus = +1 per completed task (no corresponding miss)
-  // Denominator = totalTasks (past) + todayDoneBonus (today's contributing tasks)
+
   const combinedTotal = totalTasks + todayDoneBonus;
-  if (!hasPastData || combinedTotal === 0) return { pct: 0, done: doneTasks + todayDoneBonus, total: totalTasks, missed: 0, hasPastData: false };
   const missed = totalTasks - doneTasks;
-  const score  = (doneTasks - missed) + todayDoneBonus;
-  const pct    = Math.round((score / combinedTotal) * 100);
-  return { pct, done: doneTasks + todayDoneBonus, total: totalTasks, missed, hasPastData: true };
+  const taskScore = combinedTotal > 0 ? Math.round(((doneTasks - missed) + todayDoneBonus) / combinedTotal * 100) : null;
+  const hasTaskData = hasPastData && combinedTotal > 0;
+
+  // Blend with impact avg if this is an impact role
+  const impCfg = getImpactConfig(catKey);
+  let finalPct;
+  if (impCfg.enabled) {
+    const impAvg = getRoleImpactAvg(catKey, windowDays);
+    if (hasTaskData && impAvg !== null) {
+      // Both dimensions — average them equally
+      finalPct = Math.round((taskScore + impAvg) / 2);
+    } else if (impAvg !== null) {
+      // Impact only
+      finalPct = impAvg; hasPastData = true;
+    } else if (hasTaskData) {
+      // Tasks only
+      finalPct = taskScore;
+    } else {
+      finalPct = 0;
+    }
+  } else {
+    finalPct = hasTaskData ? taskScore : 0;
+  }
+
+  if (!hasPastData) return { pct: 0, done: doneTasks + todayDoneBonus, total: totalTasks, missed: 0, hasPastData: false };
+  return { pct: finalPct, done: doneTasks + todayDoneBonus, total: totalTasks, missed, hasPastData: true };
 }
 
 /* ============================================================
@@ -2297,8 +2313,10 @@ function makeStatCard(catKey, label, color, pct, done, total, missed, hasPastDat
       else if (avg >= impactCfg.midThreshold) { tierLabel = impactCfg.midLabel; tierClass = 'impact-middle'; }
       else { tierLabel = impactCfg.bottomLabel; tierClass = 'impact-needs-work'; }
       impactClass = tierClass;
+      // Show blend note if both task data and impact exist
+      const blendNote = hasPastData && total > 0 ? ' <span style="font-size:0.58rem;opacity:0.7">(tasks + impact)</span>' : '';
       impactTierHTML = `<div class="stat-tier-label" style="color:${color}">${tierLabel}</div>
-        <div class="stat-impact-avg" style="color:${color}">Impact avg: ${avg}%</div>`;
+        <div class="stat-impact-avg" style="color:${color}">Impact avg: ${avg}%${blendNote}</div>`;
     } else {
       impactTierHTML = `<div class="stat-impact-avg">◎ Impact role — no scores yet</div>`;
     }
@@ -2447,7 +2465,8 @@ function openCatDetail(catKey, label, color) {
     const raw = ls_get('day_' + key); if (!raw) return;
     (raw[catKey]||[]).forEach(t => { if (t.trackProgress) hasProgData = true; });
   });
-  const hasStatsData = hasPunctData || hasProgData;
+  const impCfgCheck = getImpactConfig(catKey);
+  const hasStatsData = hasPunctData || hasProgData || impCfgCheck.enabled;
 
   // Build / update header buttons
   let hdrRight = document.getElementById('cd-header-right');
@@ -2489,7 +2508,7 @@ function openCatDetail(catKey, label, color) {
 function renderCatDetailBody() {
   const body = document.getElementById('cd-body');
   body.innerHTML = '';
-  const { catKey, color, groups } = catDetailState;
+  const { catKey, label, color, groups } = catDetailState;
 
   if (catDetailView === 'stats') {
     renderCatDetailStats(body, catKey, color);
@@ -2499,7 +2518,94 @@ function renderCatDetailBody() {
   // ── Tasks view (current & future only) ──
   const visibleGroups = groups.filter(g => g.isToday || g.isFuture);
 
-  if (visibleGroups.length === 0) {
+  // ── Today's Impact Scores (if this is an impact role) ──
+  const impCfgBody = getImpactConfig(catKey);
+  if (impCfgBody.enabled) {
+    const metrics = getImpactMetrics(catKey);
+    const todayStr = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+    const scores   = getImpactScores(todayStr);
+    if (!scores[catKey]) scores[catKey] = {};
+
+    const impWrap = document.createElement('div');
+    impWrap.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:8px;padding:12px 14px;margin-bottom:12px;';
+
+    const impHdr = document.createElement('div'); impHdr.className = 'impact-section-header';
+    impHdr.appendChild(document.createTextNode(" Today's Impact Scores"));
+    impWrap.appendChild(impHdr);
+
+    if (metrics.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:0.76rem;color:var(--text3);font-style:italic;';
+      empty.textContent = 'No metrics yet — add them in the day panel on Calendar.';
+      impWrap.appendChild(empty);
+    } else {
+      metrics.forEach(metricName => {
+        const entry    = scores[catKey][metricName] || { checked: false, value: 50 };
+        const isChecked = !!(entry.checked);
+        const val      = entry.value !== undefined ? entry.value : 50;
+
+        const mRow = document.createElement('div'); mRow.className = 'impact-task-row' + (isChecked ? ' checked' : '');
+
+        const nameRow = document.createElement('div'); nameRow.className = 'impact-task-name';
+        const cb = document.createElement('div'); cb.className = 'impact-cb' + (isChecked ? ' on' : '');
+        cb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+        const nameTxt = document.createElement('span'); nameTxt.textContent = metricName;
+        const valEl   = document.createElement('span'); valEl.className = 'impact-task-val';
+        valEl.textContent = isChecked ? val + '%' : '—';
+        valEl.style.color = isChecked ? getImpactColor(val) : 'var(--text3)';
+
+        nameRow.appendChild(cb); nameRow.appendChild(nameTxt); nameRow.appendChild(valEl);
+
+        const sliderSection = document.createElement('div');
+        sliderSection.className = 'impact-slider-section' + (isChecked ? ' visible' : '');
+        const slider = document.createElement('input'); slider.type = 'range';
+        slider.min = '0'; slider.max = '100'; slider.value = val;
+        slider.className = 'impact-slider'; slider.style.accentColor = getImpactColor(val);
+
+        slider.oninput = () => {
+          const newVal = parseInt(slider.value);
+          valEl.textContent = newVal + '%';
+          const c = getImpactColor(newVal);
+          valEl.style.color = c; slider.style.accentColor = c;
+          const s2 = getImpactScores(todayStr);
+          if (!s2[catKey]) s2[catKey] = {};
+          s2[catKey][metricName] = { checked: true, value: newVal };
+          saveImpactScores(todayStr, s2);
+          renderDashboard();
+        };
+
+        const labelsRow = document.createElement('div'); labelsRow.className = 'impact-slider-labels';
+        labelsRow.innerHTML = '<span>0%</span><span>50%</span><span>100%</span>';
+        sliderSection.appendChild(slider); sliderSection.appendChild(labelsRow);
+
+        const noOpp = document.createElement('div'); noOpp.className = 'impact-no-opp';
+        noOpp.textContent = 'No opportunity today — not counted';
+        noOpp.style.display = isChecked ? 'none' : 'block';
+
+        cb.onclick = (e) => {
+          e.stopPropagation();
+          const nowChecked = !cb.classList.contains('on');
+          cb.className = 'impact-cb' + (nowChecked ? ' on' : '');
+          mRow.className = 'impact-task-row' + (nowChecked ? ' checked' : '');
+          sliderSection.classList.toggle('visible', nowChecked);
+          noOpp.style.display = nowChecked ? 'none' : 'block';
+          valEl.textContent = nowChecked ? slider.value + '%' : '—';
+          valEl.style.color = nowChecked ? getImpactColor(parseInt(slider.value)) : 'var(--text3)';
+          const s2 = getImpactScores(todayStr);
+          if (!s2[catKey]) s2[catKey] = {};
+          s2[catKey][metricName] = { checked: nowChecked, value: parseInt(slider.value) };
+          saveImpactScores(todayStr, s2);
+          renderDashboard();
+        };
+
+        mRow.appendChild(nameRow); mRow.appendChild(noOpp); mRow.appendChild(sliderSection);
+        impWrap.appendChild(mRow);
+      });
+    }
+    body.appendChild(impWrap);
+  }
+
+  if (visibleGroups.length === 0 && !impCfgBody.enabled) {
     body.innerHTML = '<div class="cat-detail-empty">No current or upcoming tasks for this category.</div>';
     return;
   }
@@ -2518,6 +2624,29 @@ function renderCatDetailBody() {
       cb.className = 'cat-detail-task-cb' + (t.done ? ' done' : '');
       if (t.done) cb.style.cssText = `background:${color};border-color:${color}`;
       cb.innerHTML = checkSVG();
+      cb.style.cursor = 'pointer';
+      cb.onclick = (e) => {
+        e.stopPropagation();
+        propagateRecurring(g.key);
+        const data = getDay(g.key);
+        if (!data[catKey]) return;
+        let idx = data[catKey].findIndex(x => x.text === t.text && x.recur === t.recur);
+        if (idx < 0) idx = data[catKey].findIndex(x => x.text === t.text);
+        if (idx < 0) return;
+        data[catKey][idx].done = !data[catKey][idx].done;
+        const ps = getPunctSettings();
+        if (data[catKey][idx].done && data[catKey][idx].trackTiming && ps.enabled) {
+          setDay(g.key, data);
+          cpPending = { catKey, taskIdx: idx, dateKey: g.key, taskText: t.text };
+          cpTimingSelected = null; cpPrepSelected = null;
+          openCompletionPrompt();
+        } else {
+          setDay(g.key, data);
+        }
+        renderDashboard();
+        if (activeDateKey === g.key) renderPanel();
+        openCatDetail(catKey, label, color);
+      };
       const txtWrap = document.createElement('div'); txtWrap.style.flex = '1';
       const txt = document.createElement('div');
       txt.className = 'cat-detail-task-text' + (t.done ? ' done' : '');
@@ -2538,8 +2667,8 @@ function renderCatDetailBody() {
       // Edit & delete buttons
       const editBtn = document.createElement('button'); editBtn.className = 'cat-detail-task-edit'; editBtn.textContent = '✎'; editBtn.title = 'Edit';
       const delBtn  = document.createElement('button'); delBtn.className  = 'cat-detail-task-del';  delBtn.textContent  = '🗑'; delBtn.title  = 'Delete';
-      editBtn.onclick = () => startCatDetailInlineEdit(row, txt, editBtn, delBtn, catKey, t, g.key, color, label);
-      delBtn.onclick  = () => catDetailDeleteTask(catKey, t, g.key, color, label);
+      editBtn.onclick = (e) => { e.stopPropagation(); startCatDetailInlineEdit(row, txt, editBtn, delBtn, catKey, t, g.key, color, label); };
+      delBtn.onclick  = (e) => { e.stopPropagation(); catDetailDeleteTask(catKey, t, g.key, color, label); };
       row.appendChild(cb); row.appendChild(txtWrap); row.appendChild(editBtn); row.appendChild(delBtn);
       wrap.appendChild(row);
     });
@@ -2550,7 +2679,7 @@ function renderCatDetailBody() {
 function renderCatDetailStats(body, catKey, color) {
   const log = getPunctLog().filter(e => e.catKey === catKey);
 
-  // Check if any tasks in this category are flagged for progress tracking in the window
+  // Check if any tasks flagged for progress tracking in the window
   const windowKeys = getWindowDayKeys();
   let hasProgressTasks = false;
   windowKeys.forEach(key => {
@@ -2560,9 +2689,17 @@ function renderCatDetailStats(body, catKey, color) {
     (raw[catKey] || []).forEach(t => { if (t.trackProgress) hasProgressTasks = true; });
   });
 
-  if (log.length === 0 && !hasProgressTasks) {
+  const impCfg = getImpactConfig(catKey);
+  const isImpact = impCfg.enabled;
+
+  if (log.length === 0 && !hasProgressTasks && !isImpact) {
     body.innerHTML = '<div class="cat-detail-empty">No timing/prep or progress tracking entries for this category yet.</div>';
     return;
+  }
+
+  // ── Impact Role Ranges editor ──
+  if (isImpact) {
+    renderImpactRangeEditor(body, catKey, color);
   }
 
   // ── Punctuality & Prep box ──
@@ -2574,6 +2711,82 @@ function renderCatDetailStats(body, catKey, color) {
   if (hasProgressTasks) {
     renderCatDetailProgressBox(body, catKey);
   }
+
+  if (log.length === 0 && !hasProgressTasks) {
+    const note = document.createElement('div'); note.className = 'cat-detail-empty';
+    note.style.paddingTop = '8px';
+    note.textContent = 'No timing/prep or progress entries yet — complete a tracked task to start logging.';
+    body.appendChild(note);
+  }
+}
+
+function renderImpactRangeEditor(body, catKey, color) {
+  const cfg = getImpactConfig(catKey);
+  const box = document.createElement('div');
+  box.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:8px;padding:12px 14px;margin-bottom:12px;';
+
+  const lbl = document.createElement('div'); lbl.className = 'punct-detail-section-label';
+  lbl.textContent = '◎ Impact Role — Tier Ranges';
+  box.appendChild(lbl);
+
+  const note = document.createElement('div');
+  note.style.cssText = 'font-size:0.68rem;color:var(--text3);font-family:"JetBrains Mono",monospace;margin-bottom:10px;';
+  note.textContent = 'Avg impact score needed to reach each tier.';
+  box.appendChild(note);
+
+  const tierDefs = [
+    { lblField: 'topLabel',    tField: 'topThreshold',  color: '#22c55e', hint: 'Top tier ≥' },
+    { lblField: 'midLabel',    tField: 'midThreshold',  color: '#f59e0b', hint: 'Mid tier ≥' },
+    { lblField: 'bottomLabel', tField: null,            color: '#f87171', hint: 'Bottom tier' },
+  ];
+
+  const inputs = {};
+  tierDefs.forEach(td => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;';
+
+    const dot = document.createElement('div');
+    dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${td.color};flex-shrink:0;`;
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:0.68rem;color:var(--text3);font-family:"JetBrains Mono",monospace;width:76px;flex-shrink:0;';
+    hint.textContent = td.hint;
+
+    const labelInp = document.createElement('input');
+    labelInp.className = 'impact-label-inp'; labelInp.value = cfg[td.lblField] || '';
+    labelInp.placeholder = td.lblField.replace('Label','');
+    inputs[td.lblField] = labelInp;
+    row.appendChild(dot); row.appendChild(hint); row.appendChild(labelInp);
+
+    if (td.tField) {
+      const pctInp = document.createElement('input');
+      pctInp.className = 'impact-threshold-inp'; pctInp.type = 'number';
+      pctInp.min = '0'; pctInp.max = '100'; pctInp.value = cfg[td.tField] || 0;
+      const pctLbl = document.createElement('span');
+      pctLbl.style.cssText = 'font-size:0.7rem;color:var(--text3);flex-shrink:0;';
+      pctLbl.textContent = '%';
+      inputs[td.tField] = pctInp;
+      row.appendChild(pctInp); row.appendChild(pctLbl);
+    }
+    box.appendChild(row);
+  });
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'cat-add-save-btn'; saveBtn.style.marginTop = '4px'; saveBtn.textContent = 'Save Ranges';
+  saveBtn.onclick = () => {
+    const newCfg = Object.assign({}, getImpactConfig(catKey));
+    newCfg.topLabel    = inputs.topLabel.value.trim()    || cfg.topLabel;
+    newCfg.midLabel    = inputs.midLabel.value.trim()    || cfg.midLabel;
+    newCfg.bottomLabel = inputs.bottomLabel.value.trim() || cfg.bottomLabel;
+    newCfg.topThreshold = parseInt(inputs.topThreshold.value) || cfg.topThreshold;
+    newCfg.midThreshold = parseInt(inputs.midThreshold.value) || cfg.midThreshold;
+    saveImpactConfig(catKey, newCfg);
+    saveBtn.textContent = '✓ Saved';
+    setTimeout(() => { saveBtn.textContent = 'Save Ranges'; }, 1400);
+    renderDashboard();
+  };
+  box.appendChild(saveBtn);
+  body.appendChild(box);
 }
 
 function getWindowDayKeys() {
@@ -2801,10 +3014,18 @@ function renderFlagPanel() {
     cb.className = 'flag-task-cb' + (task.done ? ' checked' : '');
     if (task.done) { cb.style.background = flagPanelCat.color; cb.style.borderColor = flagPanelCat.color; }
     cb.innerHTML = checkSVG();
-    cb.onclick = () => {
+    cb.onclick = (e) => {
+      e.stopPropagation();
       const d = getDay(todayKey);
+      const wasUndone = !d[flagPanelCatKey][idx].done;
       d[flagPanelCatKey][idx].done = !d[flagPanelCatKey][idx].done;
       setDay(todayKey, d);
+      const ps = getPunctSettings();
+      if (wasUndone && d[flagPanelCatKey][idx].done && d[flagPanelCatKey][idx].trackTiming && ps.enabled) {
+        cpPending = { catKey: flagPanelCatKey, taskIdx: idx, dateKey: todayKey, taskText: task.text };
+        cpTimingSelected = null; cpPrepSelected = null;
+        openCompletionPrompt();
+      }
       renderFlagPanel();
       renderDashboard();
     };
@@ -4013,25 +4234,48 @@ function renderSettings() {
 
   // Tutorials
   const tutSection = document.createElement('div');
-  tutSection.innerHTML = '<div class="settings-section-label">Tutorials</div>';
+  tutSection.innerHTML = '<div class="settings-section-label">Guided Tours</div>';
   const tutNote = document.createElement('div');
-  tutNote.style.cssText = 'font-size:0.72rem;color:var(--text3);margin-bottom:10px;font-family:"JetBrains Mono",monospace;';
-  tutNote.textContent = 'Replay a guided tour at any time.';
+  tutNote.style.cssText = 'font-size:0.72rem;color:var(--text3);margin-bottom:10px;font-family:"JetBrains Mono",monospace;line-height:1.5;';
+  tutNote.textContent = 'Tours only run once. Check the box to mark as done, uncheck to replay next time you visit that screen.';
   tutSection.appendChild(tutNote);
+
   [
     { label: 'Balance Dashboard Tour', key: TUTORIAL_KEYS.dashboard },
     { label: 'Calendar Tour',          key: TUTORIAL_KEYS.calendar  },
     { label: 'Day Panel Tour',         key: TUTORIAL_KEYS.dayPanel  },
   ].forEach(({ label, key }) => {
-    const btn = document.createElement('button'); btn.className = 'backup-btn'; btn.style.marginBottom = '6px'; btn.style.width = '100%'; btn.textContent = '▶ ' + label;
-    btn.onclick = () => {
-      localStorage.removeItem('lt_' + key); closeSettings();
-      if (key === TUTORIAL_KEYS.dashboard) { showPage('dashboard', document.querySelector('.nav-tab')); setTimeout(() => startTutorial(DASH_STEPS, key), 500); }
-      if (key === TUTORIAL_KEYS.calendar)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(CAL_STEPS, key), 500); }
-      if (key === TUTORIAL_KEYS.dayPanel)  { showPage('calendar',  document.querySelectorAll('.nav-tab')[1]); setTimeout(() => startTutorial(PANEL_STEPS, key), 500); }
+    const isDone = tutDone(key);
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;margin-bottom:6px;cursor:pointer;transition:border-color 0.15s;';
+
+    const cb = document.createElement('div');
+    cb.style.cssText = `width:18px;height:18px;border-radius:4px;flex-shrink:0;border:1.5px solid ${isDone ? 'var(--green)' : 'var(--border2)'};background:${isDone ? 'var(--green)' : 'transparent'};display:flex;align-items:center;justify-content:center;transition:all 0.15s;`;
+    cb.innerHTML = isDone ? `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>` : '';
+
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'flex:1;font-size:0.82rem;color:var(--text2);font-family:"DM Sans",sans-serif;';
+    lbl.textContent = label;
+
+    const statusLbl = document.createElement('div');
+    statusLbl.style.cssText = `font-size:0.65rem;font-family:"JetBrains Mono",monospace;color:${isDone ? 'var(--green)' : 'var(--text3)'};`;
+    statusLbl.textContent = isDone ? 'Completed' : 'Not yet shown';
+
+    row.appendChild(cb); row.appendChild(lbl); row.appendChild(statusLbl);
+    row.onclick = () => {
+      const nowDone = tutDone(key);
+      if (nowDone) {
+        // Uncheck — reset so it plays again
+        localStorage.removeItem('lt_' + key);
+      } else {
+        // Check — mark as done so it won't play
+        markTutDone(key);
+      }
+      renderSettings(); // refresh to show new state
     };
-    tutSection.appendChild(btn);
+    tutSection.appendChild(row);
   });
+
   body.appendChild(tutSection);
 }
 
@@ -6191,10 +6435,6 @@ function buildObRolesAndAreas() {
   const g = obState.gender, r = obState.relationship;
   const c = obState.children, e = obState.employment;
 
-  // ── Always suggested roles ──
-  result.roles.push({ name: 'Personal Promises',  color: '#6366f1', impact: false, badge: 'Role' });
-  result.roles.push({ name: 'Promises to Others', color: '#a855f7', impact: false, badge: 'Role' });
-
   // ── Relationship roles ──
   if (r === 'married') {
     const name = g === 'female' ? 'Wife' : g === 'nonbinary' ? 'Partner' : 'Husband';
@@ -6547,6 +6787,8 @@ function startTutorial(steps, tutKey) {
   spotlightSteps  = steps.filter(s => !s.skip || !s.skip());
   spotlightIndex  = 0;
   spotlightTutKey = tutKey;
+  // Mark done immediately — prevents re-firing even if user skips or closes
+  markTutDone(tutKey);
   document.getElementById('spotlight-overlay').classList.add('active');
   showSpotlightStep(0);
 }
@@ -6589,27 +6831,41 @@ function showSpotlightStep(idx) {
   actions.appendChild(dots); actions.appendChild(skipBtn); actions.appendChild(nextBtn);
   tip.appendChild(stepLbl); tip.appendChild(title); tip.appendChild(body); tip.appendChild(actions);
 
-  // Position tooltip — always keep within viewport
-  const tipW = 280; const tipH = 180;
-  // Try below first, then above, then center
+  // Position tooltip using fixed coordinates — always fully visible in viewport
+  const vw  = window.innerWidth;
+  const vh  = window.innerHeight;
+  const tipW = Math.min(300, vw - 24);
+  const tipH = Math.min(220, vh * 0.42);
+  const margin = 14;
+
+  tip.style.width     = tipW + 'px';
+  tip.style.height    = tipH + 'px';
+  tip.style.overflowY = 'auto';
+
+  // Prefer below element; if not enough room place above; if neither center it
   let tipTop;
-  if (rect.bottom + pad + 16 + tipH < window.innerHeight) {
-    tipTop = rect.bottom + pad + 12;
-  } else if (rect.top - pad - 16 - tipH > 0) {
-    tipTop = rect.top - pad - tipH - 12;
+  const spaceBelow = vh - rect.bottom - pad - margin;
+  const spaceAbove = rect.top - pad - margin;
+  if (spaceBelow >= tipH) {
+    tipTop = rect.bottom + pad + margin;
+  } else if (spaceAbove >= tipH) {
+    tipTop = rect.top - pad - tipH - margin;
   } else {
-    tipTop = Math.max(10, (window.innerHeight - tipH) / 2);
+    tipTop = Math.max(margin, (vh - tipH) / 2);
   }
-  // Clamp to viewport
-  tipTop = Math.max(10, Math.min(tipTop, window.innerHeight - tipH - 10));
-  let tipLeft = rect.left;
-  tipLeft = Math.max(12, Math.min(tipLeft, window.innerWidth - tipW - 12));
+
+  // Horizontal — left-align with element, clamp within viewport
+  let tipLeft = Math.max(margin, Math.min(rect.left, vw - tipW - margin));
+
+  // Hard clamp — never let it go offscreen
+  tipTop  = Math.max(margin, Math.min(tipTop,  vh - tipH - margin));
+  tipLeft = Math.max(margin, Math.min(tipLeft, vw - tipW - margin));
+
   tip.style.top  = tipTop + 'px';
   tip.style.left = tipLeft + 'px';
-  tip.style.width = tipW + 'px';
 
-  // Scroll element into view
-  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Scroll spotlighted element into view
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function endTutorial() {
