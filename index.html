@@ -48,8 +48,10 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 20px; height: 56px; gap: 10px;
 }
-.nav-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em; color: var(--text); flex-shrink: 0; }
+.nav-brand-wrap { display: flex; flex-direction: column; gap: 0; flex-shrink: 0; }
+.nav-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em; color: var(--text); line-height: 1; }
 .nav-brand span { color: var(--blue); }
+.nav-brand-sub { font-size: 0.52rem; color: var(--text3); letter-spacing: 0.06em; font-family: 'DM Sans', sans-serif; opacity: 0.7; white-space: nowrap; }
 .nav-tabs { display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex: 1; }
 .nav-tabs::-webkit-scrollbar { display: none; }
 .nav-tab { padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; color: var(--text2); background: transparent; transition: all 0.18s; white-space: nowrap; flex-shrink: 0; }
@@ -1363,7 +1365,30 @@ svg.ring { transform: rotate(-90deg); }
 .impact-slider-labels { display: flex; justify-content: space-between; font-size: 0.58rem; color: var(--text3); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
 .impact-del-btn { background: none; border: none; color: var(--text3); font-size: 0.8rem; cursor: pointer; padding: 0 3px; transition: color 0.15s; }
 .impact-del-btn:hover { color: #f87171; }
-.add-impact-row { display: flex; gap: 7px; margin-top: 8px; align-items: center; }
+.impact-freq-row {
+  display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap;
+}
+.impact-freq-btn {
+  font-size: 0.62rem; padding: 2px 8px; border-radius: 10px;
+  border: 1px solid var(--border2); background: transparent; color: var(--text3);
+  cursor: pointer; font-family: 'JetBrains Mono', monospace; transition: all 0.15s;
+}
+.impact-freq-btn.active { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+.impact-freq-btn:hover { border-color: var(--text3); color: var(--text2); }
+.impact-reflect-day-sel {
+  font-size: 0.62rem; padding: 2px 6px; border-radius: 6px;
+  border: 1px solid var(--border2); background: var(--surface3); color: var(--text2);
+  font-family: 'JetBrains Mono', monospace; cursor: pointer; outline: none;
+}
+.impact-inactive-note {
+  font-size: 0.68rem; color: var(--text3); font-style: italic;
+  font-family: 'JetBrains Mono', monospace; padding: 4px 0;
+  display: flex; align-items: center; gap: 6px;
+}
+.impact-last-val {
+  font-size: 0.66rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--text3); margin-top: 2px;
+}
 .add-impact-inp { flex: 1; background: var(--surface3); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; padding: 6px 10px; outline: none; }
 .add-impact-inp:focus { border-color: var(--purple); }
 .add-impact-btn { background: var(--purple-dim); border: 1px solid var(--purple); color: var(--purple); border-radius: 6px; font-size: 0.82rem; padding: 6px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
@@ -1488,7 +1513,10 @@ svg.ring { transform: rotate(-90deg); }
 </div>
 
 <nav>
-  <div class="nav-brand">EQUILIB<span>.</span></div>
+  <div class="nav-brand-wrap">
+    <div class="nav-brand">EQUILIB<span>.</span></div>
+    <div class="nav-brand-sub">by Structure and Flow</div>
+  </div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('dashboard',this)">Balance</button>
     <button class="nav-tab" onclick="showPage('calendar',this)">Calendar</button>
@@ -1916,9 +1944,38 @@ function getImpactColor(val) {
   return '#f87171';
 }
 
-/* ============================================================
-   PANEL SORT
-   ============================================================ */
+// Impact metric frequencies: { [roleId]: { [metricName]: { freq: 'daily'|'weekly'|'monthly', reflectDay: 0-6 } } }
+function getImpactMetricFreqs(roleId) { return ls_get('impact_freqs_' + roleId) || {}; }
+function saveImpactMetricFreqs(roleId, v) { ls_set('impact_freqs_' + roleId, v); }
+function getMetricFreq(roleId, metricName) {
+  const freqs = getImpactMetricFreqs(roleId);
+  return freqs[metricName] || { freq: 'daily', reflectDay: 0 };
+}
+
+function isReflectionDay(roleId, metricName, dateObj) {
+  const { freq, reflectDay } = getMetricFreq(roleId, metricName);
+  if (freq === 'daily') return true;
+  if (freq === 'weekly') return dateObj.getDay() === (reflectDay || 0);
+  if (freq === 'monthly') return dateObj.getDate() === 1;
+  return true;
+}
+
+function getLastReflectionValue(roleId, metricName, currentDateKey) {
+  // Find the most recent logged value for this metric
+  const keys = Object.keys(localStorage)
+    .filter(k => k.startsWith('lt_impact_scores_'))
+    .map(k => k.replace('lt_impact_scores_', ''))
+    .filter(k => k < currentDateKey)
+    .sort().reverse();
+  for (const dk of keys.slice(0, 60)) {
+    const scores = ls_get('impact_scores_' + dk);
+    if (scores && scores[roleId] && scores[roleId][metricName] !== undefined) {
+      const e = scores[roleId][metricName];
+      if (e && e.checked) return { value: e.value, date: dk };
+    }
+  }
+  return null;
+}
 function getPanelSort() { return ls_get('panel_sort') || 'default'; }
 function savePanelSort(v) { ls_set('panel_sort', v); }
 function setPanelSort(val) { savePanelSort(val); updateSortPills(val); renderPanel(); }
@@ -1957,22 +2014,16 @@ function getRoles() {
   const r = ls_get('roles');
   if (!r) { ls_set('roles', []); return []; }
 
-  // One-time migration: purge legacy hardcoded default roles injected by old DEFAULT_ROLE_NAMES
-  const LEGACY_ROLE_NAMES = ['Father','Leader','Son','Partner','Professional','Friend','Entrepreneur','Student','Wife','Husband','Parent','Not Important','Personal Promises','Promises to Others'];
-  const obComplete = ls_get('ob_complete');
-  if (!obComplete) {
-    // Before onboarding is done, wipe any auto-injected legacy roles entirely
-    const cleaned = r.filter(role => !LEGACY_ROLE_NAMES.includes(role.name));
-    if (cleaned.length !== r.length) { ls_set('roles', cleaned); return cleaned; }
-  } else {
-    // After onboarding, only wipe roles that were auto-injected (not user-chosen)
-    // We flag user-chosen roles with id starting 'role_ob_'
-    // Legacy auto-injected ones had id 'role_0', 'role_1' etc.
-    const cleaned = r.filter(role => {
-      const isLegacyId = /^role_\d+$/.test(role.id);
-      return !isLegacyId;
-    });
-    if (cleaned.length !== r.length) { ls_set('roles', cleaned); return cleaned; }
+  // One-time migration — only runs once, flagged after completion
+  if (!ls_get('roles_migrated')) {
+    // Strip only the truly legacy auto-injected IDs (role_0, role_1, etc.)
+    // Never strip by name — user may have legitimately named a role 'Husband' etc.
+    const cleaned = r.filter(role => !/^role_\d+$/.test(role.id));
+    ls_set('roles_migrated', true);
+    if (cleaned.length !== r.length) {
+      ls_set('roles', cleaned);
+      return cleaned;
+    }
   }
   return r;
 }
@@ -2167,14 +2218,15 @@ function renderDashboard() {
     const dt = parseKey(key);
     const isPast  = dt < today;
     const isToday = dt.getTime() === today.getTime();
-    let dayHas = false;
+    if (!isPast && !isToday) return; // skip future dates
+    let dayDoneCount = 0;
     const allKeys = [...BASE_CATS.map(c=>c.key), ...customCats.map(c=>c.id), ...roles.map(r=>r.id)];
     allKeys.forEach(k => {
       const arr = raw[k] || [];
       if (arr.length > 0) {
-        dayHas = true;
         grandTotalAll += arr.length;
         grandDoneAll  += arr.filter(x => x.done).length;
+        dayDoneCount  += arr.filter(x => x.done).length;
         if (isPast) {
           grandTotalPast += arr.length;
           grandDonePast  += arr.filter(x => x.done).length;
@@ -2183,7 +2235,8 @@ function renderDashboard() {
         }
       }
     });
-    if (dayHas) daysLogged++;
+    // A day counts as "shown up" only if at least one task was completed
+    if (dayDoneCount > 0) daysLogged++;
   });
 
   let overallPct = 0;
@@ -2536,70 +2589,13 @@ function renderCatDetailBody() {
     if (metrics.length === 0) {
       const empty = document.createElement('div');
       empty.style.cssText = 'font-size:0.76rem;color:var(--text3);font-style:italic;';
-      empty.textContent = 'No metrics yet — add them in the day panel on Calendar.';
+      empty.textContent = 'No metrics yet — add them from the Calendar day panel.';
       impWrap.appendChild(empty);
     } else {
+      const todayDt = new Date(today);
       metrics.forEach(metricName => {
-        const entry    = scores[catKey][metricName] || { checked: false, value: 50 };
-        const isChecked = !!(entry.checked);
-        const val      = entry.value !== undefined ? entry.value : 50;
-
-        const mRow = document.createElement('div'); mRow.className = 'impact-task-row' + (isChecked ? ' checked' : '');
-
-        const nameRow = document.createElement('div'); nameRow.className = 'impact-task-name';
-        const cb = document.createElement('div'); cb.className = 'impact-cb' + (isChecked ? ' on' : '');
-        cb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-        const nameTxt = document.createElement('span'); nameTxt.textContent = metricName;
-        const valEl   = document.createElement('span'); valEl.className = 'impact-task-val';
-        valEl.textContent = isChecked ? val + '%' : '—';
-        valEl.style.color = isChecked ? getImpactColor(val) : 'var(--text3)';
-
-        nameRow.appendChild(cb); nameRow.appendChild(nameTxt); nameRow.appendChild(valEl);
-
-        const sliderSection = document.createElement('div');
-        sliderSection.className = 'impact-slider-section' + (isChecked ? ' visible' : '');
-        const slider = document.createElement('input'); slider.type = 'range';
-        slider.min = '0'; slider.max = '100'; slider.value = val;
-        slider.className = 'impact-slider'; slider.style.accentColor = getImpactColor(val);
-
-        slider.oninput = () => {
-          const newVal = parseInt(slider.value);
-          valEl.textContent = newVal + '%';
-          const c = getImpactColor(newVal);
-          valEl.style.color = c; slider.style.accentColor = c;
-          const s2 = getImpactScores(todayStr);
-          if (!s2[catKey]) s2[catKey] = {};
-          s2[catKey][metricName] = { checked: true, value: newVal };
-          saveImpactScores(todayStr, s2);
-          renderDashboard();
-        };
-
-        const labelsRow = document.createElement('div'); labelsRow.className = 'impact-slider-labels';
-        labelsRow.innerHTML = '<span>0%</span><span>50%</span><span>100%</span>';
-        sliderSection.appendChild(slider); sliderSection.appendChild(labelsRow);
-
-        const noOpp = document.createElement('div'); noOpp.className = 'impact-no-opp';
-        noOpp.textContent = 'No opportunity today — not counted';
-        noOpp.style.display = isChecked ? 'none' : 'block';
-
-        cb.onclick = (e) => {
-          e.stopPropagation();
-          const nowChecked = !cb.classList.contains('on');
-          cb.className = 'impact-cb' + (nowChecked ? ' on' : '');
-          mRow.className = 'impact-task-row' + (nowChecked ? ' checked' : '');
-          sliderSection.classList.toggle('visible', nowChecked);
-          noOpp.style.display = nowChecked ? 'none' : 'block';
-          valEl.textContent = nowChecked ? slider.value + '%' : '—';
-          valEl.style.color = nowChecked ? getImpactColor(parseInt(slider.value)) : 'var(--text3)';
-          const s2 = getImpactScores(todayStr);
-          if (!s2[catKey]) s2[catKey] = {};
-          s2[catKey][metricName] = { checked: nowChecked, value: parseInt(slider.value) };
-          saveImpactScores(todayStr, s2);
-          renderDashboard();
-        };
-
-        mRow.appendChild(nameRow); mRow.appendChild(noOpp); mRow.appendChild(sliderSection);
-        impWrap.appendChild(mRow);
+        impWrap.appendChild(buildImpactMetricRow(catKey, metricName, todayStr, todayDt,
+          () => openCatDetail(catKey, label, color), false));
       });
     }
     body.appendChild(impWrap);
@@ -3415,89 +3411,9 @@ function renderPanel() {
       impHdr.appendChild(document.createTextNode(' Today\'s Impact Scores'));
       impSection.appendChild(impHdr);
 
+      const panelDt = parseKey(dk);
       metrics.forEach(metricName => {
-        const entry = scores[cat.key][metricName] || { checked: false, value: 50 };
-        const isChecked = !!(entry.checked);
-        const val = entry.value !== undefined ? entry.value : 50;
-
-        const impRow = document.createElement('div');
-        impRow.className = 'impact-task-row' + (isChecked ? ' checked' : '');
-
-        // Name row: checkbox + name + value (when checked)
-        const nameRow = document.createElement('div'); nameRow.className = 'impact-task-name';
-
-        const cb = document.createElement('div');
-        cb.className = 'impact-cb' + (isChecked ? ' on' : '');
-        cb.innerHTML = `<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 3.5,7 9,1" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-
-        const nameTxt = document.createElement('span'); nameTxt.textContent = metricName;
-
-        const valEl = document.createElement('span'); valEl.className = 'impact-task-val';
-        valEl.textContent = isChecked ? val + '%' : '—';
-        valEl.style.color = isChecked ? getImpactColor(val) : 'var(--text3)';
-        valEl.style.display = 'block';
-
-        const delBtn = document.createElement('button'); delBtn.className = 'impact-del-btn'; delBtn.textContent = '×';
-        delBtn.title = 'Remove this metric';
-        delBtn.onclick = () => {
-          const ms = getImpactMetrics(cat.key).filter(m => m !== metricName);
-          saveImpactMetrics(cat.key, ms);
-          renderPanel();
-        };
-
-        nameRow.appendChild(cb); nameRow.appendChild(nameTxt); nameRow.appendChild(valEl); nameRow.appendChild(delBtn);
-
-        // Slider section (only visible when checked)
-        const sliderSection = document.createElement('div');
-        sliderSection.className = 'impact-slider-section' + (isChecked ? ' visible' : '');
-
-        const slider = document.createElement('input'); slider.type = 'range';
-        slider.min = '0'; slider.max = '100'; slider.value = val;
-        slider.className = 'impact-slider';
-        slider.style.accentColor = getImpactColor(val);
-
-        slider.oninput = () => {
-          const newVal = parseInt(slider.value);
-          valEl.textContent = newVal + '%';
-          const c = getImpactColor(newVal);
-          valEl.style.color = c; slider.style.accentColor = c;
-          const s2 = getImpactScores(dk);
-          if (!s2[cat.key]) s2[cat.key] = {};
-          s2[cat.key][metricName] = { checked: true, value: newVal };
-          saveImpactScores(dk, s2);
-          renderDashboard();
-        };
-
-        const labelsRow = document.createElement('div'); labelsRow.className = 'impact-slider-labels';
-        labelsRow.innerHTML = '<span>0%</span><span>50%</span><span>100%</span>';
-
-        sliderSection.appendChild(slider); sliderSection.appendChild(labelsRow);
-
-        // No-opportunity note (shown when unchecked)
-        const noOpp = document.createElement('div'); noOpp.className = 'impact-no-opp';
-        noOpp.textContent = 'No opportunity today — not counted';
-        noOpp.style.display = isChecked ? 'none' : 'block';
-
-        // Checkbox toggle logic
-        cb.onclick = () => {
-          const nowChecked = !cb.classList.contains('on');
-          cb.className = 'impact-cb' + (nowChecked ? ' on' : '');
-          impRow.className = 'impact-task-row' + (nowChecked ? ' checked' : '');
-          sliderSection.classList.toggle('visible', nowChecked);
-          noOpp.style.display = nowChecked ? 'none' : 'block';
-          valEl.textContent = nowChecked ? slider.value + '%' : '—';
-          valEl.style.color = nowChecked ? getImpactColor(parseInt(slider.value)) : 'var(--text3)';
-          // If newly checked and slider is still at default, set to 50
-          if (nowChecked && parseInt(slider.value) === 50) { slider.value = 50; }
-          const s2 = getImpactScores(dk);
-          if (!s2[cat.key]) s2[cat.key] = {};
-          s2[cat.key][metricName] = { checked: nowChecked, value: parseInt(slider.value) };
-          saveImpactScores(dk, s2);
-          renderDashboard();
-        };
-
-        impRow.appendChild(nameRow); impRow.appendChild(noOpp); impRow.appendChild(sliderSection);
-        impSection.appendChild(impRow);
+        impSection.appendChild(buildImpactMetricRow(cat.key, metricName, dk, panelDt, () => renderPanel(), true));
       });
 
       // Add new metric
@@ -4746,6 +4662,8 @@ function importBackup(file, statusId, onDone) {
       toRemove.forEach(k => localStorage.removeItem(k));
       // Write restored data
       Object.entries(entries).forEach(([k, v]) => localStorage.setItem(k, v));
+      // Set migration flag so getRoles doesn't wipe restored user roles
+      localStorage.setItem('lt_roles_migrated', 'true');
       setBackupStatus(statusId, `✓ Restored ${Object.keys(entries).length} records`, 'ok');
       if (onDone) onDone();
       renderDashboard(); buildCalendar();
@@ -4881,6 +4799,7 @@ async function firebasePull(statusId) {
     }
     toRemove.forEach(k => localStorage.removeItem(k));
     Object.entries(entries).forEach(([k, v]) => localStorage.setItem(k, v));
+    localStorage.setItem('lt_roles_migrated', 'true');
     saveLastSync();
     setBackupStatus(statusId, `✓ Pulled ${Object.keys(entries).length} records`, 'ok');
     renderDashboard(); buildCalendar();
@@ -6192,6 +6111,154 @@ function buildRoleAreaExplainer() {
   row.appendChild(areaCol); row.appendChild(roleCol);
   box.appendChild(row);
   return box;
+}
+
+/* ============================================================
+   SHARED IMPACT METRIC ROW BUILDER
+   ============================================================ */
+function buildImpactMetricRow(roleKey, metricName, dateKeyStr, dateObj, onSave, showDelete) {
+  const scores    = getImpactScores(dateKeyStr);
+  const entry     = (scores[roleKey] && scores[roleKey][metricName]) || { checked: false, value: 50 };
+  const isChecked = !!(entry.checked);
+  const val       = entry.value !== undefined ? entry.value : 50;
+  const freqInfo  = getMetricFreq(roleKey, metricName);
+  const isActive  = isReflectionDay(roleKey, metricName, dateObj);
+  const lastVal   = !isActive ? getLastReflectionValue(roleKey, metricName, dateKeyStr) : null;
+
+  const DOW_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const freqLabel = freqInfo.freq === 'daily' ? 'Daily'
+    : freqInfo.freq === 'weekly' ? `Weekly · ${DOW_NAMES[freqInfo.reflectDay||0]}`
+    : 'Monthly · 1st';
+
+  const row = document.createElement('div');
+  row.className = 'impact-task-row' + (isChecked && isActive ? ' checked' : '');
+  if (!isActive) row.style.opacity = '0.6';
+
+  // Name row
+  const nameRow = document.createElement('div'); nameRow.className = 'impact-task-name';
+  const cb = document.createElement('div');
+  cb.className = 'impact-cb' + (isChecked && isActive ? ' on' : '');
+  cb.innerHTML = `<svg width="8" height="7" viewBox="0 0 8 7"><polyline points="1,3.5 3,6 7,1" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const nameTxt = document.createElement('span'); nameTxt.textContent = metricName;
+  const valEl = document.createElement('span'); valEl.className = 'impact-task-val';
+  valEl.textContent = isChecked && isActive ? val + '%' : (lastVal ? lastVal.value + '%' : '—');
+  valEl.style.color = isChecked && isActive ? getImpactColor(val) : 'var(--text3)';
+
+  nameRow.appendChild(cb); nameRow.appendChild(nameTxt); nameRow.appendChild(valEl);
+
+  if (showDelete) {
+    const delBtn = document.createElement('button'); delBtn.className = 'impact-del-btn'; delBtn.textContent = '×';
+    delBtn.onclick = () => {
+      const ms = getImpactMetrics(roleKey).filter(m => m !== metricName);
+      saveImpactMetrics(roleKey, ms);
+      if (onSave) onSave();
+    };
+    nameRow.appendChild(delBtn);
+  }
+
+  // Frequency selector row
+  const freqRow = document.createElement('div'); freqRow.className = 'impact-freq-row';
+  const freqLbl = document.createElement('span');
+  freqLbl.style.cssText = 'font-size:0.6rem;color:var(--text3);font-family:"JetBrains Mono",monospace;';
+  freqLbl.textContent = 'Reflect:';
+  freqRow.appendChild(freqLbl);
+
+  ['daily','weekly','monthly'].forEach(f => {
+    const btn = document.createElement('button');
+    btn.className = 'impact-freq-btn' + (freqInfo.freq === f ? ' active' : '');
+    btn.textContent = f.charAt(0).toUpperCase() + f.slice(1);
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const newFreq = getMetricFreq(roleKey, metricName);
+      newFreq.freq = f;
+      const freqs = getImpactMetricFreqs(roleKey);
+      freqs[metricName] = newFreq;
+      saveImpactMetricFreqs(roleKey, freqs);
+      if (onSave) onSave();
+    };
+    freqRow.appendChild(btn);
+  });
+
+  // Reflect day picker (only for weekly)
+  if (freqInfo.freq === 'weekly') {
+    const daySel = document.createElement('select'); daySel.className = 'impact-reflect-day-sel';
+    DOW_NAMES.forEach((d, i) => {
+      const opt = document.createElement('option'); opt.value = i; opt.textContent = d;
+      if (i === (freqInfo.reflectDay || 0)) opt.selected = true;
+      daySel.appendChild(opt);
+    });
+    daySel.onchange = (e) => {
+      e.stopPropagation();
+      const newFreq = getMetricFreq(roleKey, metricName);
+      newFreq.reflectDay = parseInt(daySel.value);
+      const freqs = getImpactMetricFreqs(roleKey);
+      freqs[metricName] = newFreq;
+      saveImpactMetricFreqs(roleKey, freqs);
+      if (onSave) onSave();
+    };
+    freqRow.appendChild(daySel);
+  }
+
+  // Inactive message
+  const inactiveNote = document.createElement('div'); inactiveNote.className = 'impact-inactive-note';
+  inactiveNote.style.display = isActive ? 'none' : 'flex';
+  inactiveNote.textContent = freqInfo.freq === 'weekly'
+    ? `Weekly reflection — next: ${DOW_NAMES[freqInfo.reflectDay||0]}`
+    : 'Monthly reflection — logs on the 1st';
+  if (lastVal) {
+    const lastLbl = document.createElement('div'); lastLbl.className = 'impact-last-val';
+    lastLbl.textContent = `Last logged: ${lastVal.value}% (${lastVal.date})`;
+    inactiveNote.appendChild(lastLbl);
+  }
+
+  // Slider section (only when active)
+  const sliderSection = document.createElement('div');
+  sliderSection.className = 'impact-slider-section' + (isChecked && isActive ? ' visible' : '');
+  sliderSection.style.display = isActive ? '' : 'none';
+
+  const slider = document.createElement('input'); slider.type = 'range';
+  slider.min = '0'; slider.max = '100'; slider.value = val;
+  slider.className = 'impact-slider'; slider.style.accentColor = getImpactColor(val);
+  slider.oninput = () => {
+    const newVal = parseInt(slider.value);
+    valEl.textContent = newVal + '%';
+    const c = getImpactColor(newVal);
+    valEl.style.color = c; slider.style.accentColor = c;
+    const s2 = getImpactScores(dateKeyStr);
+    if (!s2[roleKey]) s2[roleKey] = {};
+    s2[roleKey][metricName] = { checked: true, value: newVal };
+    saveImpactScores(dateKeyStr, s2);
+    renderDashboard();
+  };
+  const labelsRow = document.createElement('div'); labelsRow.className = 'impact-slider-labels';
+  labelsRow.innerHTML = '<span>0%</span><span>50%</span><span>100%</span>';
+  sliderSection.appendChild(slider); sliderSection.appendChild(labelsRow);
+
+  const noOpp = document.createElement('div'); noOpp.className = 'impact-no-opp';
+  noOpp.textContent = 'No opportunity — not counted';
+  noOpp.style.display = (isChecked && isActive) ? 'none' : (isActive ? 'block' : 'none');
+
+  if (isActive) {
+    cb.onclick = (e) => {
+      e.stopPropagation();
+      const nowChecked = !cb.classList.contains('on');
+      cb.className = 'impact-cb' + (nowChecked ? ' on' : '');
+      row.className = 'impact-task-row' + (nowChecked ? ' checked' : '');
+      sliderSection.classList.toggle('visible', nowChecked);
+      noOpp.style.display = nowChecked ? 'none' : 'block';
+      valEl.textContent = nowChecked ? slider.value + '%' : '—';
+      valEl.style.color = nowChecked ? getImpactColor(parseInt(slider.value)) : 'var(--text3)';
+      const s2 = getImpactScores(dateKeyStr);
+      if (!s2[roleKey]) s2[roleKey] = {};
+      s2[roleKey][metricName] = { checked: nowChecked, value: parseInt(slider.value) };
+      saveImpactScores(dateKeyStr, s2);
+      renderDashboard();
+    };
+  }
+
+  row.appendChild(nameRow); row.appendChild(freqRow); row.appendChild(inactiveNote);
+  row.appendChild(noOpp); row.appendChild(sliderSection);
+  return row;
 }
 
 /* ============================================================
